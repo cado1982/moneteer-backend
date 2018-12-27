@@ -4,20 +4,23 @@ stages:
   - build
   - test
 
+before_script:
+  - "dotnet restore -s https://www.myget.org/F/dumpster-unicorn-fish/auth/$MYGET_API_KEY/api/v3/index.json -s https://api.nuget.org/v3/index.json"  
+  
 build-backend:
   stage: build
   script:
     - "cd Moneteer.Backend"
-    - "dotnet build"
+    - "dotnet build --no-restore"
 
 test-backend:
   stage: test
   script:
     - "cd Moneteer.Backend.Tests"
-    - "dotnet test"
+    - "dotnet test --no-restore"
 
 test-domain:
   stage: test
   script:
     - "cd Moneteer.Domain.Tests"
-    - "dotnet test"
+    - "dotnet test --no-restore"
