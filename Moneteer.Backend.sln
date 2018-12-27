@@ -1,0 +1,49 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.168
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Moneteer.Backend", "Moneteer.Backend\Moneteer.Backend.csproj", "{3CFB1DA0-3292-4353-A77C-0BF941C76290}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Moneteer.Backend.Tests", "Moneteer.Backend.Tests\Moneteer.Backend.Tests.csproj", "{1E93EABB-19E4-46F3-A603-B8775650782D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Moneteer.Domain", "Moneteer.Domain\Moneteer.Domain.csproj", "{0EC72B17-629C-4160-92C7-63EB7C638712}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Moneteer.Domain.Tests", "Moneteer.Domain.Tests\Moneteer.Domain.Tests.csproj", "{70398001-003A-4B47-A67C-FF5648DCD2C4}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Moneteer.Models", "Moneteer.Models\Moneteer.Models.csproj", "{504A730B-2891-4E0F-8BAC-C4EBCD1761EF}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3CFB1DA0-3292-4353-A77C-0BF941C76290}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3CFB1DA0-3292-4353-A77C-0BF941C76290}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3CFB1DA0-3292-4353-A77C-0BF941C76290}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3CFB1DA0-3292-4353-A77C-0BF941C76290}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1E93EABB-19E4-46F3-A603-B8775650782D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1E93EABB-19E4-46F3-A603-B8775650782D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1E93EABB-19E4-46F3-A603-B8775650782D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1E93EABB-19E4-46F3-A603-B8775650782D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0EC72B17-629C-4160-92C7-63EB7C638712}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0EC72B17-629C-4160-92C7-63EB7C638712}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0EC72B17-629C-4160-92C7-63EB7C638712}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0EC72B17-629C-4160-92C7-63EB7C638712}.Release|Any CPU.Build.0 = Release|Any CPU
+		{70398001-003A-4B47-A67C-FF5648DCD2C4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{70398001-003A-4B47-A67C-FF5648DCD2C4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{70398001-003A-4B47-A67C-FF5648DCD2C4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{70398001-003A-4B47-A67C-FF5648DCD2C4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{504A730B-2891-4E0F-8BAC-C4EBCD1761EF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{504A730B-2891-4E0F-8BAC-C4EBCD1761EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{504A730B-2891-4E0F-8BAC-C4EBCD1761EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{504A730B-2891-4E0F-8BAC-C4EBCD1761EF}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F946BF72-3A2B-4E14-9E46-F3336BA53AB3}
+	EndGlobalSection
+EndGlobal
