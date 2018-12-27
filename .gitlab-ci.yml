@@ -1,0 +1,23 @@
+image: microsoft/dotnet:latest
+
+stages:
+  - build
+  - test
+
+build-backend:
+  stage: build
+  script:
+    - "cd Moneteer.Backend"
+    - "dotnet build"
+
+test-backend:
+  stage: test
+  script:
+    - "cd Moneteer.Backend.Tests"
+    - "dotnet test"
+
+test-domain:
+  stage: test
+  script:
+    - "cd Moneteer.Domain.Tests"
+    - "dotnet test"
