@@ -1,0 +1,8 @@
+version: '3.4'
+
+services:
+  moneteer.backend:
+    image: ${DOCKER_REGISTRY-}moneteerbackend
+    build:
+      context: .
+      dockerfile: Dockerfile

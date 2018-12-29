@@ -2,11 +2,15 @@
   "profiles": {
     "Project": {
       "commandName": "Project",
-      "launchBrowser": false,
-      "applicationUrl": "https://localhost:4300",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
-      }
+      },
+      "applicationUrl": "https://localhost:4300"
+    },
+    "Docker": {
+      "commandName": "Docker",
+      "launchBrowser": true,
+      "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}"
     }
   }
 }
