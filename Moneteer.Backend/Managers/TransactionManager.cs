@@ -108,7 +108,7 @@ namespace Moneteer.Backend.Managers
                     throw new InvalidOperationException("Budget could not be found for transaction");
                 }
 
-                var assignments = transactions.SelectMany(t => t.Assignments);
+                var assignments = transactions.SelectMany(t => t.Assignments).Where(a => a.Envelope != null); // Inflow won't have an Envelope
                 var groupedByEnvelope = assignments.GroupBy(a => a.Envelope.Id);
 
                 foreach (var envelope in groupedByEnvelope)
