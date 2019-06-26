@@ -12,13 +12,13 @@ using Moneteer.Models;
 namespace Moneteer.Backend.Controllers
 {
     [Authorize]
-    public class BudgetController : BaseController
+    public class BudgetController : BaseController<BudgetController>
     {
         private readonly IBudgetManager _budgetManager;
         private readonly ILogger<BudgetController> _logger;
 
         public BudgetController(IBudgetManager budgetManager, ILogger<BudgetController> logger, IUserInfoService userInfoService)
-            :base(userInfoService)
+            :base(logger, userInfoService)
         {
             _budgetManager = budgetManager;
             _logger = logger;

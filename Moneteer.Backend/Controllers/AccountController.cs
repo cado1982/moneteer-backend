@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Moneteer.Backend.Managers;
 using Moneteer.Backend.Services;
 using Moneteer.Domain;
@@ -13,12 +14,12 @@ namespace Moneteer.Backend.Controllers
 {
     [Route("api/account")]
     [Authorize]
-    public class AccountController : BaseController
+    public class AccountController : BaseController<AccountController>
     {
         private readonly IAccountManager _accountManager;
 
-        public AccountController(IAccountManager accountManager, IUserInfoService userInfoService)
-            :base(userInfoService)
+        public AccountController(ILogger<AccountController> logger, IAccountManager accountManager, IUserInfoService userInfoService)
+            :base(logger, userInfoService)
         {
             _accountManager = accountManager;
         }

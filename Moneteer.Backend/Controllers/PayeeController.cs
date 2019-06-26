@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Moneteer.Backend.Managers;
 using Moneteer.Backend.Services;
 using Moneteer.Models;
@@ -9,13 +10,15 @@ using System.Threading.Tasks;
 namespace Moneteer.Backend.Controllers
 {
     [Authorize]
-    public class PayeeController : BaseController
+    public class PayeeController : BaseController<PayeeController>
     {
+        private readonly ILogger<PayeeController> _logger;
         private readonly IPayeeManager _payeeManager;
 
-        public PayeeController(IPayeeManager payeeManager, IUserInfoService userInfoService)
-            :base(userInfoService)
+        public PayeeController(ILogger<PayeeController> logger, IPayeeManager payeeManager, IUserInfoService userInfoService)
+            :base(logger, userInfoService)
         {
+            _logger = logger;
             _payeeManager = payeeManager;
         }
 

@@ -4,16 +4,20 @@ using System.Net;
 using System.Security;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Moneteer.Backend.Services;
 
 namespace Moneteer.Backend.Controllers
 {
-    public abstract class BaseController : Controller
+    public abstract class BaseController<T> : Controller
     {
-        protected IUserInfoService UserInfoService { get; }
+        protected ILogger<T> Logger { get; }
 
-        protected BaseController(IUserInfoService userInfoService)
+        protected IUserInfoService UserInfoService { get; }
+        
+        protected BaseController(ILogger<T> logger, IUserInfoService userInfoService)
         {
+            Logger = logger;
             UserInfoService = userInfoService;
         }
 
@@ -38,6 +42,7 @@ namespace Moneteer.Backend.Controllers
             }
             catch (ApplicationException ex)
             {
+
                 return BadRequest(ex.Message);
             }
             catch (ArgumentException ex)
@@ -54,7 +59,7 @@ namespace Moneteer.Backend.Controllers
             }
         }
 
-        protected async Task<IActionResult> HandleExceptions<T>(Func<Task<T>> func) where T : class
+        protected async Task<IActionResult> HandleExceptions<TResult>(Func<Task<TResult>> func) where TResult : class
         {
             try
             {
@@ -63,18 +68,21 @@ namespace Moneteer.Backend.Controllers
             }
             catch (ApplicationException ex)
             {
+                Logger.LogError(ex, ex.Message);
                 return BadRequest(ex.Message);
             }
             catch (ArgumentException ex)
             {
+                Logger.LogError(ex, ex.Message);
                 return BadRequest(ex.Message);
             }
             catch (UnauthorizedAccessException)
             {
                 return Unauthorized();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Logger.LogError(ex, ex.Message);
                 return StatusCode((int)HttpStatusCode.InternalServerError);
             }
         }
@@ -88,18 +96,21 @@ namespace Moneteer.Backend.Controllers
             }
             catch (ApplicationException ex)
             {
+                Logger.LogError(ex, ex.Message);
                 return BadRequest(ex.Message);
             }
             catch (ArgumentException ex)
             {
+                Logger.LogError(ex, ex.Message);
                 return BadRequest(ex.Message);
             }
             catch (UnauthorizedAccessException)
             {
                 return Unauthorized();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Logger.LogError(ex, ex.Message);
                 return StatusCode((int)HttpStatusCode.InternalServerError);
             }
         }

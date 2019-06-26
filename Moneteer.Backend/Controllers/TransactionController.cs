@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Moneteer.Backend.Managers;
 using Moneteer.Backend.Services;
 using Moneteer.Domain;
@@ -13,13 +14,15 @@ using System.Threading.Tasks;
 namespace Moneteer.Backend.Controllers
 {
     [Authorize]
-    public class TransactionController : BaseController
+    public class TransactionController : BaseController<TransactionController>
     {
+        private readonly ILogger<TransactionController> _logger;
         private readonly ITransactionManager _transactionManager;
 
-        public TransactionController(ITransactionManager transactionManager, IUserInfoService userInfoService)
-            :base(userInfoService)
+        public TransactionController(ILogger<TransactionController> logger,  ITransactionManager transactionManager, IUserInfoService userInfoService)
+            :base(logger, userInfoService)
         {
+            _logger = logger;
             _transactionManager = transactionManager;
         }
 
@@ -82,7 +85,7 @@ namespace Moneteer.Backend.Controllers
         }
 
         [HttpPut]
-        [Route("api/transaction/{transactionId}")]
+        [Route("api/transaction/{transactionId}/setCleared")]
         public Task<IActionResult> SetCleared(Guid transactionId, [FromBody] bool isCleared)
         {
             return HandleExceptions(() =>
