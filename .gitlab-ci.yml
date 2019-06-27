@@ -1,26 +1,21 @@
-image: microsoft/dotnet:latest
+image: docker:stable
 
-stages:
-  - build
-  - test
+services:
+  - docker:dind
 
 before_script:
-  - "dotnet restore -s https://www.myget.org/F/dumpster-unicorn-fish/auth/$MYGET_API_KEY/api/v3/index.json -s https://api.nuget.org/v3/index.json"  
-  
-build-backend:
+  - docker info
+
+build:
+  only:
+    - master
+  before_script:
+    - docker login registry.gitlab.com -u ${CI_REGISTRY_USER} -p ${CI_REGISTRY_PASSWORD}
+  script:
+    - docker build -t ${CI_REGISTRY}/${CI_PROJECT_PATH}:latest .
+    - docker push ${CI_REGISTRY}/${CI_PROJECT_PATH}:latest
+  after_script:
+    - docker logout ${CI_REGISTRY}
   stage: build
-  script:
-    - "cd Moneteer.Backend"
-    - "dotnet build --no-restore"
-
-test-backend:
-  stage: test
-  script:
-    - "cd Moneteer.Backend.Tests"
-    - "dotnet test --no-restore"
-
-test-domain:
-  stage: test
-  script:
-    - "cd Moneteer.Domain.Tests"
-    - "dotnet test --no-restore"
+  tags: 
+    - docker
