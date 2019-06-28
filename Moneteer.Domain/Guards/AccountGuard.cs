@@ -1,6 +1,7 @@
 ﻿using Moneteer.Domain.Helpers;
 using Moneteer.Domain.Repositories;
 using System;
+using System.Data;
 using System.Threading.Tasks;
 
 namespace Moneteer.Domain.Guards
@@ -16,16 +17,13 @@ namespace Moneteer.Domain.Guards
             _connectionProvider = connectionProvider;
         }
 
-        public async Task Guard(Guid accountId, Guid userId)
+        public async Task Guard(Guid accountId, Guid userId, IDbConnection conn)
         {
-            using (var conn = _connectionProvider.GetOpenConnection())
-            {
-                var accountOwnerId = await _accountRepository.GetOwner(accountId, conn);
+            var accountOwnerId = await _accountRepository.GetOwner(accountId, conn);
 
-                if (accountOwnerId != userId)
-                {
-                    throw new UnauthorizedAccessException();
-                }
+            if (accountOwnerId != userId)
+            {
+                throw new UnauthorizedAccessException();
             }
         }
     }

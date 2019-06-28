@@ -12,7 +12,7 @@ namespace Moneteer.Domain.Repositories
         Task<Payee> CreatePayee(Payee payee, IDbConnection connection);
         Task UpdatePayee(Payee payee, IDbConnection connection);
         Task DeletePayee(Guid payeeId, IDbConnection connection);
-        Task<Payee> GetPayee(Guid budgetId, string name, IDbConnection connection);
+        Task<Payee> GetPayee(Guid payeeId, IDbConnection connection);
         Task<Guid> GetOwner(Guid payeeId, IDbConnection connection);
     }
 }

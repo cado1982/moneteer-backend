@@ -17,7 +17,7 @@ namespace Moneteer.Backend.Managers
         private readonly IAccountRepository _accountRepository;
         private readonly ITransactionAssignmentRepository _transactionAssignmentRepository;
         private readonly IPayeeRepository _payeeRepository;
-        private readonly TransactionValidationStrategy _validationStrategy;
+        private readonly IDataValidationStrategy<Transaction> _validationStrategy;
         private readonly IConnectionProvider _connectionProvider;
         private readonly IEnvelopeRepository _envelopeRepository;
         private readonly IBudgetRepository _budgetRepository;
@@ -29,7 +29,7 @@ namespace Moneteer.Backend.Managers
             IPayeeRepository payeeRepository,
             IEnvelopeRepository envelopeRepository,
             IBudgetRepository budgetRepository,
-            TransactionValidationStrategy validationStrategy,
+            IDataValidationStrategy<Transaction> validationStrategy,
             Guards guards,
             IConnectionProvider connectionProvider)
             : base(guards)
@@ -46,50 +46,52 @@ namespace Moneteer.Backend.Managers
 
         public async Task<Transaction> CreateTransaction(Transaction transaction, Guid userId)
         {
-            await GuardAccount(transaction.Account.Id, userId).ConfigureAwait(false);
-
-            _validationStrategy.RunRules(transaction);
-
-            var transactionEntity = transaction.ToEntity();
-
             using (var conn = _connectionProvider.GetOpenConnection())
-            using (var dbTransaction = conn.BeginTransaction())
             {
-                var account = await _accountRepository.Get(transactionEntity.Account.Id, conn).ConfigureAwait(false);
-                transactionEntity.Account = account ?? throw new ApplicationException("Account not found");
+                await GuardAccount(transaction.Account.Id, userId, conn).ConfigureAwait(false);
 
-                if (transactionEntity.Payee != null)
+                _validationStrategy.RunRules(transaction);
+
+                var transactionEntity = transaction.ToEntity();
+
+                using (var dbTransaction = conn.BeginTransaction())
                 {
-                    var payee = await _payeeRepository.GetPayee(account.BudgetId, transactionEntity.Payee.Name, conn).ConfigureAwait(false);
+                    var account = await _accountRepository.Get(transactionEntity.Account.Id, conn).ConfigureAwait(false);
+                    transactionEntity.Account = account ?? throw new ApplicationException("Account not found");
 
-                    if (payee == null && !String.IsNullOrWhiteSpace(transactionEntity.Payee.Name))
+                    if (transactionEntity.Payee?.Id == Guid.Empty)
                     {
                         transactionEntity.Payee.BudgetId = account.BudgetId;
-                        payee = await _payeeRepository.CreatePayee(transactionEntity.Payee, conn).ConfigureAwait(false);
+                        var newPayee = await _payeeRepository.CreatePayee(transactionEntity.Payee, conn).ConfigureAwait(false);
+
+                        transactionEntity.Payee = newPayee;
                     }
 
-                    transactionEntity.Payee = payee;
+                    transactionEntity = await _transactionRepository.CreateTransaction(transactionEntity, conn).ConfigureAwait(false);
+
+                    var tasks = new List<Task>();
+
+                    tasks.Add(_transactionAssignmentRepository.CreateTransactionAssignments(transactionEntity.Assignments, transactionEntity.Id, conn));
+
+                    // Adjust envelope balances
+                    foreach (var assignment in transactionEntity.Assignments)
+                    {
+                        tasks.Add(_envelopeRepository.AdjustBalance(assignment.Envelope.Id, assignment.Inflow - assignment.Outflow, conn));
+                    }
+
+                    // Adjust budget available balance
+                    if (transaction.Inflow > 0)
+                    {
+                        tasks.Add(_budgetRepository.AdjustAvailable(account.BudgetId, transaction.Inflow, conn));
+                    }
+
+                    await Task.WhenAll(tasks).ConfigureAwait(false);
+
+                    dbTransaction.Commit();
                 }
-
-                transactionEntity = await _transactionRepository.CreateTransaction(transactionEntity, conn).ConfigureAwait(false);
-
-                await _transactionAssignmentRepository.CreateTransactionAssignments(transactionEntity.Assignments, transactionEntity.Id, conn).ConfigureAwait(false);
-
-                // Adjust envelope balances
-                foreach (var assignment in transaction.Assignments)
-                {
-                    await _envelopeRepository.AdjustBalance(assignment.Envelope.Id, assignment.Inflow - assignment.Outflow, conn).ConfigureAwait(false);
-                }
-
-                // Adjust budget available balance
-                if (transaction.Inflow > 0)
-                {
-                    await _budgetRepository.AdjustAvailable(account.BudgetId, transaction.Inflow, conn).ConfigureAwait(false);
-                }
-
-                dbTransaction.Commit();
+                return transactionEntity.ToModel();
             }
-            return transactionEntity.ToModel();
+
         }
 
         public async Task DeleteTransactions(List<Guid> transactionIds, Guid userId)
@@ -128,10 +130,10 @@ namespace Moneteer.Backend.Managers
 
         public async Task<List<Transaction>> GetAllForAccount(Guid accountId, Guid userId)
         {
-            await GuardAccount(accountId, userId).ConfigureAwait(false);
-
             using (var conn = _connectionProvider.GetOpenConnection())
             {
+                await GuardAccount(accountId, userId, conn).ConfigureAwait(false);
+
                 var transactions = await _transactionRepository.GetAllForAccount(accountId, conn).ConfigureAwait(false);
 
                 return transactions.ToModels().ToList();

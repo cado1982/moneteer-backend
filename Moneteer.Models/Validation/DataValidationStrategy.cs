@@ -2,7 +2,7 @@
 
 namespace Moneteer.Models.Validation
 {
-    public abstract class DataValidationStrategy<T> where T : class
+    public abstract class DataValidationStrategy<T> : IDataValidationStrategy<T> where T : class
     {
         protected abstract List<ValidationRule<T>> Rules { get; }
 
@@ -13,5 +13,9 @@ namespace Moneteer.Models.Validation
                 rule.Validate(value);
             }
         }
+    }
+
+    public interface IDataValidationStrategy<T> {
+        void RunRules(T value);
     }
 }

@@ -1,9 +1,12 @@
-﻿using Moneteer.Domain.Guards;
+﻿using Moneteer.Backend.Extensions;
+using Moneteer.Domain.Guards;
 using Moneteer.Domain.Helpers;
 using Moneteer.Domain.Repositories;
+using Moneteer.Models;
 using Moq;
 using System;
 using System.Data;
+using System.Data.Common;
 
 namespace Moneteer.Backend.Tests.Managers
 {
@@ -22,6 +25,11 @@ namespace Moneteer.Backend.Tests.Managers
 
         protected Guid BudgetId = Guid.NewGuid();
         protected Guid UserId = Guid.NewGuid();
+        protected Guid AccountId = Guid.NewGuid();
+        protected Guid PayeeId = Guid.NewGuid();
+
+        protected Account Account;
+        protected Payee Payee;
 
         protected Guards Guards;
 
@@ -39,6 +47,19 @@ namespace Moneteer.Backend.Tests.Managers
                                 new AccountGuard(AccountRepository, ConnectionProvider),
                                 new PayeeGuard(PayeeRepository, ConnectionProvider),
                                 new TransactionGuard(TransactionRepository, ConnectionProvider));
+
+            Account = new Account();
+            Account.BudgetId = BudgetId;
+            Account.Id = AccountId; 
+            Account.Name = "I'm an account";
+
+            Payee = new Payee();
+            Payee.Id = PayeeId;
+            Payee.Name = "I'm a payee";
+
+            Mock.Get(AccountRepository).Setup(r => r.Get(AccountId, DbConnection)).ReturnsAsync(Account.ToEntity());
+            Mock.Get(PayeeRepository).Setup(r => r.GetPayee(Payee.Id, DbConnection)).ReturnsAsync(Payee.ToEntity());
+            Mock.Get(TransactionRepository).Setup(r => r.CreateTransaction(It.IsAny<Domain.Entities.Transaction>(), DbConnection)).ReturnsAsync((Domain.Entities.Transaction t, IDbConnection conn) => t);
         }
     }
 }

@@ -116,14 +116,13 @@ namespace Moneteer.Domain.Repositories
             }
         }
 
-        public async Task<Payee> GetPayee(Guid budgetId, string name, IDbConnection connection)
+        public async Task<Payee> GetPayee(Guid payeeId, IDbConnection connection)
         {
             try
             {
                 var parameters = new DynamicParameters();
 
-                parameters.Add("@BudgetId", budgetId);
-                parameters.Add("@Name", name);
+                parameters.Add("@Id", payeeId);
 
                 return await connection.QuerySingleOrDefaultAsync<Payee>(PayeeSql.Get, parameters).ConfigureAwait(false);
             }

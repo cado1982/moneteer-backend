@@ -35,11 +35,15 @@ namespace Moneteer.Backend.Extensions
 
         public static IEnumerable<Models.TransactionAssignment> ToModels(this IEnumerable<Entities.TransactionAssignment> entities)
         {
+            if (entities == null) return null;
+
             return entities.Select(t => t.ToModel());
         }
 
         public static IEnumerable<Entities.TransactionAssignment> ToEntities(this IEnumerable<Models.TransactionAssignment> models)
         {
+            if (models == null) return null;
+
             return models.Select(t => t.ToEntity());
         }
     }

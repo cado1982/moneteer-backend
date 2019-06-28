@@ -106,10 +106,10 @@ namespace Moneteer.Backend.Managers
 
         public async Task Delete(Guid accountId, Guid userId)
         {
-            await GuardAccount(accountId, userId);
-
             using (var conn = _connectionProvider.GetOpenConnection())
             {
+                await GuardAccount(accountId, userId, conn);
+
                 await _accountRepository.Delete(accountId, conn);
             }
         }
@@ -130,19 +130,19 @@ namespace Moneteer.Backend.Managers
 
         public async Task Update(Account account, Guid userId)
         {
-            await GuardAccount(account.Id, userId);
-
-            _validationStrategy.RunRules(account);
-            
-            var entity = new Entities.Account
-            {
-                Id = account.Id,
-                Name = account.Name,
-                IsBudget = account.IsBudget
-            };
-
             using (var conn = _connectionProvider.GetOpenConnection())
             {
+                await GuardAccount(account.Id, userId, conn);
+
+                _validationStrategy.RunRules(account);
+
+                var entity = new Entities.Account
+                {
+                    Id = account.Id,
+                    Name = account.Name,
+                    IsBudget = account.IsBudget
+                };
+
                 await _accountRepository.Update(entity, conn);
             }
         }

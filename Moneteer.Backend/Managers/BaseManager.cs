@@ -1,6 +1,7 @@
 ﻿using Moneteer.Domain.Guards;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Threading.Tasks;
 
 namespace Moneteer.Backend.Managers
@@ -19,9 +20,9 @@ namespace Moneteer.Backend.Managers
             return _guards.BudgetGuard.Guard(budgetId, userId);
         }
 
-        protected Task GuardAccount(Guid accountId, Guid userId)
+        protected Task GuardAccount(Guid accountId, Guid userId, IDbConnection conn)
         {
-            return _guards.AccountGuard.Guard(accountId, userId);
+            return _guards.AccountGuard.Guard(accountId, userId, conn);
         }
 
         protected Task GuardPayee(Guid payeeId, Guid userId)

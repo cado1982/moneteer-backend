@@ -42,7 +42,7 @@ namespace Moneteer.Backend.Extensions
                 IsReconciled = model.IsReconciled,
                 Outflow = model.Outflow,
                 Payee = model.Payee.ToEntity(),
-                Assignments = model.Assignments.ToEntities().ToList()
+                Assignments = model.Assignments.ToEntities()?.ToList()
             };
         }
 
