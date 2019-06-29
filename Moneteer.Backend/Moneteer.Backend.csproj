@@ -12,6 +12,11 @@
     <WarningsAsErrors />
   </PropertyGroup>
 
+  <PropertyGroup Condition=" '$(RunConfiguration)' == 'Default' ">
+    <StartAction>Project</StartAction>
+    <ApplicationURL>https://localhost:4300</ApplicationURL>
+    <LaunchBrowser>false</LaunchBrowser>
+  </PropertyGroup>
   <ItemGroup>
     <Compile Remove="wwwroot\**" />
     <Content Remove="wwwroot\**" />

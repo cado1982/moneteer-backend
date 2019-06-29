@@ -14,6 +14,7 @@ using Moneteer.Domain.Guards;
 using Moneteer.Domain.Helpers;
 using Moneteer.Domain.Repositories;
 using Moneteer.Models.Validation;
+using Moneteer.Models;
 using System;
 
 namespace Moneteer.Backend
@@ -106,7 +107,7 @@ namespace Moneteer.Backend
             services.AddSingleton<BudgetValidationStrategy>();
             services.AddSingleton<EnvelopeValidationStrategy>();
             services.AddSingleton<EnvelopeCategoryValidationStrategy>();
-            services.AddSingleton<TransactionValidationStrategy>();
+            services.AddSingleton<IDataValidationStrategy<Transaction>, TransactionValidationStrategy>();
 
             // Services
             services.AddTransient<IUserInfoService, UserInfoService>();
