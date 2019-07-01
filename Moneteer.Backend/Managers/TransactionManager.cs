@@ -69,9 +69,10 @@ namespace Moneteer.Backend.Managers
 
                     transactionEntity = await _transactionRepository.CreateTransaction(transactionEntity, conn).ConfigureAwait(false);
 
-                    var tasks = new List<Task>();
-
-                    tasks.Add(_transactionAssignmentRepository.CreateTransactionAssignments(transactionEntity.Assignments, transactionEntity.Id, conn));
+                    var tasks = new List<Task>
+                    {
+                        _transactionAssignmentRepository.CreateTransactionAssignments(transactionEntity.Assignments, transactionEntity.Id, conn)
+                    };
 
                     // Adjust envelope balances
                     foreach (var assignment in transactionEntity.Assignments)
