@@ -86,5 +86,19 @@ namespace Moneteer.Backend.Controllers
                 return await _envelopeManager.CreateEnvelope(budgetId, envelope, userId);
             });
         }
+
+        [HttpPost]
+        [Route("api/budget/{budgetId}/envelopes/assignIncome")]
+        public Task<IActionResult> AssignIncome(Guid budgetId, [FromBody] AssignIncomeRequest request)
+        {
+            return HandleExceptions(async () =>
+            {
+                if (budgetId == Guid.Empty) throw new ArgumentException("budgetId must be provided", nameof(budgetId));
+
+                var userId = GetCurrentUserId();
+
+                await _envelopeManager.AssignIncome(budgetId, request, userId);
+            });
+        }
     }
 }

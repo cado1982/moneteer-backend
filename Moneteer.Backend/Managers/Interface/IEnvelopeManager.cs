@@ -12,5 +12,6 @@ namespace Moneteer.Backend.Managers
         Task<EnvelopeCategory> CreateEnvelopeCategory(Guid budgetId, EnvelopeCategory envelopeCategory, Guid userId);
         Task<Envelope> CreateEnvelope(Guid budgetId, Envelope envelope, Guid userId);
         Task<decimal> GetAvailable(Guid budgetId, Guid userId);
+        Task AssignIncome(Guid budgetId, AssignIncomeRequest request, Guid userId);
     }
 }

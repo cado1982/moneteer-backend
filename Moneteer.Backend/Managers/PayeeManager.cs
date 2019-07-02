@@ -24,20 +24,20 @@ namespace Moneteer.Backend.Managers
         
         public async Task DeletePayee(Guid payeeId, Guid userId)
         {
-            await GuardPayee(payeeId, userId);
-
             using (var conn = _connectionProvider.GetOpenConnection())
             {
+                await GuardPayee(payeeId, userId, conn);
+            
                 await _payeeRepository.DeletePayee(payeeId, conn);
             }
         }
 
         public async Task<List<Payee>> GetAllForBudget(Guid budgetId, Guid userId)
         {
-            await GuardBudget(budgetId, userId);
-
             using (var conn = _connectionProvider.GetOpenConnection())
             {
+                await GuardBudget(budgetId, userId, conn);
+            
                 var payees = await _payeeRepository.GetAllForBudget(budgetId, conn);
 
                 var models = payees.ToModels();
@@ -48,12 +48,12 @@ namespace Moneteer.Backend.Managers
 
         public async Task UpdatePayee(Payee payee, Guid userId)
         {
-            await GuardPayee(payee.Id, userId);
-
-            var entity = payee.ToEntity();
-
             using (var conn = _connectionProvider.GetOpenConnection())
             {
+                await GuardPayee(payee.Id, userId, conn);
+
+                var entity = payee.ToEntity();
+            
                 await _payeeRepository.UpdatePayee(entity, conn);
             }
         }

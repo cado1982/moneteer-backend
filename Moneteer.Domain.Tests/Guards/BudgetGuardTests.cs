@@ -12,7 +12,7 @@ namespace Moneteer.Domain.Tests.Guards
     public class BudgetGuardTests
     {
         private Mock<IBudgetRepository> _budgetRepositoryMock;
-        private Mock<IConnectionProvider> _connectionProviderMock;
+        private Mock<IDbConnection> _connectionMock;
         private BudgetGuard _sut;
 
         private Guid _budgetId = Guid.NewGuid();
@@ -21,23 +21,23 @@ namespace Moneteer.Domain.Tests.Guards
         public BudgetGuardTests()
         {
             _budgetRepositoryMock = new Mock<IBudgetRepository>();
-            _connectionProviderMock = new Mock<IConnectionProvider>();
+            _connectionMock = new Mock<IDbConnection>();
 
             _budgetRepositoryMock.Setup(r => r.GetOwner(_budgetId, It.IsAny<IDbConnection>())).ReturnsAsync(_budgetOwnerId);
 
-            _sut = new BudgetGuard(_budgetRepositoryMock.Object, _connectionProviderMock.Object);
+            _sut = new BudgetGuard(_budgetRepositoryMock.Object);
         }
 
         [Fact]
         public Task Blocks()
         {
-            return Assert.ThrowsAsync<UnauthorizedAccessException>(() => _sut.Guard(_budgetId, Guid.NewGuid()));
+            return Assert.ThrowsAsync<UnauthorizedAccessException>(() => _sut.Guard(_budgetId, Guid.NewGuid(), _connectionMock.Object));
         }
 
         [Fact]
         public Task Allows()
         {
-            return _sut.Guard(_budgetId, _budgetOwnerId);
+            return _sut.Guard(_budgetId, _budgetOwnerId, _connectionMock.Object);
         }
     }
 }

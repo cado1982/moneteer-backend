@@ -42,15 +42,15 @@ namespace Moneteer.Backend.Managers
 
         public async Task<Account> Create(Account account, Guid userId)
         {
-            await GuardBudget(account.BudgetId, userId);
-
-            _validationStrategy.RunRules(account);
-
-            var entity = account.ToEntity();
-
             using (var conn = _connectionProvider.GetOpenConnection())
             using (var dbTransaction = conn.BeginTransaction())
             {
+                await GuardBudget(account.BudgetId, userId, conn);
+
+                _validationStrategy.RunRules(account);
+
+                var entity = account.ToEntity();
+
                 await _accountRepository.Create(entity, conn);
 
                 if (account.InitialBalance != 0)
@@ -116,10 +116,10 @@ namespace Moneteer.Backend.Managers
 
         public async Task<List<Account>> GetAllForBudget(Guid budgetId, Guid userId)
         {
-            await GuardBudget(budgetId, userId);
-
             using (var conn = _connectionProvider.GetOpenConnection())
             {
+                await GuardBudget(budgetId, userId, conn);
+            
                 var entities = await _accountRepository.GetAllForBudget(budgetId, conn);
 
                 var models = entities.Select(e => e.ToModel()).ToList();

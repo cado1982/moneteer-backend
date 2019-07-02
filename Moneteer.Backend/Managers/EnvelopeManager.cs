@@ -5,9 +5,9 @@ using Moneteer.Domain.Repositories;
 using Moneteer.Models;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
-using Entities = Moneteer.Domain.Entities;
 
 namespace Moneteer.Backend.Managers
 {
@@ -30,10 +30,12 @@ namespace Moneteer.Backend.Managers
 
         public async Task<Envelope> CreateEnvelope(Guid budgetId, Envelope envelope, Guid userId)
         {
-            await GuardBudget(budgetId, userId);
+            if (budgetId == Guid.Empty) throw new ArgumentException("budgetId must be provided");
 
             using (var conn = _connectionProvider.GetOpenConnection())
             {
+                await GuardBudget(budgetId, userId, conn);
+            
                 var entity = envelope.ToEntity();
 
                 await _envelopeRepository.CreateEnvelope(entity, conn);
@@ -46,20 +48,24 @@ namespace Moneteer.Backend.Managers
 
         public async Task CreateDefaultEnvelopes(Guid budgetId, Guid userId)
         {
-            await GuardBudget(budgetId, userId);
+            if (budgetId == Guid.Empty) throw new ArgumentException("budgetId must be provided");
 
             using (var conn = _connectionProvider.GetOpenConnection())
             {
+                await GuardBudget(budgetId, userId, conn);
+            
                 await _envelopeRepository.CreateDefaultForBudget(budgetId, conn);
             }
         }
 
         public async Task<EnvelopeCategory> CreateEnvelopeCategory(Guid budgetId, EnvelopeCategory envelopeCategory, Guid userId)
         {
-            await GuardBudget(budgetId, userId);
+            if (budgetId == Guid.Empty) throw new ArgumentException("budgetId must be provided");
 
             using (var conn = _connectionProvider.GetOpenConnection())
             {
+                await GuardBudget(budgetId, userId, conn);
+            
                 var entity = envelopeCategory.ToEntity();
 
                 entity = await _envelopeRepository.CreateEnvelopeCategory(budgetId, entity, conn);
@@ -72,12 +78,12 @@ namespace Moneteer.Backend.Managers
 
         public async Task<List<Envelope>> GetEnvelopes(Guid budgetId, Guid userId)
         {
-            if (budgetId == null) throw new ArgumentException("budgetId must be provided");
-
-            await GuardBudget(budgetId, userId);
+            if (budgetId == Guid.Empty) throw new ArgumentException("budgetId must be provided");
 
             using (var conn = _connectionProvider.GetOpenConnection())
             {
+                await GuardBudget(budgetId, userId, conn);
+            
                 var envelopes = await _envelopeRepository.GetBudgetEnvelopes(budgetId, conn);
 
                 var models = envelopes.ToModels();
@@ -88,15 +94,51 @@ namespace Moneteer.Backend.Managers
 
         public async Task<decimal> GetAvailable(Guid budgetId, Guid userId)
         {
-            if (budgetId == null) throw new ArgumentException("budgetId must be provided");
-
-            await GuardBudget(budgetId, userId);
+            if (budgetId == Guid.Empty) throw new ArgumentException("budgetId must be provided");
 
             using (var conn = _connectionProvider.GetOpenConnection())
             {
-                var available = await _budgetRepository.GetAvailable(budgetId, conn);
+                await GuardBudget(budgetId, userId, conn);
+            
+                return await GetAvailableInternal(budgetId, conn);
+            }
+        }
 
-                return available;
+        private async Task<decimal> GetAvailableInternal(Guid budgetId, IDbConnection conn)
+        {
+            if (budgetId == Guid.Empty) throw new ArgumentException("budgetId must be provided");
+
+            var available = await _budgetRepository.GetAvailable(budgetId, conn);
+
+            return available;
+        }
+
+        public async Task AssignIncome(Guid budgetId, AssignIncomeRequest request, Guid userId)
+        {
+            if (budgetId == Guid.Empty) throw new ArgumentException("budgetId must be provided");
+
+            using (var conn = _connectionProvider.GetOpenConnection())
+            using (var transaction = conn.BeginTransaction())
+            {
+                await GuardBudget(budgetId, userId, conn);
+            
+                var available = await GetAvailableInternal(budgetId, conn);
+
+                var requestAssignmentTotal = request.Assignments.Sum(a => a.Amount);
+
+                if (requestAssignmentTotal > available)
+                {
+                    throw new ApplicationException("Attempt to assign more income than is available.");
+                }
+
+                foreach (var assignment in request.Assignments)
+                {
+                    await _envelopeRepository.AdjustBalance(assignment.Envelope.Id, assignment.Amount, conn);
+                }
+
+                await _budgetRepository.AdjustAvailable(budgetId, -requestAssignmentTotal, conn);
+
+                transaction.Commit();
             }
         }
     }

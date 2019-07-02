@@ -43,10 +43,10 @@ namespace Moneteer.Backend.Tests.Managers
             Mock.Get(AccountRepository).Setup(r => r.GetOwner(It.IsAny<Guid>(), DbConnection)).ReturnsAsync(UserId);
             Mock.Get(PayeeRepository).Setup(r => r.GetOwner(It.IsAny<Guid>(), DbConnection)).ReturnsAsync(UserId);
 
-            Guards = new Guards(new BudgetGuard(BudgetRepository, ConnectionProvider),
-                                new AccountGuard(AccountRepository, ConnectionProvider),
-                                new PayeeGuard(PayeeRepository, ConnectionProvider),
-                                new TransactionGuard(TransactionRepository, ConnectionProvider));
+            Guards = new Guards(new BudgetGuard(BudgetRepository),
+                                new AccountGuard(AccountRepository),
+                                new PayeeGuard(PayeeRepository),
+                                new TransactionGuard(TransactionRepository));
 
             Account = new Account();
             Account.BudgetId = BudgetId;

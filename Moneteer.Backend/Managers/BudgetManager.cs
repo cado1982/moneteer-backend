@@ -60,20 +60,20 @@ namespace Moneteer.Backend.Managers
 
         public async Task Delete(Guid budgetId, Guid userId)
         {
-            await GuardBudget(budgetId, userId).ConfigureAwait(false);
-
             using (var conn = _connectionProvider.GetOpenConnection())
             {
+                await GuardBudget(budgetId, userId, conn).ConfigureAwait(false);
+            
                 await _budgetRepository.Delete(budgetId, conn).ConfigureAwait(false);
             }
         }
 
         public async Task<Models.Budget> Get(Guid budgetId, Guid userId)
         {
-            await GuardBudget(budgetId, userId).ConfigureAwait(false);
-
             using (var conn = _connectionProvider.GetOpenConnection())
             {
+                await GuardBudget(budgetId, userId, conn).ConfigureAwait(false);
+            
                 var entity = await _budgetRepository.Get(budgetId, conn).ConfigureAwait(false);
 
                 var model = entity.ToModel();
@@ -96,10 +96,10 @@ namespace Moneteer.Backend.Managers
 
         public async Task AdjustAvailable(Guid budgetId, Guid userId, decimal change)
         {
-            await GuardBudget(budgetId, userId).ConfigureAwait(false);
-
             using (var conn = _connectionProvider.GetOpenConnection())
             {
+                await GuardBudget(budgetId, userId, conn).ConfigureAwait(false);
+            
                 await _budgetRepository.AdjustAvailable(budgetId, change, conn);
             }
         }

@@ -1,6 +1,6 @@
-﻿using Moneteer.Domain.Helpers;
-using Moneteer.Domain.Repositories;
+﻿using Moneteer.Domain.Repositories;
 using System;
+using System.Data;
 using System.Threading.Tasks;
 
 namespace Moneteer.Domain.Guards
@@ -8,24 +8,19 @@ namespace Moneteer.Domain.Guards
     public class PayeeGuard
     {
         private readonly IPayeeRepository _payeeRepository;
-        private readonly IConnectionProvider _connectionProvider;
 
-        public PayeeGuard(IPayeeRepository payeeRepository, IConnectionProvider connectionProvider)
+        public PayeeGuard(IPayeeRepository payeeRepository)
         {
             _payeeRepository = payeeRepository;
-            _connectionProvider = connectionProvider;
         }
 
-        public async Task Guard(Guid payeeId, Guid userId)
+        public async Task Guard(Guid payeeId, Guid userId, IDbConnection conn)
         {
-            using (var conn = _connectionProvider.GetOpenConnection())
-            {
-                var payeeOwnerId = await _payeeRepository.GetOwner(payeeId, conn);
+            var payeeOwnerId = await _payeeRepository.GetOwner(payeeId, conn);
 
-                if (payeeOwnerId != userId)
-                {
-                    throw new UnauthorizedAccessException();
-                }
+            if (payeeOwnerId != userId)
+            {
+                throw new UnauthorizedAccessException();
             }
         }
     }

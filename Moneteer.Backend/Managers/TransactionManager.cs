@@ -97,11 +97,11 @@ namespace Moneteer.Backend.Managers
 
         public async Task DeleteTransactions(List<Guid> transactionIds, Guid userId)
         {
-            await GuardTransactions(transactionIds, userId).ConfigureAwait(false);
-
             using (var conn = _connectionProvider.GetOpenConnection())
             using (var dbTransaction = conn.BeginTransaction())
             {
+                await GuardTransactions(transactionIds, userId, conn).ConfigureAwait(false);
+            
                 var transactions = await _transactionRepository.GetByIds(transactionIds, conn).ConfigureAwait(false);
 
                 // Make sure we're only dealing with one budget
@@ -143,10 +143,10 @@ namespace Moneteer.Backend.Managers
 
         public async Task<List<Transaction>> GetAllForBudget(Guid budgetId, Guid userId)
         {
-            await GuardBudget(budgetId, userId).ConfigureAwait(false);
-
             using (var conn = _connectionProvider.GetOpenConnection())
             {
+                await GuardBudget(budgetId, userId, conn).ConfigureAwait(false);
+            
                 var transactions = await _transactionRepository.GetAllForBudget(budgetId, conn).ConfigureAwait(false);
 
                 return transactions.ToModels().ToList();
@@ -155,21 +155,24 @@ namespace Moneteer.Backend.Managers
 
         public async Task SetTransactionIsCleared(Guid transactionId, bool isCleared, Guid userId)
         {
-            await GuardTransaction(transactionId, userId).ConfigureAwait(false);
-
             using (var conn = _connectionProvider.GetOpenConnection())
             {
+                await GuardTransaction(transactionId, userId, conn).ConfigureAwait(false);
+            
                 await _transactionRepository.SetIsCleared(transactionId, isCleared, conn).ConfigureAwait(false);
             }
         }
 
         public async Task<Transaction> UpdateTransaction(Transaction transaction, Guid userId)
         {
-            await GuardTransaction(transaction.Id, userId).ConfigureAwait(false);
+            using (var conn = _connectionProvider.GetOpenConnection())
+            {
+                await GuardTransaction(transaction.Id, userId, conn).ConfigureAwait(false);
 
-            _validationStrategy.RunRules(transaction);
+                _validationStrategy.RunRules(transaction);
 
-            return transaction;
+                return transaction;
+            }
         }
     }
 }

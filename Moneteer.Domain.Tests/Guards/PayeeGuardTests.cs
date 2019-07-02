@@ -12,7 +12,7 @@ namespace Moneteer.Domain.Tests.Guards
     public class PayeeGuardTests
     {
         private Mock<IPayeeRepository> _payeeRepositoryMock;
-        private Mock<IConnectionProvider> _connectionProviderMock;
+        private Mock<IDbConnection> _connectionMock;
         private PayeeGuard _sut;
 
         private Guid _payeeId = Guid.NewGuid();
@@ -21,23 +21,23 @@ namespace Moneteer.Domain.Tests.Guards
         public PayeeGuardTests()
         {
             _payeeRepositoryMock = new Mock<IPayeeRepository>();
-            _connectionProviderMock = new Mock<IConnectionProvider>();
+            _connectionMock = new Mock<IDbConnection>();
 
             _payeeRepositoryMock.Setup(r => r.GetOwner(_payeeId, It.IsAny<IDbConnection>())).ReturnsAsync(_payeeOwnerId);
 
-            _sut = new PayeeGuard(_payeeRepositoryMock.Object, _connectionProviderMock.Object);
+            _sut = new PayeeGuard(_payeeRepositoryMock.Object);
         }
 
         [Fact]
         public Task Blocks()
         {
-            return Assert.ThrowsAsync<UnauthorizedAccessException>(() => _sut.Guard(_payeeId, Guid.NewGuid()));
+            return Assert.ThrowsAsync<UnauthorizedAccessException>(() => _sut.Guard(_payeeId, Guid.NewGuid(), _connectionMock.Object));
         }
 
         [Fact]
         public Task Allows()
         {
-            return _sut.Guard(_payeeId, _payeeOwnerId);
+            return _sut.Guard(_payeeId, _payeeOwnerId, _connectionMock.Object);
         }
     }
 }
