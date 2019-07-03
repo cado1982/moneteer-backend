@@ -71,7 +71,7 @@ namespace Moneteer.Backend.Managers
             if (initialBalance == 0) return;
 
             decimal inflow = 0, outflow = 0;
-            Entities.Envelope envelope = null;
+
             if (initialBalance > 0)
             {
                 inflow = initialBalance;
@@ -91,7 +91,7 @@ namespace Moneteer.Backend.Managers
                     {
                         Inflow = inflow,
                         Outflow = outflow,
-                        Envelope = envelope
+                        Envelope = null
                     }
                 },
                 Inflow = inflow,
@@ -122,7 +122,20 @@ namespace Moneteer.Backend.Managers
             
                 var entities = await _accountRepository.GetAllForBudget(budgetId, conn);
 
+                var accountBalances = await _accountRepository.GetAccountBalances(budgetId, conn);
+
                 var models = entities.Select(e => e.ToModel()).ToList();
+
+                foreach (var accountBalance in accountBalances)
+                {
+                    var accountModel = models.SingleOrDefault(a => a.Id == accountBalance.AccountId);
+
+                    if (accountModel != null)
+                    {
+                        accountModel.ClearedBalance = accountBalance.ClearedBalance;
+                        accountModel.UnclearedBalance = accountBalance.UnclearedBalance;
+                    }
+                }
 
                 return models;
             }
@@ -144,6 +157,28 @@ namespace Moneteer.Backend.Managers
                 };
 
                 await _accountRepository.Update(entity, conn);
+            }
+        }
+
+        public async Task<Account> Get(Guid accountId, Guid userId)
+        {
+            using (var conn = _connectionProvider.GetOpenConnection())
+            {
+                await GuardAccount(accountId, userId, conn);
+
+                var entity = await _accountRepository.Get(accountId, conn);
+
+                var accountBalance = await _accountRepository.GetAccountBalance(accountId, conn);
+
+                var model = entity.ToModel();
+
+                if (accountBalance != null)
+                {
+                    model.ClearedBalance = accountBalance.ClearedBalance;
+                    model.UnclearedBalance = accountBalance.UnclearedBalance;
+                }
+
+                return model;
             }
         }
     }

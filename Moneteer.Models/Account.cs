@@ -10,5 +10,7 @@ namespace Moneteer.Models
         public bool IsBudget { get; set; }
         public decimal InitialBalance { get; set; }
         public Guid BudgetId { get; set; }
+        public decimal ClearedBalance { get; set; }
+        public decimal UnclearedBalance { get; set; }
     }
 }

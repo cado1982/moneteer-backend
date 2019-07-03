@@ -19,6 +19,31 @@ namespace Moneteer.Domain.Repositories
 
         }
 
+        //public async Task AdjustBalance(Guid accountId, decimal amount, IDbConnection connection)
+        //{
+        //    try
+        //    {
+        //        var parameters = new DynamicParameters();
+
+        //        parameters.Add("@AccountId", accountId);
+        //        parameters.Add("@Adjustment", amount, DbType.Decimal);
+
+        //        await connection.ExecuteAsync(AccountSql.AdjustBalance, parameters).ConfigureAwait(false);
+        //    }
+        //    catch (PostgresException ex)
+        //    {
+        //        LogPostgresException(ex, $"Error changing balance amount for account: {accountId}");
+        //        throw new ApplicationException("Oops! Something went wrong. Please try again");
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Logger.LogError(ex, $"Error changing balance amount for account: {accountId}");
+        //        throw new ApplicationException("Oops! Something went wrong. Please try again");
+        //    }
+        //}
+
+        
+
         public async Task Create(Account account, IDbConnection connection)
         {
             try
@@ -30,7 +55,7 @@ namespace Moneteer.Domain.Repositories
                 parameters.Add("@Id", account.Id);
                 parameters.Add("@Name", account.Name);
                 parameters.Add("@BudgetId", account.BudgetId);
-                parameters.Add("@IsBudget", account.IsBudget);
+                parameters.Add("@IsBudget", true /* account.IsBudget */); // All accounts are budget accounts at the moment
 
                 await connection.ExecuteAsync(AccountSql.Create, parameters).ConfigureAwait(false);
             }
@@ -97,6 +122,53 @@ namespace Moneteer.Domain.Repositories
             }
         }
 
+        public async Task<AccountBalance> GetAccountBalance(Guid accountId, IDbConnection connection)
+        {
+            try
+            {
+                var parameters = new DynamicParameters();
+
+                parameters.Add("@AccountId", accountId);
+
+                return await connection.QuerySingleAsync<AccountBalance>(AccountSql.GetAccountBalance, parameters).ConfigureAwait(false);
+
+            }
+            catch (PostgresException ex)
+            {
+                LogPostgresException(ex, $"Error getting account balance for account: {accountId}");
+                throw new ApplicationException("Oops! Something went wrong. Please try again");
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, $"Error getting account balance for account: {accountId}");
+                throw new ApplicationException("Oops! Something went wrong. Please try again");
+            }
+        }
+
+        public async Task<List<AccountBalance>> GetAccountBalances(Guid budgetId, IDbConnection connection)
+        {
+            try
+            {
+                var parameters = new DynamicParameters();
+
+                parameters.Add("@BudgetId", budgetId);
+
+                var result = await connection.QueryAsync<AccountBalance>(AccountSql.GetAccountBalances, parameters).ConfigureAwait(false);
+
+                return result.ToList();
+            }
+            catch (PostgresException ex)
+            {
+                LogPostgresException(ex, $"Error getting account balances for budget: {budgetId}");
+                throw new ApplicationException("Oops! Something went wrong. Please try again");
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, $"Error getting account balances for budget: {budgetId}");
+                throw new ApplicationException("Oops! Something went wrong. Please try again");
+            }
+        }
+
         public async Task<List<Account>> GetAllForBudget(Guid budgetId, IDbConnection connection)
         {
             try
@@ -121,6 +193,8 @@ namespace Moneteer.Domain.Repositories
             }
         }
 
+       
+
         public async Task<Guid> GetOwner(Guid accountId, IDbConnection connection)
         {
             try
@@ -142,6 +216,8 @@ namespace Moneteer.Domain.Repositories
                 throw new ApplicationException("Oops! Something went wrong. Please try again");
             }
         }
+
+
 
         public async Task Update(Account account, IDbConnection connection)
         {
@@ -166,5 +242,6 @@ namespace Moneteer.Domain.Repositories
                 throw new ApplicationException("Oops! Something went wrong. Please try again");
             }
         }
+
     }
 }

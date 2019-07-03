@@ -114,16 +114,19 @@ namespace Moneteer.Backend.Managers
                 var assignments = transactions.SelectMany(t => t.Assignments).Where(a => a.Envelope != null); // Inflow won't have an Envelope
                 var groupedByEnvelope = assignments.GroupBy(a => a.Envelope.Id);
 
+                // Adjust envelope balances
                 foreach (var envelope in groupedByEnvelope)
                 {
                     var adjustment = envelope.Sum(e => e.Outflow - e.Inflow);
                     await _envelopeRepository.AdjustBalance(envelope.Key, adjustment, conn).ConfigureAwait(false);
                 }
 
-                await _transactionRepository.DeleteTransactions(transactionIds, conn).ConfigureAwait(false);
-
+                // Adjust budget balance
                 var inflows = transactions.Where(t => t.Inflow > 0).Sum(t => t.Inflow);
                 await _budgetRepository.AdjustAvailable(budgetId, -inflows, conn).ConfigureAwait(false);
+
+
+                await _transactionRepository.DeleteTransactions(transactionIds, conn).ConfigureAwait(false);
 
                 dbTransaction.Commit();
             }
@@ -170,6 +173,10 @@ namespace Moneteer.Backend.Managers
                 await GuardTransaction(transaction.Id, userId, conn).ConfigureAwait(false);
 
                 _validationStrategy.RunRules(transaction);
+
+                // Adjust budget available
+                // Adjust account balances
+                // Adjust envelope balances
 
                 return transaction;
             }

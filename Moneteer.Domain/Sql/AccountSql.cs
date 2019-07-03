@@ -41,5 +41,26 @@
         public static string Delete = @"DELETE FROM account WHERE id = @AccountId";
 
         public static string Update = @"UPDATE account SET name = @Name, is_budget = @IsBudget WHERE id = @AccountId";
+
+        public static string GetAccountBalances = @"
+            WITH transactions AS (
+                SELECT * FROM transaction INNER JOIN account ON transaction.account_id = account.id WHERE account.budget_id = @BudgetId
+            )
+
+            SELECT 
+                a.id as AccountId,
+                (SELECT COALESCE(SUM(inflow) - SUM(outflow), 0) as ClearedBalance FROM transactions t WHERE t.is_cleared = true AND t.account_id = a.id),
+                (SELECT COALESCE(SUM(inflow) - SUM(outflow), 0) as UnclearedBalance FROM transactions t WHERE t.is_cleared = false AND t.account_id = a.id)
+            FROM
+                public.account a";
+
+        public static string GetAccountBalance = @"
+            WITH transactions AS (
+                SELECT * FROM transaction WHERE account_id = @AccountId
+            )
+
+            SELECT 
+                (SELECT COALESCE(SUM(inflow) - SUM(outflow), 0) as ClearedBalance FROM transactions t WHERE t.is_cleared = true),
+                (SELECT COALESCE(SUM(inflow) - SUM(outflow), 0) as UnclearedBalance FROM transactions t WHERE t.is_cleared = false)";
     }
 }

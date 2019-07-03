@@ -12,7 +12,6 @@ using System.Threading.Tasks;
 
 namespace Moneteer.Backend.Controllers
 {
-    [Route("api/account")]
     [Authorize]
     public class AccountController : BaseController<AccountController>
     {
@@ -24,7 +23,8 @@ namespace Moneteer.Backend.Controllers
             _accountManager = accountManager;
         }
 
-        [HttpGet] // api/account?budgetId=XXX
+        [HttpGet]
+        [Route("api/budget/{budgetId}/accounts")]
         public Task<IActionResult> GetForBudget(Guid budgetId)
         {
             return HandleExceptions(() => 
@@ -35,8 +35,21 @@ namespace Moneteer.Backend.Controllers
             });
         }
 
-        [HttpPost] // api/account/budgetId=XXX
-        public Task<IActionResult> Post(Guid budgetId, [FromBody] Account account)
+        [HttpGet]
+        [Route("api/account/{accountId}")]
+        public Task<IActionResult> Get(Guid accountId)
+        {
+            return HandleExceptions(() =>
+            {
+                var userId = GetCurrentUserId();
+
+                return _accountManager.Get(accountId, userId);
+            });
+        }
+
+        [HttpPost]
+        [Route("api/account")]
+        public Task<IActionResult> Post([FromBody] Account account)
         {
             if (!ModelState.IsValid)
             {
@@ -46,13 +59,13 @@ namespace Moneteer.Backend.Controllers
             return HandleExceptions(() => 
             {
                 var userId = GetCurrentUserId();
-                account.BudgetId = budgetId;
 
                 return  _accountManager.Create(account, userId);
             });
         }
 
-        [HttpPut] // api/account
+        [HttpPut]
+        [Route("api/account")]
         public Task<IActionResult> Put([FromBody] Account account)
         {
             if (!ModelState.IsValid)
@@ -70,7 +83,7 @@ namespace Moneteer.Backend.Controllers
             });
         }
 
-        [HttpDelete("{accountId}")] // api/account/XXX
+        [HttpDelete("api/account/{accountId}")]
         public Task<IActionResult> Delete(Guid accountId)
         {
             return HandleExceptions(() => 

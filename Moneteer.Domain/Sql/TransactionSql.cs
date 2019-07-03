@@ -71,7 +71,7 @@
                 payee as p ON p.id = t.payee_id
             INNER JOIN
                 transaction_assignment as ta ON ta.transaction_id = t.id
-            INNER JOIN
+            LEFT JOIN
                 envelope as e ON ta.envelope_id = e.id
             WHERE
                 a.id = @AccountId;";
@@ -108,7 +108,7 @@
                 payee as p ON p.id = t.payee_id
             INNER JOIN
                 transaction_assignment as ta ON ta.transaction_id = t.id
-            INNER JOIN
+            LEFT JOIN
                 envelope as e ON ta.envelope_id = e.id
             WHERE
                 -- We want to take all transactions with a date of this month along with all

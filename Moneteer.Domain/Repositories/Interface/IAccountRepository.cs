@@ -14,5 +14,7 @@ namespace Moneteer.Domain.Repositories
         Task Delete(Guid accountId, IDbConnection connection);
         Task<List<Account>> GetAllForBudget(Guid budgetId, IDbConnection connection);
         Task Update(Account account, IDbConnection connection);
+        Task<List<AccountBalance>> GetAccountBalances(Guid budgetId, IDbConnection connection);
+        Task<AccountBalance> GetAccountBalance(Guid accountId, IDbConnection connection);
     }
 }
