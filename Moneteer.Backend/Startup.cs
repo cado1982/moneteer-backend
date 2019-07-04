@@ -111,15 +111,6 @@ namespace Moneteer.Backend
 
             // Services
             services.AddTransient<IUserInfoService, UserInfoService>();
-
-            // Logic
-            //services.AddTransient<IIncomeCalculator, IncomeCalculator>();
-            //services.AddTransient<IActivityCalculator, ActivityCalculator>();
-            //services.AddTransient<ICategoryBalanceCalculator, CategoryBalanceCalculator>();
-            //services.AddTransient<IAvailableCalculator, AvailableCalculator>();
-            //services.AddTransient<IOverspentCalculator, OverspentCalculator>();
-            //services.AddTransient<IAssignmentCalculator, AssignmentCalculator>();
-            //services.AddTransient<BudgetMonthCalculator>();
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
