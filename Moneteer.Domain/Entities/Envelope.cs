@@ -11,5 +11,6 @@ namespace Moneteer.Domain.Entities
         public bool IsDeleted { get; set; }
         public decimal Balance { get; set; }
         public decimal SpendingLast30Days { get; set; }
+        public decimal AverageSpend { get; set; }
     }
 }
