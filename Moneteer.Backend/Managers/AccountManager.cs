@@ -59,6 +59,8 @@ namespace Moneteer.Backend.Managers
                 }
 
                 account = entity.ToModel();
+                account.ClearedBalance = account.InitialBalance;
+                account.UnclearedBalance = 0;
 
                 dbTransaction.Commit();
 

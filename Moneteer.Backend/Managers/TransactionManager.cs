@@ -69,24 +69,19 @@ namespace Moneteer.Backend.Managers
 
                     transactionEntity = await _transactionRepository.CreateTransaction(transactionEntity, conn).ConfigureAwait(false);
 
-                    var tasks = new List<Task>
-                    {
-                        _transactionAssignmentRepository.CreateTransactionAssignments(transactionEntity.Assignments, transactionEntity.Id, conn)
-                    };
+                    await _transactionAssignmentRepository.CreateTransactionAssignments(transactionEntity.Assignments, transactionEntity.Id, conn).ConfigureAwait(false);
 
                     // Adjust envelope balances
                     foreach (var assignment in transactionEntity.Assignments)
                     {
-                        tasks.Add(_envelopeRepository.AdjustBalance(assignment.Envelope.Id, assignment.Inflow - assignment.Outflow, conn));
+                        await _envelopeRepository.AdjustBalance(assignment.Envelope.Id, assignment.Inflow - assignment.Outflow, conn).ConfigureAwait(false);
                     }
 
                     // Adjust budget available balance
                     if (transaction.Inflow > 0)
                     {
-                        tasks.Add(_budgetRepository.AdjustAvailable(account.BudgetId, transaction.Inflow, conn));
+                        await _budgetRepository.AdjustAvailable(account.BudgetId, transaction.Inflow, conn).ConfigureAwait(false);
                     }
-
-                    await Task.WhenAll(tasks).ConfigureAwait(false);
 
                     dbTransaction.Commit();
                 }
