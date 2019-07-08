@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Moneteer.Backend.Tests", "M
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Moneteer.Domain", "Moneteer.Domain\Moneteer.Domain.csproj", "{0EC72B17-629C-4160-92C7-63EB7C638712}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Moneteer.Domain.Tests", "Moneteer.Domain.Tests\Moneteer.Domain.Tests.csproj", "{70398001-003A-4B47-A67C-FF5648DCD2C4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Moneteer.Domain.Tests", "Moneteer.Domain.Tests\Moneteer.Domain.Tests.csproj", "{70398001-003A-4B47-A67C-FF5648DCD2C4}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Moneteer.Models", "Moneteer.Models\Moneteer.Models.csproj", "{504A730B-2891-4E0F-8BAC-C4EBCD1761EF}"
 EndProject
