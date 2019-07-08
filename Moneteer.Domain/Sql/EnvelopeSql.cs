@@ -22,7 +22,7 @@
                     false,
                     0);";
 
-        public static string GetForBudget = @"
+        public static string GetEnvelopesForBudget = @"
             WITH transaction_assignments AS (
 	            SELECT
 		            envelope_id,
@@ -91,5 +91,15 @@
                 balance = balance + @Adjustment
             WHERE
                 e.id = @EnvelopeId;";
+
+        public static string GetEnvelopeCategoriesForBudget = @"
+            SELECT
+	            id,
+	            name
+            FROM
+	            envelope_category
+            WHERE
+	            budget_id = @BudgetId AND
+	            is_deleted = false";
     }
 }

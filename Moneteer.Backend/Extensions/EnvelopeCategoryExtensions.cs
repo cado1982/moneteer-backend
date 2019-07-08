@@ -34,7 +34,7 @@ namespace Moneteer.Backend.Extensions
             };
         }
 
-        public static IEnumerable<Models.EnvelopeCategory> ToModels(this IEnumerable<Entities.EnvelopeCategory> entities, IEnumerable<Entities.Envelope> envelopes)
+        public static IEnumerable<Models.EnvelopeCategory> ToModels(this IEnumerable<Entities.EnvelopeCategory> entities)
         {
             return entities.Select(t => t.ToModel());
         }

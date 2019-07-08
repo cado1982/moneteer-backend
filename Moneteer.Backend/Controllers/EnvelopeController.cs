@@ -59,6 +59,22 @@ namespace Moneteer.Backend.Controllers
             });
         }
 
+        [HttpGet]
+        [Route("api/budget/{budgetId}/envelopes/categories")]
+        public Task<IActionResult> GetAllEnvelopeCategoriesForBudget(Guid budgetId)
+        {
+            return HandleExceptions(async () =>
+            {
+                if (budgetId == Guid.Empty) throw new ArgumentException("budgetId must be provided", nameof(budgetId));
+
+                var userId = GetCurrentUserId();
+
+                var result = await _envelopeManager.GetEnvelopeCategories(budgetId, userId);
+
+                return result;
+            });
+        }
+
         [HttpPost]
         [Route("api/budget/{budgetId}/envelopes/category")]
         public Task<IActionResult> CreateEnvelopeCategory(Guid budgetId, [FromBody] EnvelopeCategory envelopeCategory)

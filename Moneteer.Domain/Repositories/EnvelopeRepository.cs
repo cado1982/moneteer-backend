@@ -121,7 +121,7 @@ namespace Moneteer.Domain.Repositories
 
                 parameters.Add("@BudgetId", budgetId);
 
-                var result = await conn.QueryAsync<Envelope, EnvelopeCategory, Envelope>(EnvelopeSql.GetForBudget, (envelope, category) =>
+                var result = await conn.QueryAsync<Envelope, EnvelopeCategory, Envelope>(EnvelopeSql.GetEnvelopesForBudget, (envelope, category) =>
                 {
                     envelope.EnvelopeCategory = category;
                     return envelope;
@@ -160,6 +160,35 @@ namespace Moneteer.Domain.Repositories
             catch (Exception ex)
             {
                 Logger.LogError(ex, $"Error adjusting balance by {balanceAdjustment} for envelope: {envelopeId}");
+                throw new ApplicationException("Oops! Something went wrong. Please try again");
+            }
+        }
+
+        public Task DeleteEnvelope(Guid envelopeId, IDbConnection conn)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<List<EnvelopeCategory>> GetEnvelopeCategories(Guid budgetId, IDbConnection conn)
+        {
+            try
+            {
+                var parameters = new DynamicParameters();
+
+                parameters.Add("@BudgetId", budgetId);
+
+                var result = await conn.QueryAsync<EnvelopeCategory>(EnvelopeSql.GetEnvelopeCategoriesForBudget, parameters).ConfigureAwait(false);
+
+                return result.ToList();
+            }
+            catch (PostgresException ex)
+            {
+                LogPostgresException(ex, $"Error getting envelope categories for budget: {budgetId}");
+                throw new ApplicationException("Oops! Something went wrong. Please try again");
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, $"Error getting envelope categories for budget: {budgetId}");
                 throw new ApplicationException("Oops! Something went wrong. Please try again");
             }
         }

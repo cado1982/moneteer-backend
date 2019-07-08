@@ -141,5 +141,21 @@ namespace Moneteer.Backend.Managers
                 transaction.Commit();
             }
         }
+
+        public async Task<List<EnvelopeCategory>> GetEnvelopeCategories(Guid budgetId, Guid userId)
+        {
+            if (budgetId == Guid.Empty) throw new ArgumentException("budgetId must be provided");
+
+            using (var conn = _connectionProvider.GetOpenConnection())
+            {
+                await GuardBudget(budgetId, userId, conn);
+
+                var envelopeCategories = await _envelopeRepository.GetEnvelopeCategories(budgetId, conn);
+
+                var models = envelopeCategories.ToModels();
+
+                return models.ToList();
+            }
+        }
     }
 }
