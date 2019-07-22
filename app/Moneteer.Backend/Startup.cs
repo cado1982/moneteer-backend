@@ -41,33 +41,28 @@ namespace Moneteer.Backend
             services.AddAuthentication(IdentityServerAuthenticationDefaults.AuthenticationScheme)
                     .AddIdentityServerAuthentication(options =>
             {
-                options.Authority = $"https://localhost:4400";
+                options.Authority = $"http://localhost:4400";
                 options.RequireHttpsMetadata = false;
                 options.ApiName = "moneteer-api";
                 options.ApiSecret = "eb18f78e-d660-448a-9e28-cae9790a2a2d";
             });
 
-            services.Configure<MvcOptions>(options =>
-            {
-                options.Filters.Add(new RequireHttpsAttribute());
-            });
+            // services.Configure<MvcOptions>(options =>
+            // {
+            //     options.Filters.Add(new RequireHttpsAttribute());
+            // });
 
             services.AddCors(options =>
             {
                 options.AddPolicy("default", policy =>
                 {
-                    policy.WithOrigins("https://localhost:4200")
+                    policy.WithOrigins("http://localhost:4200")
                           .AllowAnyHeader()
                           .AllowAnyMethod();
                 });
             });
 
             services.AddHttpContextAccessor();
-            services.AddHttpsRedirection(options => 
-            {
-                options.RedirectStatusCode = StatusCodes.Status301MovedPermanently;
-                options.HttpsPort = 4300;
-            });
 
             services.AddHsts(options =>
             {
@@ -120,7 +115,6 @@ namespace Moneteer.Backend
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseHttpsRedirection();
             app.UseCors("default");
             app.UseAuthentication();
             app.UseMvc();
