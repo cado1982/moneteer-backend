@@ -46,12 +46,7 @@ namespace Moneteer.Backend
                 options.ApiName = "moneteer-api";
                 options.ApiSecret = "eb18f78e-d660-448a-9e28-cae9790a2a2d";
             });
-
-            // services.Configure<MvcOptions>(options =>
-            // {
-            //     options.Filters.Add(new RequireHttpsAttribute());
-            // });
-
+            
             services.AddCors(options =>
             {
                 options.AddPolicy("default", policy =>
@@ -110,11 +105,6 @@ namespace Moneteer.Backend
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
-
             app.UseCors("default");
             app.UseAuthentication();
             app.UseMvc();
