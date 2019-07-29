@@ -1,0 +1,26 @@
+version: 1
+task_definition:
+  task_execution_role: ecsTaskExecutionRole
+  ecs_network_mode: awsvpc
+  task_size:
+    mem_limit: "0.5GB"
+    cpu_limit: 256
+  services:
+    app:
+      essential: true
+      secrets:
+        - value_from: MoneteerAppConnectionString
+          name: ConnectionStrings:App
+        - value_from: /Moneteer/Identity/ApiSecret
+          name: ApiSecret
+    proxy:
+      essential: true
+run_params:
+  network_configuration:
+    awsvpc_configuration:
+      subnets:
+        - "subnet-d7f089b1"
+        - "subnet-30622a78"
+      security_groups:
+        - "sg-07c5eded8842f1205"
+      assign_public_ip: ENABLED

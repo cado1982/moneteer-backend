@@ -10,7 +10,7 @@
             "request": "launch",
             "preLaunchTask": "build",
             // If you have changed target frameworks, make sure to update the program path.
-            "program": "${workspaceFolder}/Moneteer.Backend/bin/Debug/netcoreapp2.1/Moneteer.Backend.dll",
+            "program": "${workspaceFolder}/Moneteer.Backend/bin/Debug/netcoreapp2.2/Moneteer.Backend.dll",
             "args": [],
             "cwd": "${workspaceFolder}/Moneteer.Backend",
             "stopAtEntry": false,

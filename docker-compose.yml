@@ -1,8 +1,16 @@
-version: '3.4'
-
+version: "3"
 services:
-  moneteer.backend:
-    image: ${DOCKER_REGISTRY-}moneteerbackend
+  app:
     build:
-      context: .
+      context: app
       dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+  proxy:
+    build:
+      context: nginx/dev
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"

@@ -1,10 +1,6 @@
 ﻿using IdentityServer4.AccessTokenValidation;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Logging;
@@ -15,8 +11,8 @@ using Moneteer.Domain.Helpers;
 using Moneteer.Domain.Repositories;
 using Moneteer.Models.Validation;
 using Moneteer.Models;
-using System;
 using Microsoft.AspNetCore.HttpOverrides;
+using System;
 
 namespace Moneteer.Backend
 {
@@ -33,8 +29,11 @@ namespace Moneteer.Backend
 
         public void ConfigureServices(IServiceCollection services)
         {
-            IdentityModelEventSource.ShowPII = true;
-
+            if (Environment.IsDevelopment())
+            {
+                IdentityModelEventSource.ShowPII = true;
+            }
+            
             services.AddMvcCore()
                     .AddAuthorization()
                     .AddJsonFormatters();
@@ -42,10 +41,10 @@ namespace Moneteer.Backend
             services.AddAuthentication(IdentityServerAuthenticationDefaults.AuthenticationScheme)
                     .AddIdentityServerAuthentication(options =>
             {
-                options.Authority = $"http://localhost:4400";
+                options.Authority = Configuration["OpenIdConnectAuthority"];
                 options.RequireHttpsMetadata = false;
                 options.ApiName = "moneteer-api";
-                options.ApiSecret = "eb18f78e-d660-448a-9e28-cae9790a2a2d";
+                options.ApiSecret = Configuration["ApiSecret"];
             });
 
             services.Configure<ForwardedHeadersOptions>(options =>
@@ -57,20 +56,13 @@ namespace Moneteer.Backend
             {
                 options.AddPolicy("default", policy =>
                 {
-                    policy.WithOrigins("http://localhost:4200")
+                    policy.WithOrigins(Configuration["AllowedCorsOrigins"])
                           .AllowAnyHeader()
                           .AllowAnyMethod();
                 });
             });
 
             services.AddHttpContextAccessor();
-
-            services.AddHsts(options =>
-            {
-                options.Preload = true;
-                options.IncludeSubDomains = true;
-                options.MaxAge = TimeSpan.FromDays(60);
-            });
 
             services.AddSingleton(new DatabaseConnectionInfo { ConnectionString = Configuration["ConnectionStrings:App"] });
 
