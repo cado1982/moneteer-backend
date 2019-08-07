@@ -180,15 +180,8 @@ namespace Moneteer.Backend.Managers
                 }
 
                 var account = await _accountRepository.Get(existingTransaction.Account.Id, conn).ConfigureAwait(false);
-                var budgetAvailable = await _budgetRepository.GetAvailable(account.BudgetId, conn).ConfigureAwait(false);
 
                 var inflowDifference = newTransaction.Inflow - existingTransaction.Inflow;
-                
-                // Check if there is enough in available income
-                if (budgetAvailable + inflowDifference < 0)
-                {
-                    throw new ApplicationException("Not enough available income");
-                }
 
                 // Adjust budget available
                 await _budgetRepository.AdjustAvailable(account.BudgetId, inflowDifference, conn);
