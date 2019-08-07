@@ -276,7 +276,7 @@
                 inflow = @Inflow,
                 outflow = @Outflow
             WHERE
-                id = @TransactionId";
+                id = @Id";
 
         public static string GetOwner = @"
             SELECT 

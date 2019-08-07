@@ -192,5 +192,29 @@ namespace Moneteer.Domain.Repositories
                 throw new ApplicationException("Oops! Something went wrong. Please try again");
             }
         }
+
+        //public async Task<List<EnvelopeBalance>> GetEnvelopeBalances(Guid budgetId, IDbConnection conn)
+        //{
+        //    try
+        //    {
+        //        var parameters = new DynamicParameters();
+
+        //        parameters.Add("@BudgetId", budgetId);
+
+        //        var result = await conn.QueryAsync<EnvelopeBalance>(EnvelopeSql.GetEnvelopeBalances, parameters).ConfigureAwait(false);
+
+        //        return result.ToList();
+        //    }
+        //    catch (PostgresException ex)
+        //    {
+        //        LogPostgresException(ex, $"Error getting envelope balances for budget: {budgetId}");
+        //        throw new ApplicationException("Oops! Something went wrong. Please try again");
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Logger.LogError(ex, $"Error getting envelope balances for budget: {budgetId}");
+        //        throw new ApplicationException("Oops! Something went wrong. Please try again");
+        //    }
+        //}
     }
 }

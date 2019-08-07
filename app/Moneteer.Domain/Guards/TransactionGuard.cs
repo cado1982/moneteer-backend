@@ -24,7 +24,7 @@ namespace Moneteer.Domain.Guards
         public async Task Guard(List<Guid> transactionIds, Guid userId, IDbConnection conn)
         {
             var transactionOwnerIds = await _transactionRepository.GetOwners(transactionIds, conn);
-
+            
             if (!transactionOwnerIds.All(t => t == userId))
             {
                 throw new UnauthorizedAccessException();

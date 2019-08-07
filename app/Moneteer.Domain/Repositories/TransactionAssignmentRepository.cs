@@ -47,7 +47,52 @@ namespace Moneteer.Domain.Repositories
                 throw new ApplicationException("Oops! Something went wrong. Please try again");
             }
         }
+
+        public async Task DeleteTransactionAssignmentsById(IEnumerable<Guid> transactionAssignmentIds, IDbConnection connection)
+        {
+            try
+            {
+                foreach (var assignmentId in transactionAssignmentIds)
+                {
+                    var parameters = new DynamicParameters();
+
+                    parameters.Add("@AssignmentId", assignmentId);
+
+                    await connection.ExecuteAsync(TransactionAssignmentSql.DeleteByIds, parameters).ConfigureAwait(false);
+                }
+            }
+            catch (PostgresException ex)
+            {
+                LogPostgresException(ex, "Error deleting transaction assignments");
+                throw new ApplicationException("Oops! Something went wrong. Please try again");
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, "Error deleting transaction assignments");
+                throw new ApplicationException("Oops! Something went wrong. Please try again");
+            }
+        }
+
+        public async Task DeleteTransactionAssignmentsByTransactionId(Guid transactionId, IDbConnection connection)
+        {
+            try
+            {
+                var parameters = new DynamicParameters();
+
+                parameters.Add("@TransactionId", transactionId);
+
+                await connection.ExecuteAsync(TransactionAssignmentSql.DeleteByTransactionId, parameters).ConfigureAwait(false);
+            }
+            catch (PostgresException ex)
+            {
+                LogPostgresException(ex, $"Error deleting transaction assignments by transaction {transactionId}");
+                throw new ApplicationException("Oops! Something went wrong. Please try again");
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, $"Error deleting transaction assignments by transaction {transactionId}");
+                throw new ApplicationException("Oops! Something went wrong. Please try again");
+            }
+        }
     }
-
-
 }

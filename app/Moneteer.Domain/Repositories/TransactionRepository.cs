@@ -165,6 +165,13 @@ namespace Moneteer.Domain.Repositories
             }
         }
 
+        public async Task<Transaction> GetById(Guid transactionId, IDbConnection connection)
+        {
+            var transactions = await GetByIds(new List<Guid> { transactionId }, connection);
+
+            return transactions.SingleOrDefault();
+        }
+
         public async Task<List<Transaction>> GetForMonth(Guid budgetId, short year, short month, IDbConnection connection)
         {
             try

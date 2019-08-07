@@ -15,5 +15,6 @@ namespace Moneteer.Domain.Repositories
         Task AdjustBalance(Guid envelopeId, decimal balanceAdjustment, IDbConnection conn);
         Task DeleteEnvelope(Guid envelopeId, IDbConnection conn);
         Task<List<EnvelopeCategory>> GetEnvelopeCategories(Guid budgetId, IDbConnection conn);
+        //Task<List<EnvelopeBalance>> GetEnvelopeBalances(Guid budgetId, IDbConnection conn);
     }
 }

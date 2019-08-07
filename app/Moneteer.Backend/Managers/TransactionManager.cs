@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Moneteer.Backend.Extensions;
+using Moneteer.Domain.Entities.Comparers;
 using Moneteer.Domain.Guards;
 using Moneteer.Domain.Helpers;
 using Moneteer.Domain.Repositories;
@@ -120,7 +121,6 @@ namespace Moneteer.Backend.Managers
                 var inflows = transactions.Where(t => t.Inflow > 0).Sum(t => t.Inflow);
                 await _budgetRepository.AdjustAvailable(budgetId, -inflows, conn).ConfigureAwait(false);
 
-
                 await _transactionRepository.DeleteTransactions(transactionIds, conn).ConfigureAwait(false);
 
                 dbTransaction.Commit();
@@ -164,14 +164,70 @@ namespace Moneteer.Backend.Managers
         public async Task<Transaction> UpdateTransaction(Transaction transaction, Guid userId)
         {
             using (var conn = _connectionProvider.GetOpenConnection())
+            using (var dbTrans = conn.BeginTransaction())
             {
                 await GuardTransaction(transaction.Id, userId, conn).ConfigureAwait(false);
 
                 _validationStrategy.RunRules(transaction);
 
+                var newTransaction = transaction.ToEntity();
+
+                var existingTransaction = await _transactionRepository.GetById(transaction.Id, conn).ConfigureAwait(false);
+
+                if (existingTransaction == null)
+                {
+                    throw new ApplicationException("Transaction not found");
+                }
+
+                var account = await _accountRepository.Get(existingTransaction.Account.Id, conn).ConfigureAwait(false);
+                var budgetAvailable = await _budgetRepository.GetAvailable(account.BudgetId, conn).ConfigureAwait(false);
+
+                var inflowDifference = newTransaction.Inflow - existingTransaction.Inflow;
+                
+                // Check if there is enough in available income
+                if (budgetAvailable + inflowDifference < 0)
+                {
+                    throw new ApplicationException("Not enough available income");
+                }
+
                 // Adjust budget available
-                // Adjust account balances
+                await _budgetRepository.AdjustAvailable(account.BudgetId, inflowDifference, conn);
+
+                var deletedAssignments = existingTransaction.Assignments.Except(newTransaction.Assignments, new TransactionAssignmentEqualityComparer());
+                var newAssignments = newTransaction.Assignments.Except(existingTransaction.Assignments, new TransactionAssignmentEqualityComparer());
+                var existingAssignments = existingTransaction.Assignments.Intersect(newTransaction.Assignments, new TransactionAssignmentEqualityComparer());
+
+                // Delete all the transaction assignments
+                await _transactionAssignmentRepository.DeleteTransactionAssignmentsByTransactionId(transaction.Id, conn);
+                // Then just recreate them
+                await _transactionAssignmentRepository.CreateTransactionAssignments(newTransaction.Assignments, transaction.Id, conn);
+
                 // Adjust envelope balances
+                foreach (var assignment in newAssignments)
+                {
+                    await _envelopeRepository.AdjustBalance(assignment.Envelope.Id, -assignment.Outflow, conn);
+                }
+
+                foreach (var assignment in deletedAssignments)
+                {
+                    await _envelopeRepository.AdjustBalance(assignment.Envelope.Id, assignment.Outflow, conn);
+                }
+
+                foreach (var assignment in existingAssignments)
+                {
+                    var match = newTransaction.Assignments.SingleOrDefault(a => a.Id.Equals(assignment.Id));
+
+                    if (match != null)
+                    {
+                        var difference = assignment.Outflow - match.Outflow;
+
+                        await _envelopeRepository.AdjustBalance(assignment.Envelope.Id, difference, conn);
+                    }
+                }
+
+                await _transactionRepository.UpdateTransaction(newTransaction, conn);
+
+                dbTrans.Commit();
 
                 return transaction;
             }
