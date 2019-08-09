@@ -303,5 +303,39 @@
                 t.id = ANY(@TransactionIds)";
 
         public static string SetIsCleared = @"UPDATE transaction SET is_cleared = @IsCleared WHERE id = @TransactionId";
+
+        public static string GetRecentTransactionsByEnvelope = @"
+            WITH transactions AS (
+                SELECT
+                    ROW_NUMBER() OVER (PARTITION BY envelope_id ORDER BY date) AS r,
+                    e.id as envelope_id,
+                    t.date,
+                    SUM(ta.outflow) as outflow,
+                    p.name as payee,
+                    ec.budget_id as budget_id
+                FROM
+                    transaction_assignment ta
+                INNER JOIN
+                    envelope e ON e.id = ta.envelope_id
+                INNER JOIN
+                    envelope_category ec ON ec.id = e.envelope_category_id
+                INNER JOIN
+                    transaction t ON t.id = ta.transaction_id
+                LEFT JOIN
+                    payee p ON p.id = t.payee_id
+                GROUP BY	
+                    t.id, t.date, e.id, p.name, ec.budget_id, ta.envelope_id
+            )
+
+            SELECT 
+                t.envelope_id as EnvelopeId,
+                t.date as Date,
+                t.outflow as Amount,
+                t.payee as Payee
+            FROM 
+                transactions t
+            WHERE
+                t.r <= @NumberOfTransactions AND
+                budget_id = @BudgetId";
     }
 }

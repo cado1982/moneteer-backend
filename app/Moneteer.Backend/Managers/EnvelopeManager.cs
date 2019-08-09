@@ -61,6 +61,7 @@ namespace Moneteer.Backend.Managers
         public async Task<EnvelopeCategory> CreateEnvelopeCategory(Guid budgetId, EnvelopeCategory envelopeCategory, Guid userId)
         {
             if (budgetId == Guid.Empty) throw new ArgumentException("budgetId must be provided");
+            if (envelopeCategory == null || String.IsNullOrWhiteSpace(envelopeCategory.Name)) throw new ArgumentException("Category name must be provided.");
 
             using (var conn = _connectionProvider.GetOpenConnection())
             {

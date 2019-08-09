@@ -107,5 +107,17 @@ namespace Moneteer.Backend.Controllers
                 return _transactionManager.DeleteTransactions(transactionIds.ToList(), userId);
             });
         }
+
+        [HttpGet]
+        [Route("api/budget/{budgetId}/recenttransactions")]
+        public Task<IActionResult> GetRecentTransactions(Guid budgetId, [FromQuery] int numberOfTransactions = 10)
+        {
+            return HandleExceptions(() =>
+            {
+                var userId = GetCurrentUserId();
+
+                return _transactionManager.GetRecentTransactionsByEnvelope(budgetId, numberOfTransactions, userId);
+            });
+        }
     }
 }

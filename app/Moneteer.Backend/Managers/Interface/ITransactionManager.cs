@@ -13,5 +13,6 @@ namespace Moneteer.Backend.Managers
         Task DeleteTransactions(List<Guid> transactionIds, Guid userId);
         Task<Transaction> UpdateTransaction(Transaction transaction, Guid userId);
         Task SetTransactionIsCleared(Guid transactionId, bool isCleared, Guid userId);
+        Task<List<RecentTransactionByEnvelope>> GetRecentTransactionsByEnvelope(Guid budgetId, int numberOfTransactions, Guid userId);
     }
 }

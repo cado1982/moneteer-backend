@@ -42,7 +42,6 @@ namespace Moneteer.Backend.Controllers
             }
             catch (ApplicationException ex)
             {
-
                 return BadRequest(ex.Message);
             }
             catch (ArgumentException ex)

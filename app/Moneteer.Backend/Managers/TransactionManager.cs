@@ -225,5 +225,19 @@ namespace Moneteer.Backend.Managers
                 return transaction;
             }
         }
+
+        public async Task<List<RecentTransactionByEnvelope>> GetRecentTransactionsByEnvelope(Guid budgetId, int numberOfTransactions, Guid userId)
+        {
+            using (var conn = _connectionProvider.GetOpenConnection())
+            {
+                await GuardBudget(budgetId, userId, conn).ConfigureAwait(false);
+                
+                var transactions = await _transactionRepository.GetRecentTransactionsByEnvelope(budgetId, numberOfTransactions, conn);
+
+                var models = transactions.ToModels();
+
+                return models.ToList();
+            }
+        }
     }
 }

@@ -25,5 +25,6 @@ namespace Moneteer.Domain.Repositories
         Task<Guid> GetOwner(Guid transactionId, IDbConnection connection);
         Task<List<Guid>> GetOwners(List<Guid> transactionIds, IDbConnection connection);
         Task SetIsCleared(Guid transactionId, bool isCleared, IDbConnection connection);
+        Task<List<RecentTransactionByEnvelope>> GetRecentTransactionsByEnvelope(Guid budgetId, int numberOfTransactions, IDbConnection connection);
     }
 }

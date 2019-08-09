@@ -319,6 +319,31 @@ namespace Moneteer.Domain.Repositories
             }
         }
 
+        public async Task<List<RecentTransactionByEnvelope>> GetRecentTransactionsByEnvelope(Guid budgetId, int numberOfTransactions, IDbConnection connection)
+        {
+            try
+            {
+                var parameters = new DynamicParameters();
+
+                parameters.Add("@BudgetId", budgetId);
+                parameters.Add("@NumberOfTransactions", numberOfTransactions);
+
+                var result = await connection.QueryAsync<RecentTransactionByEnvelope>(TransactionSql.GetRecentTransactionsByEnvelope, parameters).ConfigureAwait(false);
+
+                return result.ToList();
+            }
+            catch (PostgresException ex)
+            {
+                LogPostgresException(ex, "Error getting recent transactions");
+                throw new ApplicationException("Oops! Something went wrong. Please try again");
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, "Error getting recent transactions");
+                throw new ApplicationException("Oops! Something went wrong. Please try again");
+            }
+        }
+
         private async Task<List<Transaction>> QueryTransactions(DynamicParameters parameters, string sql, IDbConnection connection)
         {
             var transactionDictionary = new Dictionary<Guid, Transaction>();
