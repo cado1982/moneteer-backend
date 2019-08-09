@@ -101,5 +101,33 @@
             WHERE
 	            budget_id = @BudgetId AND
 	            is_deleted = false";
+
+        public static string GetEnvelopeOwner = @"
+            SELECT 
+                b.user_id
+            FROM
+                envelope e
+            INNER JOIN
+                envelope_category ec ON ec.id = e.envelope_category_id
+            INNER JOIN
+                budget b ON b.id = ec.budget_id
+            WHERE
+                e.id = @EnvelopeId";
+
+        public static string GetEnvelopeCategoryOwner = @"
+            SELECT 
+                b.user_id
+            FROM
+                envelope_category ec
+            INNER JOIN
+                budget b ON b.id = ec.budget_id
+            WHERE
+                ec.id = @EnvelopeCategoryId";
+
+        public static string DeleteEnvelope = @"
+            DELETE FROM
+                envelope e
+            WHERE
+                e.id = @EnvelopeId";
     }
 }

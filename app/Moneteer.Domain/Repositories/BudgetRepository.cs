@@ -45,11 +45,9 @@ namespace Moneteer.Domain.Repositories
                 {
                     throw new ApplicationException("Budget already exists");
                 }
-                else
-                {
-                    LogPostgresException(ex, "Error creating budget");
-                    throw new ApplicationException("Oops! Something went wrong. Please try again");
-                }
+
+                LogPostgresException(ex, "Error creating budget");
+                throw new ApplicationException("Oops! Something went wrong. Please try again");
             }
             catch (Exception ex)
             {

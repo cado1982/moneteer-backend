@@ -117,5 +117,17 @@ namespace Moneteer.Backend.Controllers
                 await _envelopeManager.AssignIncome(budgetId, request, userId);
             });
         }
+
+        [HttpDelete]
+        [Route("api/envelopes/{envelopeId}")]
+        public Task<IActionResult> DeleteEnvelope(Guid envelopeId)
+        {
+            return HandleExceptions(async () =>
+            {
+                var userId = GetCurrentUserId();
+
+                await _envelopeManager.DeleteEnvelope(envelopeId, userId);
+            });
+        }
     }
 }

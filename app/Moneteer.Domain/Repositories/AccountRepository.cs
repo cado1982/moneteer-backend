@@ -65,11 +65,9 @@ namespace Moneteer.Domain.Repositories
                 {
                     throw new ApplicationException("Account already exists");
                 }
-                else
-                {
-                    LogPostgresException(ex, "Error creating account");
-                    throw new ApplicationException("Oops! Something went wrong. Please try again");
-                }
+                
+                LogPostgresException(ex, "Error creating account");
+                throw new ApplicationException("Oops! Something went wrong. Please try again");
             }
             catch (Exception ex)
             {

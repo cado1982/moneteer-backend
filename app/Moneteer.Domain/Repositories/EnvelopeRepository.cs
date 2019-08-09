@@ -164,9 +164,30 @@ namespace Moneteer.Domain.Repositories
             }
         }
 
-        public Task DeleteEnvelope(Guid envelopeId, IDbConnection conn)
+        public async Task DeleteEnvelope(Guid envelopeId, IDbConnection conn)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var parameters = new DynamicParameters();
+
+                parameters.Add("@EnvelopeId", envelopeId);
+
+                await conn.ExecuteAsync(EnvelopeSql.DeleteEnvelope, parameters).ConfigureAwait(false);
+            }
+            catch (PostgresException ex)
+            {
+                if (ex.SqlState == PostgresErrorCodes.ForeignKeyConstraintViolation) {
+                    throw new ApplicationException("Envelope cannot be deleted because there are transactions using it.");
+                }
+
+                LogPostgresException(ex, $"Error deleting envelope: {envelopeId}");
+                throw new ApplicationException("Oops! Something went wrong. Please try again");
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, $"Error deleting envelope: {envelopeId}");
+                throw new ApplicationException("Oops! Something went wrong. Please try again");
+            }
         }
 
         public async Task<List<EnvelopeCategory>> GetEnvelopeCategories(Guid budgetId, IDbConnection conn)
@@ -193,28 +214,48 @@ namespace Moneteer.Domain.Repositories
             }
         }
 
-        //public async Task<List<EnvelopeBalance>> GetEnvelopeBalances(Guid budgetId, IDbConnection conn)
-        //{
-        //    try
-        //    {
-        //        var parameters = new DynamicParameters();
+        public async Task<Guid> GetEnvelopeOwner(Guid envelopeId, IDbConnection conn)
+        {
+            try
+            {
+                var parameters = new DynamicParameters();
 
-        //        parameters.Add("@BudgetId", budgetId);
+                parameters.Add("@EnvelopeId", envelopeId);
 
-        //        var result = await conn.QueryAsync<EnvelopeBalance>(EnvelopeSql.GetEnvelopeBalances, parameters).ConfigureAwait(false);
+                return await conn.QuerySingleAsync<Guid>(EnvelopeSql.GetEnvelopeOwner, parameters).ConfigureAwait(false);
+            }
+            catch (PostgresException ex)
+            {
+                LogPostgresException(ex, $"Error getting owner for envelope: {envelopeId}");
+                throw new ApplicationException("Oops! Something went wrong. Please try again");
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, $"Error getting owner for envelope: {envelopeId}");
+                throw new ApplicationException("Oops! Something went wrong. Please try again");
+            }
+        }
 
-        //        return result.ToList();
-        //    }
-        //    catch (PostgresException ex)
-        //    {
-        //        LogPostgresException(ex, $"Error getting envelope balances for budget: {budgetId}");
-        //        throw new ApplicationException("Oops! Something went wrong. Please try again");
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Logger.LogError(ex, $"Error getting envelope balances for budget: {budgetId}");
-        //        throw new ApplicationException("Oops! Something went wrong. Please try again");
-        //    }
-        //}
+        public async Task<Guid> GetEnvelopeCategoryOwner(Guid envelopeCategoryId, IDbConnection conn)
+        {
+            try
+            {
+                var parameters = new DynamicParameters();
+
+                parameters.Add("@EnvelopeCategoryId", envelopeCategoryId);
+
+                return await conn.QuerySingleAsync<Guid>(EnvelopeSql.GetEnvelopeCategoryOwner, parameters).ConfigureAwait(false);
+            }
+            catch (PostgresException ex)
+            {
+                LogPostgresException(ex, $"Error getting owner for envelope category: {envelopeCategoryId}");
+                throw new ApplicationException("Oops! Something went wrong. Please try again");
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, $"Error getting owner for envelope category: {envelopeCategoryId}");
+                throw new ApplicationException("Oops! Something went wrong. Please try again");
+            }
+        }
     }
 }

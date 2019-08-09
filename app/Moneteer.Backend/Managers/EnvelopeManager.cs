@@ -158,5 +158,17 @@ namespace Moneteer.Backend.Managers
                 return models.ToList();
             }
         }
+
+        public async Task DeleteEnvelope(Guid envelopeId, Guid userId)
+        {
+            if (envelopeId == Guid.Empty) throw new ArgumentException("envelope id must be provided");
+
+            using (var conn = _connectionProvider.GetOpenConnection())
+            {
+                await GuardEnvelope(envelopeId, userId, conn);
+
+                await _envelopeRepository.DeleteEnvelope(envelopeId, conn);
+            }
+        }
     }
 }

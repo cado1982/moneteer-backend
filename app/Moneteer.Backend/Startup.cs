@@ -81,6 +81,8 @@ namespace Moneteer.Backend
             services.AddSingleton<AccountGuard>();
             services.AddSingleton<PayeeGuard>();
             services.AddSingleton<TransactionGuard>();
+            services.AddSingleton<EnvelopeGuard>();
+            services.AddSingleton<EnvelopeCategoryGuard>();
             services.AddSingleton<Guards>();
 
             // Managers

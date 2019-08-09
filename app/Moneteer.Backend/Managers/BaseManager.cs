@@ -39,5 +39,10 @@ namespace Moneteer.Backend.Managers
         {
             return _guards.TransactionGuard.Guard(transactionIds, userId, conn);
         }
+
+        protected Task GuardEnvelope(Guid envelopeId, Guid userId, IDbConnection conn)
+        {
+            return _guards.EnvelopeGuard.Guard(envelopeId, userId, conn);
+        }
     }
 }
