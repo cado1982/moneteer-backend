@@ -12,10 +12,11 @@ namespace Moneteer.Domain.Repositories
         Task<BudgetEnvelopes> CreateDefaultForBudget(Guid budgetId, IDbConnection conn);
         Task<Envelope> CreateEnvelope(Envelope envelope, IDbConnection conn);
         Task<EnvelopeCategory> CreateEnvelopeCategory(Guid budgetId, EnvelopeCategory envelopeCategory, IDbConnection conn);
-        Task AdjustBalance(Guid envelopeId, decimal balanceAdjustment, IDbConnection conn);
+        Task AdjustAssigned(Guid envelopeId, decimal assignedAdjustment, IDbConnection conn);
         Task DeleteEnvelope(Guid envelopeId, IDbConnection conn);
         Task<List<EnvelopeCategory>> GetEnvelopeCategories(Guid budgetId, IDbConnection conn);
         Task<Guid> GetEnvelopeOwner(Guid envelopeId, IDbConnection conn);
         Task<Guid> GetEnvelopeCategoryOwner(Guid envelopeCategoryId, IDbConnection conn);
+        Task<List<EnvelopeBalance>> GetEnvelopeBalances(Guid budgetId, IDbConnection conn);
     }
 }

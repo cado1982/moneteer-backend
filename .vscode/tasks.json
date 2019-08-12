@@ -7,7 +7,7 @@
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/app/Moneteer.Backend/Moneteer.Backend.csproj"
+                "${workspaceFolder}/app"
             ],
             "problemMatcher": "$tsc"
         },
@@ -29,6 +29,16 @@
                 "watch",
                 "run",
                 "${workspaceFolder}/app/Moneteer.Backend/Moneteer.Backend.csproj"
+            ],
+            "problemMatcher": "$tsc"
+        },
+        {
+            "label": "test",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "test",
+                "${workspaceFolder}/app"
             ],
             "problemMatcher": "$tsc"
         }

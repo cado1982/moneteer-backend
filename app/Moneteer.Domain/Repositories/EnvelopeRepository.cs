@@ -43,6 +43,11 @@ namespace Moneteer.Domain.Repositories
             }
             catch (PostgresException ex)
             {
+                if (ex.SqlState == PostgresErrorCodes.UniqueViolation)
+                {
+                    throw new ApplicationException("Envelope name already exists.");
+                }
+
                 LogPostgresException(ex, $"Error creating envelope for category: {envelope.EnvelopeCategory.Id}");
                 throw new ApplicationException("Oops! Something went wrong. Please try again");
             }
@@ -103,6 +108,11 @@ namespace Moneteer.Domain.Repositories
             }
             catch (PostgresException ex)
             {
+                if (ex.SqlState == PostgresErrorCodes.UniqueViolation)
+                {
+                    throw new ApplicationException("Envelope category name already exists.");
+                }
+
                 LogPostgresException(ex, $"Error creating envelope category for budget: {budgetId}");
                 throw new ApplicationException("Oops! Something went wrong. Please try again");
             }
@@ -141,25 +151,25 @@ namespace Moneteer.Domain.Repositories
             }
         }
 
-        public async Task AdjustBalance(Guid envelopeId, decimal balanceAdjustment, IDbConnection conn)
+        public async Task AdjustAssigned(Guid envelopeId, decimal assignedAdjustment, IDbConnection conn)
         {
             try
             {
                 var parameters = new DynamicParameters();
 
                 parameters.Add("@EnvelopeId", envelopeId);
-                parameters.Add("@Adjustment", balanceAdjustment);
+                parameters.Add("@Adjustment", assignedAdjustment);
 
-                await conn.ExecuteAsync(EnvelopeSql.AdjustBalance, parameters).ConfigureAwait(false);
+                await conn.ExecuteAsync(EnvelopeSql.AdjustAssigned, parameters).ConfigureAwait(false);
             }
             catch (PostgresException ex)
             {
-                LogPostgresException(ex, $"Error adjusting balance by {balanceAdjustment} for envelope: {envelopeId}");
+                LogPostgresException(ex, $"Error adjusting assigned by {assignedAdjustment} for envelope: {envelopeId}");
                 throw new ApplicationException("Oops! Something went wrong. Please try again");
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex, $"Error adjusting balance by {balanceAdjustment} for envelope: {envelopeId}");
+                Logger.LogError(ex, $"Error adjusting assigned by {assignedAdjustment} for envelope: {envelopeId}");
                 throw new ApplicationException("Oops! Something went wrong. Please try again");
             }
         }
@@ -254,6 +264,32 @@ namespace Moneteer.Domain.Repositories
             catch (Exception ex)
             {
                 Logger.LogError(ex, $"Error getting owner for envelope category: {envelopeCategoryId}");
+                throw new ApplicationException("Oops! Something went wrong. Please try again");
+            }
+        }
+
+        public async Task<List<EnvelopeBalance>> GetEnvelopeBalances(Guid budgetId, IDbConnection conn)
+        {
+            if (budgetId == Guid.Empty) throw new ArgumentException("Budget Id must be provided");
+
+            try
+            {
+                var parameters = new DynamicParameters();
+
+                parameters.Add("@BudgetId", budgetId);
+
+                var result =  await conn.QueryAsync<EnvelopeBalance>(EnvelopeSql.GetEnvelopeBalances, parameters).ConfigureAwait(false);
+
+                return result.ToList();
+            }
+            catch (PostgresException ex)
+            {
+                LogPostgresException(ex, $"Error getting envelope balances for budget: {budgetId}");
+                throw new ApplicationException("Oops! Something went wrong. Please try again");
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, $"Error getting envelope balances for budget: {budgetId}");
                 throw new ApplicationException("Oops! Something went wrong. Please try again");
             }
         }

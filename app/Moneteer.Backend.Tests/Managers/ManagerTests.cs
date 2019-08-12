@@ -53,7 +53,9 @@ namespace Moneteer.Backend.Tests.Managers
             Guards = new Guards(new BudgetGuard(BudgetRepository),
                                 new AccountGuard(AccountRepository),
                                 new PayeeGuard(PayeeRepository),
-                                new TransactionGuard(TransactionRepository));
+                                new TransactionGuard(TransactionRepository),
+                                new EnvelopeGuard(EnvelopeRepository),
+                                new EnvelopeCategoryGuard(EnvelopeRepository));
 
             Account = new Account();
             Account.BudgetId = BudgetId;
@@ -90,6 +92,15 @@ namespace Moneteer.Backend.Tests.Managers
                                         .ReturnsAsync(new List<Domain.Entities.Envelope>
                                         {
                                             Envelope.ToEntity()
+                                        });
+
+            Mock.Get(EnvelopeRepository).Setup(r => r.GetEnvelopeBalances(BudgetId, DbConnection))
+                                        .ReturnsAsync(new List<Domain.Entities.EnvelopeBalance>{
+                                            new Domain.Entities.EnvelopeBalance 
+                                            {
+                                                EnvelopeId = EnvelopeId,
+                                                Balance = 50
+                                            }
                                         });
         }
 

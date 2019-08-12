@@ -6,7 +6,7 @@ namespace Moneteer.Models.Validation
     {
         public override void Validate(Transaction model)
         {
-            if (model.Payee != null && model.Payee.Id == Guid.NewGuid() && String.IsNullOrWhiteSpace(model.Payee.Name))
+            if (model.Payee != null && model.Payee.Id == Guid.Empty && String.IsNullOrWhiteSpace(model.Payee.Name))
             {
                 throw new ApplicationException("Payee name must be provided");
             }

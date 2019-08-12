@@ -79,36 +79,5 @@ namespace Moneteer.Backend.Tests.Managers
 
             Mock.Get(TransactionAssignmentRepository).Verify(r => r.CreateTransactionAssignments(It.IsAny<List<Domain.Entities.TransactionAssignment>>(), TransactionId, DbConnection), Times.Once);
         }
-
-        [Fact]
-        public async Task CreateTransaction_AdjustsEnvelopeBalances()
-        {
-            var envelope1Guid = Guid.NewGuid();
-            var envelope2Guid = Guid.NewGuid();
-
-            var assignments = new List<TransactionAssignment>
-            {
-                new TransactionAssignment 
-                {
-                    Id = Guid.NewGuid(),
-                    Inflow = 50,
-                    Outflow = 125,
-                    Envelope = new Envelope { Id = envelope1Guid }
-                },
-                new TransactionAssignment 
-                {
-                    Id = Guid.NewGuid(),
-                    Inflow = 60,
-                    Outflow = 25,
-                    Envelope = new Envelope { Id = envelope2Guid }
-                },
-            };
-            Transaction.Assignments = assignments;
-
-            var actual = await _sut.CreateTransaction(Transaction, UserId);
-
-            Mock.Get(EnvelopeRepository).Verify(r => r.AdjustBalance(envelope1Guid, -75, DbConnection), Times.Once);
-            Mock.Get(EnvelopeRepository).Verify(r => r.AdjustBalance(envelope2Guid, 35, DbConnection), Times.Once);
-        }
     }
 }

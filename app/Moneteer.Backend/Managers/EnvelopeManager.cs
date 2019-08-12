@@ -86,10 +86,17 @@ namespace Moneteer.Backend.Managers
                 await GuardBudget(budgetId, userId, conn);
             
                 var envelopes = await _envelopeRepository.GetBudgetEnvelopes(budgetId, conn);
+                var envelopeBalances = await _envelopeRepository.GetEnvelopeBalances(budgetId, conn);
 
-                var models = envelopes.ToModels();
+                var models = envelopes.ToModels().ToList();
 
-                return models.ToList();
+                foreach (var model in models)
+                {
+                    var balance = envelopeBalances.SingleOrDefault(b => b.EnvelopeId == model.Id);
+                    model.Balance = balance == null ? 0 : balance.Balance;
+                }
+
+                return models;
             }
         }
 
@@ -134,7 +141,7 @@ namespace Moneteer.Backend.Managers
 
                 foreach (var assignment in request.Assignments)
                 {
-                    await _envelopeRepository.AdjustBalance(assignment.Envelope.Id, assignment.Amount, conn);
+                    await _envelopeRepository.AdjustAssigned(assignment.Envelope.Id, assignment.Amount, conn);
                 }
 
                 await _budgetRepository.AdjustAvailable(budgetId, -requestAssignmentTotal, conn);

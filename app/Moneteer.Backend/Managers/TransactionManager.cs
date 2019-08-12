@@ -72,12 +72,6 @@ namespace Moneteer.Backend.Managers
 
                     await _transactionAssignmentRepository.CreateTransactionAssignments(transactionEntity.Assignments, transactionEntity.Id, conn).ConfigureAwait(false);
 
-                    // Adjust envelope balances
-                    foreach (var assignment in transactionEntity.Assignments)
-                    {
-                        await _envelopeRepository.AdjustBalance(assignment.Envelope.Id, assignment.Inflow - assignment.Outflow, conn).ConfigureAwait(false);
-                    }
-
                     // Adjust budget available balance
                     if (transaction.Inflow > 0)
                     {
@@ -109,13 +103,6 @@ namespace Moneteer.Backend.Managers
 
                 var assignments = transactions.SelectMany(t => t.Assignments).Where(a => a.Envelope != null); // Inflow won't have an Envelope
                 var groupedByEnvelope = assignments.GroupBy(a => a.Envelope.Id);
-
-                // Adjust envelope balances
-                foreach (var envelope in groupedByEnvelope)
-                {
-                    var adjustment = envelope.Sum(e => e.Outflow - e.Inflow);
-                    await _envelopeRepository.AdjustBalance(envelope.Key, adjustment, conn).ConfigureAwait(false);
-                }
 
                 // Adjust budget balance
                 var inflows = transactions.Where(t => t.Inflow > 0).Sum(t => t.Inflow);
@@ -186,37 +173,10 @@ namespace Moneteer.Backend.Managers
                 // Adjust budget available
                 await _budgetRepository.AdjustAvailable(account.BudgetId, inflowDifference, conn);
 
-                var deletedAssignments = existingTransaction.Assignments.Except(newTransaction.Assignments, new TransactionAssignmentEqualityComparer());
-                var newAssignments = newTransaction.Assignments.Except(existingTransaction.Assignments, new TransactionAssignmentEqualityComparer());
-                var existingAssignments = existingTransaction.Assignments.Intersect(newTransaction.Assignments, new TransactionAssignmentEqualityComparer());
-
                 // Delete all the transaction assignments
                 await _transactionAssignmentRepository.DeleteTransactionAssignmentsByTransactionId(transaction.Id, conn);
                 // Then just recreate them
                 await _transactionAssignmentRepository.CreateTransactionAssignments(newTransaction.Assignments, transaction.Id, conn);
-
-                // Adjust envelope balances
-                foreach (var assignment in newAssignments)
-                {
-                    await _envelopeRepository.AdjustBalance(assignment.Envelope.Id, -assignment.Outflow, conn);
-                }
-
-                foreach (var assignment in deletedAssignments)
-                {
-                    await _envelopeRepository.AdjustBalance(assignment.Envelope.Id, assignment.Outflow, conn);
-                }
-
-                foreach (var assignment in existingAssignments)
-                {
-                    var match = newTransaction.Assignments.SingleOrDefault(a => a.Id.Equals(assignment.Id));
-
-                    if (match != null)
-                    {
-                        var difference = assignment.Outflow - match.Outflow;
-
-                        await _envelopeRepository.AdjustBalance(assignment.Envelope.Id, difference, conn);
-                    }
-                }
 
                 await _transactionRepository.UpdateTransaction(newTransaction, conn);
 

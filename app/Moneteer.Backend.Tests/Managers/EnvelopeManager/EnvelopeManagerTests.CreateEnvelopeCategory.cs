@@ -13,7 +13,7 @@ namespace Moneteer.Backend.Tests.Managers
         {
             Mock.Get(BudgetRepository).Setup(r => r.GetOwner(BudgetId, DbConnection)).ReturnsAsync(Guid.NewGuid());
 
-            await Assert.ThrowsAsync<UnauthorizedAccessException>(() => _sut.CreateEnvelopeCategory(BudgetId, new EnvelopeCategory(), UserId));
+            await Assert.ThrowsAsync<UnauthorizedAccessException>(() => _sut.CreateEnvelopeCategory(BudgetId, new EnvelopeCategory { Name = "I am an envelope category" }, UserId));
         }
 
         [Fact]

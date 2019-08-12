@@ -13,7 +13,7 @@
                     name,
                     is_deleted,
                     is_hidden,
-                    balance) 
+                    assigned) 
                 VALUES (
                     @Id,
                     @EnvelopeCategoryId,
@@ -67,7 +67,7 @@
 	            e.envelope_category_id,
 	            e.is_deleted,
 	            e.is_hidden,
-	            e.balance,
+	            e.assigned,
 	            COALESCE((SELECT SpendingLast30Days FROM spending WHERE EnvelopeId = e.id), 0) as SpendingLast30Days,
 	            COALESCE((SELECT AverageSpend FROM average_spend WHERE EnvelopeId = e.id), 0) as AverageSpend,
 	            ec.id,
@@ -84,11 +84,11 @@
 	            e.is_deleted = false AND 
 	            ec.is_deleted = false";
 
-        public static string AdjustBalance = @"
+        public static string AdjustAssigned = @"
             UPDATE
                 envelope e
             SET
-                balance = balance + @Adjustment
+                assigned = assigned + @Adjustment
             WHERE
                 e.id = @EnvelopeId;";
 
@@ -129,5 +129,36 @@
                 envelope e
             WHERE
                 e.id = @EnvelopeId";
+
+        public static string GetEnvelopeBalances = @"
+            WITH transaction_assignments AS (
+                SELECT
+                    e.id as envelope_id,
+                    SUM(ta.outflow) as outflow
+                FROM
+                    transaction_assignment ta
+                INNER JOIN
+                    transaction t ON t.id = ta.transaction_id
+                INNER JOIN
+                    account a ON a.id = t.account_id
+                INNER JOIN
+                    envelope e ON e.id = ta.envelope_id
+                WHERE
+                    a.budget_id = @BudgetId
+                GROUP BY
+                    e.id
+            )
+
+            SELECT
+                e.id as envelopeid,
+                e.assigned - COALESCE(ta.outflow, 0) as balance
+            FROM
+                envelope e
+            INNER JOIN
+                envelope_category ec ON ec.id = e.envelope_category_id
+            LEFT JOIN
+                transaction_assignments ta ON ta.envelope_id = e.id
+            WHERE
+                ec.budget_id = @BudgetId";
     }
 }

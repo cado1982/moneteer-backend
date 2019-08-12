@@ -44,7 +44,7 @@ namespace Moneteer.Backend.Tests.Managers
         }
 
         [Fact]
-        public async Task AssignIncome_AdjustsEnvelopeBalances()
+        public async Task AssignIncome_AdjustsEnvelopeAssigned()
         {
             Mock.Get(BudgetRepository).Setup(r => r.GetAvailable(BudgetId, DbConnection)).ReturnsAsync(110);
 
@@ -52,8 +52,8 @@ namespace Moneteer.Backend.Tests.Managers
 
             await _sut.AssignIncome(BudgetId, request, UserId);
 
-            Mock.Get(EnvelopeRepository).Verify(r => r.AdjustBalance(request.Assignments[0].Envelope.Id, 50, DbConnection), Times.Once);
-            Mock.Get(EnvelopeRepository).Verify(r => r.AdjustBalance(request.Assignments[1].Envelope.Id, 60, DbConnection), Times.Once);
+            Mock.Get(EnvelopeRepository).Verify(r => r.AdjustAssigned(request.Assignments[0].Envelope.Id, 50, DbConnection), Times.Once);
+            Mock.Get(EnvelopeRepository).Verify(r => r.AdjustAssigned(request.Assignments[1].Envelope.Id, 60, DbConnection), Times.Once);
         }
 
         [Fact]

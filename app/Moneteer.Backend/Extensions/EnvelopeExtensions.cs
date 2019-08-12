@@ -18,7 +18,7 @@ namespace Moneteer.Backend.Extensions
                 EnvelopeCategory = entity.EnvelopeCategory.ToModel(),
                 IsHidden = entity.IsHidden,
                 IsDeleted = entity.IsDeleted,
-                Balance = entity.Balance,
+                Balance = 0,
                 SpendingLast30Days = entity.SpendingLast30Days,
                 AverageSpend = entity.AverageSpend
             };
@@ -35,7 +35,7 @@ namespace Moneteer.Backend.Extensions
                 IsHidden = model.IsHidden,
                 IsDeleted = model.IsDeleted,
                 EnvelopeCategory =  model.EnvelopeCategory.ToEntity(),
-                Balance = model.Balance,
+                Assigned = 0,
                 SpendingLast30Days = model.SpendingLast30Days,
                 AverageSpend = model.AverageSpend
             };
