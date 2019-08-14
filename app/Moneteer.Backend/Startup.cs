@@ -64,7 +64,7 @@ namespace Moneteer.Backend
 
             services.AddHttpContextAccessor();
 
-            services.AddSingleton(new DatabaseConnectionInfo { ConnectionString = Configuration["ConnectionStrings:App"] });
+            services.AddSingleton(new DatabaseConnectionInfo { ConnectionString = Configuration.GetConnectionString("Moneteer") });
 
             services.AddSingleton<IConnectionProvider, ConnectionProvider>();
 

@@ -3,11 +3,11 @@
     public static class EnvelopeSql
     {
         public static string CreateEnvelopeCategory = @"
-            INSERT INTO envelope_category (id, budget_id, name, is_deleted, is_hidden) VALUES (@Id, @BudgetId, @Name, false, false);";
+            INSERT INTO app.envelope_category (id, budget_id, name, is_deleted, is_hidden) VALUES (@Id, @BudgetId, @Name, false, false);";
 
         public static string CreateEnvelope = @"
             INSERT INTO 
-                envelope (
+                app.envelope (
                     id,
                     envelope_category_id,
                     name,
@@ -25,17 +25,17 @@
         public static string GetEnvelopesForBudget = @"
             WITH transaction_assignments AS (
 	            SELECT
-		            envelope_id,
-		            date,
+		            ta.envelope_id,
+		            t.date,
 		            ta.outflow
 	            FROM
-		            transaction_assignment ta
+		            app.transaction_assignment ta
 	            INNER JOIN
-		            transaction t ON t.id = ta.transaction_id
+		            app.transaction t ON t.id = ta.transaction_id
 	            INNER JOIN
-		            account a ON a.id = t.account_id
+		            app.account a ON a.id = t.account_id
 	            INNER JOIN
-		            budget b ON b.id = a.budget_id
+		            app.budget b ON b.id = a.budget_id
 	            WHERE
 		            b.id = @BudgetId AND
 		            ta.envelope_id IS NOT NULL
@@ -76,9 +76,9 @@
 	            ec.is_deleted,
 	            ec.is_hidden
             FROM 
-	            envelope e 
+	            app.envelope e 
             INNER JOIN 
-	            envelope_category ec ON e.envelope_category_id = ec.id 
+	            app.envelope_category ec ON e.envelope_category_id = ec.id 
             WHERE    
                 ec.budget_id = @BudgetId AND
 	            e.is_deleted = false AND 
@@ -86,7 +86,7 @@
 
         public static string AdjustAssigned = @"
             UPDATE
-                envelope e
+                app.envelope e
             SET
                 assigned = assigned + @Adjustment
             WHERE
@@ -97,7 +97,7 @@
 	            id,
 	            name
             FROM
-	            envelope_category
+	            app.envelope_category
             WHERE
 	            budget_id = @BudgetId AND
 	            is_deleted = false";
@@ -106,11 +106,11 @@
             SELECT 
                 b.user_id
             FROM
-                envelope e
+                app.envelope e
             INNER JOIN
-                envelope_category ec ON ec.id = e.envelope_category_id
+                app.envelope_category ec ON ec.id = e.envelope_category_id
             INNER JOIN
-                budget b ON b.id = ec.budget_id
+                app.budget b ON b.id = ec.budget_id
             WHERE
                 e.id = @EnvelopeId";
 
@@ -118,7 +118,7 @@
             SELECT 
                 b.user_id
             FROM
-                envelope_category ec
+                app.envelope_category ec
             INNER JOIN
                 budget b ON b.id = ec.budget_id
             WHERE
@@ -126,7 +126,7 @@
 
         public static string DeleteEnvelope = @"
             DELETE FROM
-                envelope e
+                app.envelope e
             WHERE
                 e.id = @EnvelopeId";
 
@@ -136,13 +136,13 @@
                     e.id as envelope_id,
                     SUM(ta.outflow) as outflow
                 FROM
-                    transaction_assignment ta
+                    app.transaction_assignment ta
                 INNER JOIN
-                    transaction t ON t.id = ta.transaction_id
+                    app.transaction t ON t.id = ta.transaction_id
                 INNER JOIN
-                    account a ON a.id = t.account_id
+                    app.account a ON a.id = t.account_id
                 INNER JOIN
-                    envelope e ON e.id = ta.envelope_id
+                    app.envelope e ON e.id = ta.envelope_id
                 WHERE
                     a.budget_id = @BudgetId
                 GROUP BY
@@ -153,11 +153,11 @@
                 e.id as envelopeid,
                 e.assigned - COALESCE(ta.outflow, 0) as balance
             FROM
-                envelope e
+                app.envelope e
             INNER JOIN
-                envelope_category ec ON ec.id = e.envelope_category_id
+                app.envelope_category ec ON ec.id = e.envelope_category_id
             LEFT JOIN
-                transaction_assignments ta ON ta.envelope_id = e.id
+                app.transaction_assignment ta ON ta.envelope_id = e.id
             WHERE
                 ec.budget_id = @BudgetId";
     }

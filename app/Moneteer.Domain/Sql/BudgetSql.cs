@@ -4,7 +4,7 @@
     {
         public static string Create = @"
             INSERT INTO 
-                budget (id, 
+                app.budget (id, 
                         name, 
                         user_id,
                         available,
@@ -26,7 +26,7 @@
                  @CurrencySymbolLocation, 
                  @DateFormat);";
 
-        public static string GetOwner = @"SELECT user_id FROM budget WHERE id = @BudgetId";
+        public static string GetOwner = @"SELECT user_id FROM app.budget WHERE id = @BudgetId";
 
         public static string Get = @"
             SELECT 
@@ -40,10 +40,10 @@
                 currency_symbol_location as CurrencySymbolLocation,
                 date_format as DateFormat
             FROM 
-                budget 
+                app.budget 
             WHERE id = @id";
         
-        public static string Delete = @"DELETE FROM budget WHERE id = @BudgetId";
+        public static string Delete = @"DELETE FROM app.budget WHERE id = @BudgetId";
 
         public static string GetAllForUser = @"
             SELECT 
@@ -57,12 +57,12 @@
                 currency_symbol_location as CurrencySymbolLocation,
                 date_format as DateFormat
             FROM
-                budget
+                app.budget
             WHERE user_id = @UserId";
 
         public static string AdjustAvailable = @"
             UPDATE
-                budget
+                app.budget
             SET
                 available = available + @Change
             WHERE
@@ -72,7 +72,7 @@
             SELECT
                 available
             FROM
-                budget
+                app.budget
             WHERE
                 id = @BudgetId;";
     }

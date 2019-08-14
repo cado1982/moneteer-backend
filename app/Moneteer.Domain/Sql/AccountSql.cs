@@ -8,7 +8,7 @@
                 name as Name,
                 is_budget as IsBudget
             FROM
-                account
+                app.account
             WHERE
                 budget_id = @BudgetId";
 
@@ -16,9 +16,9 @@
             SELECT
                 b.user_id
             FROM
-                account a
+                app.account a
             INNER JOIN 
-                budget b ON a.budget_id = b.id
+                app.budget b ON a.budget_id = b.id
             WHERE 
                 a.id = @AccountId";
 
@@ -29,22 +29,22 @@
                 is_budget as IsBudget,
                 budget_id as BudgetId
             FROM
-                account
+                app.account
             WHERE
                 id = @AccountId";
 
         public static string Create = @"
             INSERT INTO 
-                account (id, name, budget_id, is_budget)
+                app.account (id, name, budget_id, is_budget)
             VALUES (@Id, @Name, @BudgetId, @IsBudget);";
 
-        public static string Delete = @"DELETE FROM account WHERE id = @AccountId";
+        public static string Delete = @"DELETE FROM app.account WHERE id = @AccountId";
 
-        public static string Update = @"UPDATE account SET name = @Name, is_budget = @IsBudget WHERE id = @AccountId";
+        public static string Update = @"UPDATE app.account SET name = @Name, is_budget = @IsBudget WHERE id = @AccountId";
 
         public static string GetAccountBalances = @"
             WITH transactions AS (
-                SELECT * FROM transaction INNER JOIN account ON transaction.account_id = account.id WHERE account.budget_id = @BudgetId
+                SELECT * FROM app.transaction INNER JOIN app.account ON transaction.account_id = account.id WHERE account.budget_id = @BudgetId
             )
 
             SELECT 
@@ -52,11 +52,11 @@
                 (SELECT COALESCE(SUM(inflow) - SUM(outflow), 0) as ClearedBalance FROM transactions t WHERE t.is_cleared = true AND t.account_id = a.id),
                 (SELECT COALESCE(SUM(inflow) - SUM(outflow), 0) as UnclearedBalance FROM transactions t WHERE t.is_cleared = false AND t.account_id = a.id)
             FROM
-                public.account a";
+                app.account a";
 
         public static string GetAccountBalance = @"
             WITH transactions AS (
-                SELECT * FROM transaction WHERE account_id = @AccountId
+                SELECT * FROM app.transaction WHERE account_id = @AccountId
             )
 
             SELECT 

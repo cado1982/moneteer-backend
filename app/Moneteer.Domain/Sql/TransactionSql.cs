@@ -27,15 +27,15 @@
                 e.id as Id,
                 e.name as Name
             FROM
-                transaction as t
+                app.transaction as t
             INNER JOIN
-                account as a ON a.id = t.account_id
+                app.account as a ON a.id = t.account_id
             LEFT JOIN
-                payee as p ON p.id = t.payee_id
+                app.payee as p ON p.id = t.payee_id
             LEFT JOIN
-                transaction_assignment as ta ON ta.transaction_id = t.id
+                app.transaction_assignment as ta ON ta.transaction_id = t.id
             LEFT JOIN
-                envelope as e ON ta.envelope_id = e.id
+                app.envelope as e ON ta.envelope_id = e.id
             WHERE
                 a.budget_id = @BudgetId;";
 
@@ -64,15 +64,15 @@
                 e.id as Id,
                 e.name as Name
             FROM
-                transaction as t
+                app.transaction as t
             INNER JOIN
-                account as a ON a.id = t.account_id
+                app.account as a ON a.id = t.account_id
             LEFT JOIN
-                payee as p ON p.id = t.payee_id
+                app.payee as p ON p.id = t.payee_id
             INNER JOIN
-                transaction_assignment as ta ON ta.transaction_id = t.id
+                app.transaction_assignment as ta ON ta.transaction_id = t.id
             LEFT JOIN
-                envelope as e ON ta.envelope_id = e.id
+                app.envelope as e ON ta.envelope_id = e.id
             WHERE
                 a.id = @AccountId;";
 
@@ -101,15 +101,15 @@
                 e.id as Id,
                 e.name as Name
             FROM
-                transaction as t
+                app.transaction as t
             INNER JOIN
-                account as a ON a.id = t.account_id
+                app.account as a ON a.id = t.account_id
             LEFT JOIN
-                payee as p ON p.id = t.payee_id
+                app.payee as p ON p.id = t.payee_id
             INNER JOIN
-                transaction_assignment as ta ON ta.transaction_id = t.id
+                app.transaction_assignment as ta ON ta.transaction_id = t.id
             LEFT JOIN
-                envelope as e ON ta.envelope_id = e.id
+                app.envelope as e ON ta.envelope_id = e.id
             WHERE
                 -- We want to take all transactions with a date of this month along with all
                 -- transactions from last month that were marked as income for this month
@@ -145,15 +145,15 @@
                 e.id as Id,
                 e.name as Name
             FROM
-                transaction as t
+                app.transaction as t
             INNER JOIN
-                account as a ON a.id = t.account_id
+                app.account as a ON a.id = t.account_id
             LEFT JOIN
-                payee as p ON p.id = t.payee_id
+                app.payee as p ON p.id = t.payee_id
             LEFT JOIN
-                transaction_assignment as ta ON ta.transaction_id = t.id
+                app.transaction_assignment as ta ON ta.transaction_id = t.id
             LEFT JOIN
-                envelope as e ON ta.envelope_id = e.id
+                app.envelope as e ON ta.envelope_id = e.id
             WHERE
                 t.id = ANY(@Ids)";
 
@@ -182,15 +182,15 @@
                 e.id as Id,
                 e.name as Name
             FROM
-                transaction as t
+                app.transaction as t
             INNER JOIN
-                account as a ON a.id = t.account_id
+                app.account as a ON a.id = t.account_id
             LEFT JOIN
-                payee as p ON p.id = t.payee_id
+                app.payee as p ON p.id = t.payee_id
             LEFT JOIN
-                transaction_assignment as ta ON ta.transaction_id = t.id
+                app.transaction_assignment as ta ON ta.transaction_id = t.id
             LEFT JOIN
-                envelope as e ON ta.envelope_id = e.id
+                app.envelope as e ON ta.envelope_id = e.id
             WHERE
                 a.budget_id = @BudgetId AND 
                 EXTRACT(YEAR from t.date) < @Year OR (EXTRACT(YEAR from t.date) = @Year AND EXTRACT(MONTH from t.date) <= @Month)";
@@ -220,15 +220,15 @@
                 e.id as Id,
                 e.name as Name
             FROM
-                transaction as t
+                app.transaction as t
             INNER JOIN
-                account as a ON a.id = t.account_id
+                app.account as a ON a.id = t.account_id
             LEFT JOIN
-                payee as p ON p.id = t.payee_id
+                app.payee as p ON p.id = t.payee_id
             LEFT JOIN
-                transaction_assignment as ta ON ta.transaction_id = t.id
+                app.transaction_assignment as ta ON ta.transaction_id = t.id
             LEFT JOIN
-                envelope as e ON ta.envelope_id = e.id
+                app.envelope as e ON ta.envelope_id = e.id
             WHERE
                 a.budget_id = @BudgetId AND 
                 a.is_budget IS TRUE AND
@@ -236,7 +236,7 @@
 
         public static string Create = @"
             INSERT INTO 
-                transaction (
+                app.transaction (
                     id,
                     account_id,
                     payee_id,
@@ -259,13 +259,13 @@
 
         public static string Delete = @"
             DELETE FROM
-                transaction
+                app.transaction
             WHERE
                 id = ANY(@TransactionIds)";
 
         public static string Update = @"
             UPDATE
-                transaction
+                app.transaction
             SET
                 account_id = @AccountId,
                 payee_id = @PayeeId,
@@ -282,11 +282,11 @@
             SELECT 
                 b.user_id
             FROM
-                transaction t
+                app.transaction t
             INNER JOIN
-                account a ON t.account_id = a.id
+                app.account a ON t.account_id = a.id
             INNER JOIN
-                budget b ON a.budget_id = b.id
+                app.budget b ON a.budget_id = b.id
             WHERE 
                 t.id = @TransactionId";
 
@@ -294,15 +294,15 @@
             SELECT 
                 b.user_id
             FROM
-                transaction t
+                app.transaction t
             INNER JOIN
-                account a ON t.account_id = a.id
+                app.account a ON t.account_id = a.id
             INNER JOIN
-                budget b ON a.budget_id = b.id
+                app.budget b ON a.budget_id = b.id
             WHERE 
                 t.id = ANY(@TransactionIds)";
 
-        public static string SetIsCleared = @"UPDATE transaction SET is_cleared = @IsCleared WHERE id = @TransactionId";
+        public static string SetIsCleared = @"UPDATE app.transaction SET is_cleared = @IsCleared WHERE id = @TransactionId";
 
         public static string GetRecentTransactionsByEnvelope = @"
             WITH transactions AS (
@@ -314,15 +314,15 @@
                     p.name as payee,
                     ec.budget_id as budget_id
                 FROM
-                    transaction_assignment ta
+                    app.transaction_assignment ta
                 INNER JOIN
-                    envelope e ON e.id = ta.envelope_id
+                    app.envelope e ON e.id = ta.envelope_id
                 INNER JOIN
-                    envelope_category ec ON ec.id = e.envelope_category_id
+                    app.envelope_category ec ON ec.id = e.envelope_category_id
                 INNER JOIN
-                    transaction t ON t.id = ta.transaction_id
+                    app.transaction t ON t.id = ta.transaction_id
                 LEFT JOIN
-                    payee p ON p.id = t.payee_id
+                    app.payee p ON p.id = t.payee_id
                 GROUP BY	
                     t.id, t.date, e.id, p.name, ec.budget_id, ta.envelope_id
             )
