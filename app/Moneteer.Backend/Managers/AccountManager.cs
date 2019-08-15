@@ -16,6 +16,7 @@ namespace Moneteer.Backend.Managers
     public class AccountManager : BaseManager, IAccountManager
     {
         private readonly IAccountRepository _accountRepository;
+        private readonly IEnvelopeRepository _envelopeRepository;
         private readonly ITransactionRepository _transactionRepository;
         private readonly ITransactionAssignmentRepository _transactionAssignmentRepository;
         private readonly AccountValidationStrategy _validationStrategy;
@@ -25,6 +26,7 @@ namespace Moneteer.Backend.Managers
         public AccountManager(
             IBudgetRepository budgetRepository,
             IAccountRepository accountRepository,
+            IEnvelopeRepository envelopeRepository,
             ITransactionRepository transactionRepository,
             ITransactionAssignmentRepository transactionAssignmentRepository,
             AccountValidationStrategy validationStrategy,
@@ -34,6 +36,7 @@ namespace Moneteer.Backend.Managers
         {
             _accountRepository = accountRepository;
             _transactionRepository = transactionRepository;
+            _envelopeRepository = envelopeRepository;
             _transactionAssignmentRepository = transactionAssignmentRepository;
             _validationStrategy = validationStrategy;
             _connectionProvider = connectionProvider;
@@ -72,38 +75,42 @@ namespace Moneteer.Backend.Managers
         {
             if (initialBalance == 0) return;
 
-            decimal inflow = 0, outflow = 0;
-
-            if (initialBalance > 0)
-            {
-                inflow = initialBalance;
-            }
-            else if (initialBalance < 0)
-            {
-                outflow = Math.Abs(initialBalance);
-            }
-
             var transaction = new Entities.Transaction
             {
                 Account = account,
                 Date = DateTime.UtcNow.Date,
-                Assignments = new List<Entities.TransactionAssignment>
-                {
-                    new Entities.TransactionAssignment
-                    {
-                        Inflow = inflow,
-                        Outflow = outflow,
-                        Envelope = null
-                    }
-                },
-                Inflow = inflow,
-                Outflow = outflow,
+                Assignments = new List<Entities.TransactionAssignment>(),
+                Inflow = 0,
+                Outflow = 0,
                 IsCleared = true,
-                Description = "Automatically entered by Moneteer"
+                IsReconciled = true,
+                Description = "Initial Balance"
             };
 
+            if (initialBalance > 0)
+            {
+                transaction.Inflow = initialBalance;
+                await _budgetRepository.AdjustAvailable(account.BudgetId, initialBalance, conn).ConfigureAwait(false);
+            }
+            else if (initialBalance < 0)
+            {
+                var envelopes = await _envelopeRepository.GetBudgetEnvelopes(account.BudgetId, conn);
+
+                var preMoneteerDebtEnvelope = envelopes.SingleOrDefault(e => e.Name == "Pre Moneteer Debt");
+
+                transaction.Outflow = Math.Abs(initialBalance);
+                transaction.Assignments.Add(new Entities.TransactionAssignment{
+                    Outflow = Math.Abs(initialBalance),
+                    Envelope = preMoneteerDebtEnvelope
+                });
+            }
+
             var newTransaction = await _transactionRepository.CreateTransaction(transaction, conn);
-            await _transactionAssignmentRepository.CreateTransactionAssignments(transaction.Assignments, newTransaction.Id, conn);
+
+            if (transaction.Assignments != null && transaction.Assignments.Any())
+            {
+                await _transactionAssignmentRepository.CreateTransactionAssignments(transaction.Assignments, newTransaction.Id, conn);
+            }
         }
 
         public async Task Delete(Guid accountId, Guid userId)
