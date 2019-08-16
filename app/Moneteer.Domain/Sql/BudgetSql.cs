@@ -68,7 +68,7 @@
             WHERE
                 id = @BudgetId;";
 
-        public static string GetAvailable = @"
+        public static string GetAvailableIncome = @"
             SELECT
                 available
             FROM

@@ -11,5 +11,6 @@ namespace Moneteer.Backend.Managers
         Task<Budget> Get(Guid budgetId, Guid userId);
         Task<Budget> Create(Budget budget, Guid userId);
         Task Delete(Guid budgetId, Guid userId);
+        Task<decimal> GetAvailableIncome(Guid budgetId, Guid userId);
     }
 }

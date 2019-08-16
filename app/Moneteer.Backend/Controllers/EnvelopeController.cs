@@ -38,25 +38,13 @@ namespace Moneteer.Backend.Controllers
         [Route("api/budget/{budgetId}/envelopes")]
         public Task<IActionResult> GetAllForBudget(Guid budgetId)
         {
-            return HandleExceptions(async () =>
+            return HandleExceptions(() =>
             {
                 if (budgetId == Guid.Empty) throw new ArgumentException("budgetId must be provided", nameof(budgetId));
 
                 var userId = GetCurrentUserId();
 
-                var envelopesTask = _envelopeManager.GetEnvelopes(budgetId, userId);
-                var availableTask = _envelopeManager.GetAvailable(budgetId, userId);
-
-                await Task.WhenAll(envelopesTask, availableTask);
-
-                var envelopes = envelopesTask.Result;
-                var available = availableTask.Result;
-
-                return new
-                {
-                    Envelopes = envelopes,
-                    Available = available
-                };
+                return _envelopeManager.GetEnvelopes(budgetId, userId);
             });
         }
 

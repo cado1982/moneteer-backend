@@ -26,7 +26,7 @@ namespace Moneteer.Backend.Tests.Managers
         [Fact]
         public async Task AssignIncome_WhenTryingToAssignTooMuchIncome_Fails()
         {
-            Mock.Get(BudgetRepository).Setup(r => r.GetAvailable(BudgetId, DbConnection)).ReturnsAsync(40);
+            Mock.Get(BudgetRepository).Setup(r => r.GetAvailableIncome(BudgetId, DbConnection)).ReturnsAsync(40);
 
             var request = new AssignIncomeRequest
             {
@@ -46,7 +46,7 @@ namespace Moneteer.Backend.Tests.Managers
         [Fact]
         public async Task AssignIncome_AdjustsEnvelopeAssigned()
         {
-            Mock.Get(BudgetRepository).Setup(r => r.GetAvailable(BudgetId, DbConnection)).ReturnsAsync(110);
+            Mock.Get(BudgetRepository).Setup(r => r.GetAvailableIncome(BudgetId, DbConnection)).ReturnsAsync(110);
 
             var request = BuildExampleAssignIncomeRequest();
 
@@ -59,7 +59,7 @@ namespace Moneteer.Backend.Tests.Managers
         [Fact]
         public async Task AssignIncome_AdjustsAvailableIncome()
         {
-            Mock.Get(BudgetRepository).Setup(r => r.GetAvailable(BudgetId, DbConnection)).ReturnsAsync(110);
+            Mock.Get(BudgetRepository).Setup(r => r.GetAvailableIncome(BudgetId, DbConnection)).ReturnsAsync(110);
 
             var request = BuildExampleAssignIncomeRequest();
 

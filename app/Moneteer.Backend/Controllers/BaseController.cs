@@ -58,7 +58,7 @@ namespace Moneteer.Backend.Controllers
             }
         }
 
-        protected async Task<IActionResult> HandleExceptions<TResult>(Func<Task<TResult>> func) where TResult : class
+        protected async Task<IActionResult> HandleExceptions<TResult>(Func<Task<TResult>> func)
         {
             try
             {

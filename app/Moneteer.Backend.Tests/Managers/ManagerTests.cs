@@ -117,7 +117,7 @@ namespace Moneteer.Backend.Tests.Managers
 
         protected void SetupBudgetAvailable(decimal available)
         {
-            Mock.Get(BudgetRepository).Setup(r => r.GetAvailable(BudgetId, DbConnection)).ReturnsAsync(available);
+            Mock.Get(BudgetRepository).Setup(r => r.GetAvailableIncome(BudgetId, DbConnection)).ReturnsAsync(available);
         }
     }
 }

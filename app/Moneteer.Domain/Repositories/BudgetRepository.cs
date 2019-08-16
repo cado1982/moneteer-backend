@@ -169,7 +169,7 @@ namespace Moneteer.Domain.Repositories
             }
         }
 
-        public async Task<decimal> GetAvailable(Guid budgetId, IDbConnection connection)
+        public async Task<decimal> GetAvailableIncome(Guid budgetId, IDbConnection connection)
         {
             try
             {
@@ -177,16 +177,16 @@ namespace Moneteer.Domain.Repositories
 
                 parameters.Add("@BudgetId", budgetId);
 
-                return await connection.ExecuteScalarAsync<decimal>(BudgetSql.GetAvailable, parameters);
+                return await connection.ExecuteScalarAsync<decimal>(BudgetSql.GetAvailableIncome, parameters);
             }
             catch (PostgresException ex)
             {
-                LogPostgresException(ex, $"Error getting available amount for budget: {budgetId}");
+                LogPostgresException(ex, $"Error getting available income for budget: {budgetId}");
                 throw new ApplicationException("Oops! Something went wrong. Please try again");
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex, $"Error getting available amount for budget: {budgetId}");
+                Logger.LogError(ex, $"Error getting available income for budget: {budgetId}");
                 throw new ApplicationException("Oops! Something went wrong. Please try again");
             }
         }

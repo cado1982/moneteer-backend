@@ -103,5 +103,15 @@ namespace Moneteer.Backend.Managers
                 await _budgetRepository.AdjustAvailable(budgetId, change, conn);
             }
         }
+
+        public async Task<decimal> GetAvailableIncome(Guid budgetId, Guid userId)
+        {
+            using (var conn = _connectionProvider.GetOpenConnection())
+            {
+                await GuardBudget(budgetId, userId, conn).ConfigureAwait(false);
+
+                return await _budgetRepository.GetAvailableIncome(budgetId, conn);
+            }
+        }
     }
 }

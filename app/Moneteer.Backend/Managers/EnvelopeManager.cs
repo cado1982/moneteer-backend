@@ -108,19 +108,10 @@ namespace Moneteer.Backend.Managers
             {
                 await GuardBudget(budgetId, userId, conn);
             
-                return await GetAvailableInternal(budgetId, conn);
+                return await _budgetRepository.GetAvailableIncome(budgetId, conn);
             }
         }
-
-        private async Task<decimal> GetAvailableInternal(Guid budgetId, IDbConnection conn)
-        {
-            if (budgetId == Guid.Empty) throw new ArgumentException("budgetId must be provided");
-
-            var available = await _budgetRepository.GetAvailable(budgetId, conn);
-
-            return available;
-        }
-
+        
         public async Task AssignIncome(Guid budgetId, AssignIncomeRequest request, Guid userId)
         {
             if (budgetId == Guid.Empty) throw new ArgumentException("budgetId must be provided");
@@ -129,8 +120,8 @@ namespace Moneteer.Backend.Managers
             using (var transaction = conn.BeginTransaction())
             {
                 await GuardBudget(budgetId, userId, conn);
-            
-                var available = await GetAvailableInternal(budgetId, conn);
+
+                var available = await _budgetRepository.GetAvailableIncome(budgetId, conn);
 
                 var requestAssignmentTotal = request.Assignments.Sum(a => a.Amount);
 
