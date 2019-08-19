@@ -7,7 +7,6 @@
                 app.budget (id, 
                         name, 
                         user_id,
-                        available,
                         currency_code,
                         thousands_separator,
                         decimal_separator,
@@ -17,8 +16,7 @@
             VALUES 
                 (@Id, 
                  @Name, 
-                 @UserId, 
-                 0,
+                 @UserId,
                  @CurrencyCode, 
                  @ThousandsSeparator, 
                  @DecimalSeparator, 
@@ -32,7 +30,6 @@
             SELECT 
                 id as Id,
                 name as Name,
-                available as Available,
                 thousands_separator as ThousandsSeparator,
                 decimal_separator as DecimalSeparator,
                 decimal_places as DecimalPlaces,
@@ -49,7 +46,6 @@
             SELECT 
                 id as Id,
                 name as Name,
-                available as Available,
                 thousands_separator as ThousandsSeparator,
                 decimal_separator as DecimalSeparator,
                 decimal_places as DecimalPlaces,
@@ -59,21 +55,5 @@
             FROM
                 app.budget
             WHERE user_id = @UserId";
-
-        public static string AdjustAvailable = @"
-            UPDATE
-                app.budget
-            SET
-                available = available + @Change
-            WHERE
-                id = @BudgetId;";
-
-        public static string GetAvailableIncome = @"
-            SELECT
-                available
-            FROM
-                app.budget
-            WHERE
-                id = @BudgetId;";
     }
 }
