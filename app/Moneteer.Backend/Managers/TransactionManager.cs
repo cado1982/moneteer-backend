@@ -71,13 +71,7 @@ namespace Moneteer.Backend.Managers
                     transactionEntity = await _transactionRepository.CreateTransaction(transactionEntity, conn).ConfigureAwait(false);
 
                     await _transactionAssignmentRepository.CreateTransactionAssignments(transactionEntity.Assignments, transactionEntity.Id, conn).ConfigureAwait(false);
-
-                    // Adjust budget available balance
-                    if (transaction.Inflow > 0)
-                    {
-                        await _budgetRepository.AdjustAvailable(account.BudgetId, transaction.Inflow, conn).ConfigureAwait(false);
-                    }
-
+                    
                     dbTransaction.Commit();
                 }
                 return transactionEntity.ToModel();
@@ -100,13 +94,6 @@ namespace Moneteer.Backend.Managers
                 {
                     throw new InvalidOperationException("Budget could not be found for transaction");
                 }
-
-                var assignments = transactions.SelectMany(t => t.Assignments).Where(a => a.Envelope != null); // Inflow won't have an Envelope
-                var groupedByEnvelope = assignments.GroupBy(a => a.Envelope.Id);
-
-                // Adjust budget balance
-                var inflows = transactions.Where(t => t.Inflow > 0).Sum(t => t.Inflow);
-                await _budgetRepository.AdjustAvailable(budgetId, -inflows, conn).ConfigureAwait(false);
 
                 await _transactionRepository.DeleteTransactions(transactionIds, conn).ConfigureAwait(false);
 
@@ -169,9 +156,6 @@ namespace Moneteer.Backend.Managers
                 var account = await _accountRepository.Get(existingTransaction.Account.Id, conn).ConfigureAwait(false);
 
                 var inflowDifference = newTransaction.Inflow - existingTransaction.Inflow;
-
-                // Adjust budget available
-                await _budgetRepository.AdjustAvailable(account.BudgetId, inflowDifference, conn);
 
                 // Delete all the transaction assignments
                 await _transactionAssignmentRepository.DeleteTransactionAssignmentsByTransactionId(transaction.Id, conn);

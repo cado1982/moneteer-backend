@@ -14,7 +14,6 @@ namespace Moneteer.Backend.Extensions
                 Id = model.Id,
                 Name = model.Name,
                 UserId = userId,
-                Available = model.Available,
                 CurrencyCode = model.Currency.Code,
                 CurrencySymbolLocation = model.CurrencySymbolLocation.ToEntity(),
                 DecimalPlaces = model.CurrencyFormat.DecimalPlaces,
@@ -38,7 +37,6 @@ namespace Moneteer.Backend.Extensions
                     Symbol = String.Empty, // or the symbol
                     Code = entity.CurrencyCode,
                 },
-                Available = entity.Available,
                 CurrencySymbolLocation = entity.CurrencySymbolLocation.ToModel(),
                 CurrencyFormat = new Models.CurrencyFormat
                 {

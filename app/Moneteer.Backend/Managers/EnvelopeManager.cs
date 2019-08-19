@@ -99,48 +99,7 @@ namespace Moneteer.Backend.Managers
                 return models;
             }
         }
-
-        public async Task<decimal> GetAvailable(Guid budgetId, Guid userId)
-        {
-            if (budgetId == Guid.Empty) throw new ArgumentException("budgetId must be provided");
-
-            using (var conn = _connectionProvider.GetOpenConnection())
-            {
-                await GuardBudget(budgetId, userId, conn);
-            
-                return await _budgetRepository.GetAvailableIncome(budgetId, conn);
-            }
-        }
-        
-        public async Task AssignIncome(Guid budgetId, AssignIncomeRequest request, Guid userId)
-        {
-            if (budgetId == Guid.Empty) throw new ArgumentException("budgetId must be provided");
-
-            using (var conn = _connectionProvider.GetOpenConnection())
-            using (var transaction = conn.BeginTransaction())
-            {
-                await GuardBudget(budgetId, userId, conn);
-
-                var available = await _budgetRepository.GetAvailableIncome(budgetId, conn);
-
-                var requestAssignmentTotal = request.Assignments.Sum(a => a.Amount);
-
-                if (requestAssignmentTotal > available)
-                {
-                    throw new ApplicationException("Attempt to assign more income than is available.");
-                }
-
-                foreach (var assignment in request.Assignments)
-                {
-                    await _envelopeRepository.AdjustAssigned(assignment.Envelope.Id, assignment.Amount, conn);
-                }
-
-                await _budgetRepository.AdjustAvailable(budgetId, -requestAssignmentTotal, conn);
-
-                transaction.Commit();
-            }
-        }
-
+                
         public async Task<List<EnvelopeCategory>> GetEnvelopeCategories(Guid budgetId, Guid userId)
         {
             if (budgetId == Guid.Empty) throw new ArgumentException("budgetId must be provided");
@@ -166,6 +125,36 @@ namespace Moneteer.Backend.Managers
                 await GuardEnvelope(envelopeId, userId, conn);
 
                 await _envelopeRepository.DeleteEnvelope(envelopeId, conn);
+            }
+        }
+
+        public async Task MoveEnvelopeBalance(Guid fromEnvelopeId, Guid toEnvelopeId, decimal amount, Guid userId)
+        {
+            if (fromEnvelopeId == Guid.Empty) throw new ArgumentException("fromEnvelopeId must be provided");
+            if (toEnvelopeId == Guid.Empty) throw new ArgumentException("toEnvelopeId must be provided");
+            if (amount <= 0) throw new ArgumentException("Amount must be provided.");
+
+            using (var conn = _connectionProvider.GetOpenConnection())
+            {
+                await GuardEnvelope(fromEnvelopeId, userId, conn);
+
+                await _envelopeRepository.MoveEnvelopeBalance(fromEnvelopeId, toEnvelopeId, amount);
+            }
+        }
+
+        private async Task<Guid> GetAvailableIncomeEnvelopeId(Guid budgetId, Guid userId)
+        {
+            if (budgetId == Guid.Empty) throw new ArgumentException("budgetId must be provided");
+
+            using (var conn = _connectionProvider.GetOpenConnection())
+            {
+                await GuardBudget(budgetId, userId, conn);
+
+                var envelopes = await _envelopeRepository.GetBudgetEnvelopes(budgetId, conn);
+
+                var availableIncomeEnvelope = envelopes.SingleOrDefault(e => e.Name == "Available Income" && e.EnvelopeCategory.Name == "Income");
+
+                return availableIncomeEnvelope == null ? Guid.Empty : availableIncomeEnvelope.Id;
             }
         }
     }

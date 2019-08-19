@@ -132,32 +132,32 @@
 
         public static string GetEnvelopeBalances = @"
             WITH transaction_assignments AS (
-                SELECT
-                    e.id as envelope_id,
-                    SUM(ta.outflow) as outflow
-                FROM
-                    app.transaction_assignment ta
-                INNER JOIN
-                    app.transaction t ON t.id = ta.transaction_id
-                INNER JOIN
-                    app.account a ON a.id = t.account_id
-                INNER JOIN
-                    app.envelope e ON e.id = ta.envelope_id
+	            SELECT
+		            e.id as envelope_id,
+		            SUM(ta.inflow - ta.outflow) as amount
+	            FROM
+		            app.transaction_assignment ta
+	            INNER JOIN
+		            app.transaction t ON t.id = ta.transaction_id
+	            INNER JOIN
+		            app.account a ON a.id = t.account_id
+	            INNER JOIN
+		            app.envelope e ON e.id = ta.envelope_id
                 WHERE
                     a.budget_id = @BudgetId
-                GROUP BY
-                    e.id
+	            GROUP BY
+		            e.id
             )
 
             SELECT
-                e.id as envelopeid,
-                e.assigned - COALESCE(ta.outflow, 0) as balance
+	            e.id as envelopeid,
+	            e.assigned + COALESCE(ta.amount, 0) as balance
             FROM
-                app.envelope e
+	            app.envelope e
             INNER JOIN
                 app.envelope_category ec ON ec.id = e.envelope_category_id
             LEFT JOIN
-                app.transaction_assignment ta ON ta.envelope_id = e.id
+	            transaction_assignments ta ON ta.envelope_id = e.id
             WHERE
                 ec.budget_id = @BudgetId";
     }

@@ -93,16 +93,16 @@ namespace Moneteer.Backend.Controllers
         }
 
         [HttpPost]
-        [Route("api/budget/{budgetId}/envelopes/assignIncome")]
-        public Task<IActionResult> AssignIncome(Guid budgetId, [FromBody] AssignIncomeRequest request)
+        [Route("api/envelopes/{fromEnvelopeId}/movebalance")]
+        public Task<IActionResult> MoveBalance(Guid fromEnvelopeId, [FromBody] MoveEnvelopeBalanceRequest request)
         {
             return HandleExceptions(async () =>
             {
-                if (budgetId == Guid.Empty) throw new ArgumentException("budgetId must be provided", nameof(budgetId));
+                if (fromEnvelopeId == Guid.Empty) throw new ArgumentException("envelopeId must be provided", nameof(fromEnvelopeId));
 
                 var userId = GetCurrentUserId();
 
-                await _envelopeManager.AssignIncome(budgetId, request, userId);
+                await _envelopeManager.MoveEnvelopeBalance(fromEnvelopeId, request.ToEnvelopeId, request.Amount, userId);
             });
         }
 

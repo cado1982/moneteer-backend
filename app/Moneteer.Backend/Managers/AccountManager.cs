@@ -75,42 +75,41 @@ namespace Moneteer.Backend.Managers
         {
             if (initialBalance == 0) return;
 
+            var envelopes = await _envelopeRepository.GetBudgetEnvelopes(account.BudgetId, conn);
+                                                                                    
+            var availableIncomeEnvelope = envelopes.SingleOrDefault(e => e.Name == "Available Income" && e.EnvelopeCategory.Name == "Income");
+
+            if (availableIncomeEnvelope == null) throw new InvalidOperationException($"Unable to find available income envelope for budget {account.BudgetId}");
+
             var transaction = new Entities.Transaction
             {
                 Account = account,
                 Date = DateTime.UtcNow.Date,
-                Assignments = new List<Entities.TransactionAssignment>(),
-                Inflow = 0,
-                Outflow = 0,
+                Assignments = new List<Entities.TransactionAssignment>
+                {
+                    new Entities.TransactionAssignment{
+                        Envelope = availableIncomeEnvelope
+                    }
+                },
                 IsCleared = true,
-                IsReconciled = true,
+                IsReconciled = false,
                 Description = "Initial Balance"
             };
 
             if (initialBalance > 0)
             {
                 transaction.Inflow = initialBalance;
-                await _budgetRepository.AdjustAvailable(account.BudgetId, initialBalance, conn).ConfigureAwait(false);
+                transaction.Assignments.First().Inflow = initialBalance;
+                //await _budgetRepository.AdjustAvailable(account.BudgetId, initialBalance, conn).ConfigureAwait(false);
             }
             else if (initialBalance < 0)
             {
-                var envelopes = await _envelopeRepository.GetBudgetEnvelopes(account.BudgetId, conn);
-
-                var preMoneteerDebtEnvelope = envelopes.SingleOrDefault(e => e.Name == "Pre Moneteer Debt");
-
                 transaction.Outflow = Math.Abs(initialBalance);
-                transaction.Assignments.Add(new Entities.TransactionAssignment{
-                    Outflow = Math.Abs(initialBalance),
-                    Envelope = preMoneteerDebtEnvelope
-                });
+                transaction.Assignments.First().Outflow = Math.Abs(initialBalance);
             }
 
             var newTransaction = await _transactionRepository.CreateTransaction(transaction, conn);
-
-            if (transaction.Assignments != null && transaction.Assignments.Any())
-            {
-                await _transactionAssignmentRepository.CreateTransactionAssignments(transaction.Assignments, newTransaction.Id, conn);
-            }
+            await _transactionAssignmentRepository.CreateTransactionAssignments(transaction.Assignments, newTransaction.Id, conn);
         }
 
         public async Task Delete(Guid accountId, Guid userId)

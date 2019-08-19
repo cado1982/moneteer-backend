@@ -114,10 +114,5 @@ namespace Moneteer.Backend.Tests.Managers
                                             Envelope.ToEntity()
                                         });
         }
-
-        protected void SetupBudgetAvailable(decimal available)
-        {
-            Mock.Get(BudgetRepository).Setup(r => r.GetAvailableIncome(BudgetId, DbConnection)).ReturnsAsync(available);
-        }
     }
 }

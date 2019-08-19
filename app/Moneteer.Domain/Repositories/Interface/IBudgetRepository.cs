@@ -13,7 +13,5 @@ namespace Moneteer.Domain.Repositories
         Task<List<Budget>> GetAllForUser(Guid userId, IDbConnection connection);
         Task<Guid> GetOwner(Guid id, IDbConnection connection);
         Task Delete(Guid id, IDbConnection connection);
-        Task AdjustAvailable(Guid id, decimal change, IDbConnection connection);
-        Task<decimal> GetAvailableIncome(Guid budgetId, IDbConnection connection);
     }
 }

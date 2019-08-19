@@ -20,6 +20,7 @@ namespace Moneteer.Domain.StaticData
             var savingsGoals = new EnvelopeCategory { Id = Guid.NewGuid(), BudgetId = budgetId, Name = "Savings Goals" };
             var debt = new EnvelopeCategory { Id = Guid.NewGuid(), BudgetId = budgetId, Name = "Debt" };
             var giving = new EnvelopeCategory { Id = Guid.NewGuid(), BudgetId = budgetId, Name = "Giving" };
+            var income = new EnvelopeCategory { Id = Guid.NewGuid(), BudgetId = budgetId, Name = "Income" };
 
             result.Categories.Add(monthlyBills);
             result.Categories.Add(everydayExpenses);
@@ -27,6 +28,7 @@ namespace Moneteer.Domain.StaticData
             result.Categories.Add(savingsGoals);
             result.Categories.Add(debt);
             result.Categories.Add(giving);
+            result.Categories.Add(income);
 
             result.Envelopes.Add(new Envelope { Id = Guid.NewGuid(), EnvelopeCategory = monthlyBills, Name = "Rent/Mortgage" });
             result.Envelopes.Add(new Envelope { Id = Guid.NewGuid(), EnvelopeCategory = monthlyBills, Name = "Phone" });
@@ -56,10 +58,11 @@ namespace Moneteer.Domain.StaticData
 
             result.Envelopes.Add(new Envelope { Id = Guid.NewGuid(), EnvelopeCategory = debt, Name = "Car Payment" });
             result.Envelopes.Add(new Envelope { Id = Guid.NewGuid(), EnvelopeCategory = debt, Name = "Student Loan Payment" });
-            result.Envelopes.Add(new Envelope { Id = Guid.NewGuid(), EnvelopeCategory = debt, Name = "Pre Moneteer Debt" });
 
             result.Envelopes.Add(new Envelope { Id = Guid.NewGuid(), EnvelopeCategory = giving, Name = "Tithing" });
             result.Envelopes.Add(new Envelope { Id = Guid.NewGuid(), EnvelopeCategory = giving, Name = "Charitable" });
+
+            result.Envelopes.Add(new Envelope { Id = Guid.NewGuid(), EnvelopeCategory = income, Name = "Available Income" });
 
             return result;
         }

@@ -36,25 +36,7 @@ namespace Moneteer.Backend.Tests.Managers
             var exception = await Assert.ThrowsAsync<ApplicationException>(() => _sut.UpdateTransaction(Transaction, UserId));
             Assert.Equal("Transaction not found", exception.Message);
         }
-
-        [Fact]
-        public async Task UpdateTransaction_AdjustsBudgetAvailable()
-        {
-            SetupBudgetAvailable(10);
-            SetupTransaction(t => t.Inflow = 50);
-
-            var updatedTransaction = new Models.Transaction
-            {
-                Id = Transaction.Id,
-                Inflow = 62,
-                Assignments = new List<Models.TransactionAssignment>()
-            };
-
-            await _sut.UpdateTransaction(updatedTransaction, UserId);
-
-            Mock.Get(BudgetRepository).Verify(r => r.AdjustAvailable(BudgetId, 12, DbConnection), Times.Once);
-        }
-        
+                
         [Fact]
         public async Task UpdateTransaction_DeletesAssignments()
         {

@@ -293,5 +293,10 @@ namespace Moneteer.Domain.Repositories
                 throw new ApplicationException("Oops! Something went wrong. Please try again");
             }
         }
+
+        public Task MoveEnvelopeBalance(Guid fromEnvelopeId, Guid toEnvelopeId, decimal amount)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

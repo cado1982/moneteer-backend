@@ -83,18 +83,5 @@ namespace Moneteer.Backend.Controllers
                 await _budgetManager.Delete(budgetId, userId).ConfigureAwait(false);
             });
         }
-
-        [HttpGet("api/budget/{budgetId}/availableincome")]
-        public Task<IActionResult> GetAvailableIncome(Guid budgetId)
-        {
-            return HandleExceptions(async () =>
-            {
-                var userId = GetCurrentUserId();
-
-                var result = await _budgetManager.GetAvailableIncome(budgetId, userId).ConfigureAwait(false);
-
-                return result;
-            });
-        }
     }
 }

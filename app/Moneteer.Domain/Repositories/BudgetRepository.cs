@@ -145,50 +145,5 @@ namespace Moneteer.Domain.Repositories
                 throw new ApplicationException("Oops! Something went wrong. Please try again");
             }
         }
-
-        public async Task AdjustAvailable(Guid id, decimal change, IDbConnection connection)
-        {
-            try
-            {
-                var parameters = new DynamicParameters();
-
-                parameters.Add("@BudgetId", id);
-                parameters.Add("@Change", change, DbType.Decimal);
-
-                await connection.ExecuteAsync(BudgetSql.AdjustAvailable, parameters).ConfigureAwait(false);
-            }
-            catch (PostgresException ex)
-            {
-                LogPostgresException(ex, $"Error changing available amount for budget: {id}");
-                throw new ApplicationException("Oops! Something went wrong. Please try again");
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError(ex, $"Error changing available amount for budget: {id}");
-                throw new ApplicationException("Oops! Something went wrong. Please try again");
-            }
-        }
-
-        public async Task<decimal> GetAvailableIncome(Guid budgetId, IDbConnection connection)
-        {
-            try
-            {
-                var parameters = new DynamicParameters();
-
-                parameters.Add("@BudgetId", budgetId);
-
-                return await connection.ExecuteScalarAsync<decimal>(BudgetSql.GetAvailableIncome, parameters);
-            }
-            catch (PostgresException ex)
-            {
-                LogPostgresException(ex, $"Error getting available income for budget: {budgetId}");
-                throw new ApplicationException("Oops! Something went wrong. Please try again");
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError(ex, $"Error getting available income for budget: {budgetId}");
-                throw new ApplicationException("Oops! Something went wrong. Please try again");
-            }
-        }
     }
 }
