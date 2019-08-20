@@ -186,7 +186,8 @@ namespace Moneteer.Domain.Repositories
             }
             catch (PostgresException ex)
             {
-                if (ex.SqlState == PostgresErrorCodes.ForeignKeyConstraintViolation) {
+                if (ex.SqlState == PostgresErrorCodes.ForeignKeyConstraintViolation)
+                {
                     throw new ApplicationException("Envelope cannot be deleted because there are transactions using it.");
                 }
 
@@ -278,7 +279,7 @@ namespace Moneteer.Domain.Repositories
 
                 parameters.Add("@BudgetId", budgetId);
 
-                var result =  await conn.QueryAsync<EnvelopeBalance>(EnvelopeSql.GetEnvelopeBalances, parameters).ConfigureAwait(false);
+                var result = await conn.QueryAsync<EnvelopeBalance>(EnvelopeSql.GetEnvelopeBalances, parameters).ConfigureAwait(false);
 
                 return result.ToList();
             }
@@ -294,9 +295,40 @@ namespace Moneteer.Domain.Repositories
             }
         }
 
-        public Task MoveEnvelopeBalance(Guid fromEnvelopeId, Guid toEnvelopeId, decimal amount)
+        public async Task MoveEnvelopeBalanceMultiple(Guid fromEnvelopeId, List<Tuple<Guid, decimal>> targets, IDbConnection conn)
         {
-            throw new NotImplementedException();
+            if (fromEnvelopeId == Guid.Empty) throw new ArgumentException("fromEnvelopeId must be provided");
+            if (targets == null) throw new ArgumentException("targets must be provided");
+            if (targets.Any(t => t.Item1 == Guid.Empty)) throw new ArgumentException("Target envelopeids must be provided");
+            if (targets.Any(t => t.Item2 <= 0)) throw new ArgumentException("Target amounts must be greater than zero");
+
+            try
+            {
+                var fromEnvelopeDeduction = -targets.Sum(t => t.Item2);
+
+                var fromParameters = new DynamicParameters();
+                fromParameters.Add("@EnvelopeId", fromEnvelopeId);
+                fromParameters.Add("@Adjustment", fromEnvelopeDeduction);
+                await conn.ExecuteAsync(EnvelopeSql.AdjustAssigned, fromParameters).ConfigureAwait(false);
+
+                foreach (var target in targets)
+                {
+                    var toParameters = new DynamicParameters();
+                    toParameters.Add("@EnvelopeId", target.Item1);
+                    toParameters.Add("@Adjustment", target.Item2);
+                    await conn.ExecuteAsync(EnvelopeSql.AdjustAssigned, toParameters).ConfigureAwait(false);
+                }
+            }
+            catch (PostgresException ex)
+            {
+                LogPostgresException(ex, $"Error moving multiple balances from envelope {fromEnvelopeId}");
+                throw new ApplicationException("Oops! Something went wrong. Please try again");
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, $"Error moving multiple balances from envelope {fromEnvelopeId}");
+                throw new ApplicationException("Oops! Something went wrong. Please try again");
+            }
         }
     }
 }

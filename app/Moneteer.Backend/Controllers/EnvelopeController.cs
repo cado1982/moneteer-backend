@@ -6,6 +6,7 @@ using Moneteer.Backend.Services;
 using Moneteer.Models;
 using Moneteer.Models.Validation;
 using System;
+using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
@@ -94,7 +95,7 @@ namespace Moneteer.Backend.Controllers
 
         [HttpPost]
         [Route("api/envelopes/{fromEnvelopeId}/movebalance")]
-        public Task<IActionResult> MoveBalance(Guid fromEnvelopeId, [FromBody] MoveEnvelopeBalanceRequest request)
+        public Task<IActionResult> MoveBalance(Guid fromEnvelopeId, [FromBody] EnvelopeBalanceTarget[] targets)
         {
             return HandleExceptions(async () =>
             {
@@ -102,7 +103,7 @@ namespace Moneteer.Backend.Controllers
 
                 var userId = GetCurrentUserId();
 
-                await _envelopeManager.MoveEnvelopeBalance(fromEnvelopeId, request.ToEnvelopeId, request.Amount, userId);
+                await _envelopeManager.MoveEnvelopeBalance(fromEnvelopeId, targets.ToList(), userId);
             });
         }
 

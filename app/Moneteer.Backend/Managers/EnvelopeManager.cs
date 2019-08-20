@@ -5,7 +5,6 @@ using Moneteer.Domain.Repositories;
 using Moneteer.Models;
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -128,17 +127,27 @@ namespace Moneteer.Backend.Managers
             }
         }
 
-        public async Task MoveEnvelopeBalance(Guid fromEnvelopeId, Guid toEnvelopeId, decimal amount, Guid userId)
+        public async Task MoveEnvelopeBalance(Guid fromEnvelopeId, List<EnvelopeBalanceTarget> targets, Guid userId)
         {
             if (fromEnvelopeId == Guid.Empty) throw new ArgumentException("fromEnvelopeId must be provided");
-            if (toEnvelopeId == Guid.Empty) throw new ArgumentException("toEnvelopeId must be provided");
-            if (amount <= 0) throw new ArgumentException("Amount must be provided.");
+            if (targets == null || !targets.Any()) throw new ArgumentException("requests must be provided");
+            if (targets.Any(r => r.Amount <= 0)) throw new ArgumentException("All requests must have positive amount");
+            if (targets.Any(r => r.EnvelopeId == fromEnvelopeId)) throw new ArgumentException("None of the requests can target the same envelope as fromEnvelopeId");
 
             using (var conn = _connectionProvider.GetOpenConnection())
+            using (var trans = conn.BeginTransaction())
             {
                 await GuardEnvelope(fromEnvelopeId, userId, conn);
 
-                await _envelopeRepository.MoveEnvelopeBalance(fromEnvelopeId, toEnvelopeId, amount);
+                foreach (var targetEnvelopeId in targets.Select(t => t.EnvelopeId).Distinct())
+                {
+                    await GuardEnvelope(targetEnvelopeId, userId, conn);
+                }
+
+                var tupleRequests = targets.Select(r => new Tuple<Guid, decimal>(r.EnvelopeId, r.Amount)).ToList();
+                await _envelopeRepository.MoveEnvelopeBalanceMultiple(fromEnvelopeId, tupleRequests, conn);
+
+                trans.Commit();
             }
         }
 

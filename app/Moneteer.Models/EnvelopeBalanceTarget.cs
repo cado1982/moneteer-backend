@@ -2,9 +2,9 @@
 
 namespace Moneteer.Models
 {
-    public class MoveEnvelopeBalanceRequest
+    public class EnvelopeBalanceTarget
     {
-        public Guid ToEnvelopeId { get; set; }
+        public Guid EnvelopeId { get; set; }
         public decimal Amount { get; set; }
     }
 }
