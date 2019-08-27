@@ -13,6 +13,7 @@ using Moneteer.Models.Validation;
 using Moneteer.Models;
 using Microsoft.AspNetCore.HttpOverrides;
 using System;
+using Serilog;
 
 namespace Moneteer.Backend
 {
@@ -105,6 +106,7 @@ namespace Moneteer.Backend
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
+            app.UseSerilogRequestLogging();
             app.UseForwardedHeaders();
 
             app.UseCors("default");

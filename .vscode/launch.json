@@ -10,9 +10,9 @@
             "request": "launch",
             "preLaunchTask": "build",
             // If you have changed target frameworks, make sure to update the program path.
-            "program": "${workspaceFolder}/Moneteer.Backend/bin/Debug/netcoreapp2.2/Moneteer.Backend.dll",
+            "program": "${workspaceFolder}/app/Moneteer.Backend/bin/Debug/netcoreapp2.2/Moneteer.Backend.dll",
             "args": [],
-            "cwd": "${workspaceFolder}/Moneteer.Backend",
+            "cwd": "${workspaceFolder}/app/Moneteer.Backend",
             "stopAtEntry": false,
             "launchBrowser": {
                 "enabled": false
@@ -21,7 +21,7 @@
                 "ASPNETCORE_ENVIRONMENT": "Development"
             },
             "sourceFileMap": {
-                "/Views": "${workspaceFolder}/Views"
+                "/Views": "${workspaceFolder}/app/Views"
             }
         },
         {
