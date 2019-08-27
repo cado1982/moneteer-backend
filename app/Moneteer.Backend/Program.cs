@@ -21,7 +21,7 @@ namespace Moneteer.Backend
         {
             Log.Logger = new LoggerConfiguration()
                 .ReadFrom.Configuration(Configuration)
-                .Filter.ByExcluding((e) => e.Properties.ContainsKey("RequestPath") && e.Properties["RequestPath"].ToString() == "\"/healthcheck\"")
+                .Filter.ByExcluding("RequestPath = '/healthcheck' and StatusCode < 400")
                 .Enrich.FromLogContext()
                 .CreateLogger();
 
