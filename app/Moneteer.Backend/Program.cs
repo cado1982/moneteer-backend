@@ -22,7 +22,6 @@ namespace Moneteer.Backend
             Log.Logger = new LoggerConfiguration()
                 .ReadFrom.Configuration(Configuration)
                 .Filter.ByExcluding((e) => e.Properties.ContainsKey("RequestPath") && e.Properties["RequestPath"].ToString() == "\"/healthcheck\"")
-                .WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss.fff} {Level:u3}] {SourceContext} {Message:lj} {Properties:j} {Exception}{NewLine}")
                 .Enrich.FromLogContext()
                 .CreateLogger();
 
