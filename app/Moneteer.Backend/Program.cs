@@ -27,8 +27,6 @@ namespace Moneteer.Backend
 
             try
             {
-                Log.Information("Starting up...");
-
                 CreateWebHostBuilder(args).Build().Run();
 
                 return 0;
@@ -47,9 +45,10 @@ namespace Moneteer.Backend
         public static IWebHostBuilder CreateWebHostBuilder(string[] args)
         {
             return WebHost.CreateDefaultBuilder(args)
-                .UseStartup<Startup>()
+                .SuppressStatusMessages(true)
                 .UseConfiguration(Configuration)
-                .UseSerilog();
+                .UseSerilog()
+                .UseStartup<Startup>();
         }
     }
 }
