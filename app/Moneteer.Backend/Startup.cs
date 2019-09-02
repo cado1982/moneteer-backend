@@ -14,6 +14,9 @@ using Moneteer.Models;
 using Microsoft.AspNetCore.HttpOverrides;
 using System;
 using Serilog;
+using Microsoft.AspNetCore.Authorization;
+using Moneteer.Backend.Handlers;
+using Moneteer.Backend.Caching;
 
 namespace Moneteer.Backend
 {
@@ -36,7 +39,10 @@ namespace Moneteer.Backend
             }
             
             services.AddMvcCore()
-                    .AddAuthorization()
+                    .AddAuthorization(options => 
+                    {
+                        options.AddPolicy("Subscriber", policy => policy.AddRequirements(new SubscriptionAuthorizeRequirement()));
+                    })
                     .AddJsonFormatters();
 
             services.AddAuthentication(IdentityServerAuthenticationDefaults.AuthenticationScheme)
@@ -63,11 +69,18 @@ namespace Moneteer.Backend
                 });
             });
 
+            services.AddLazyCache();
+            services.AddTransient<SubscriptionStatusCache>();
+
             services.AddHttpContextAccessor();
+
+            services.AddSingleton<IAuthorizationHandler, SubscriptionAuthorizationHandler>();
 
             services.AddSingleton(new DatabaseConnectionInfo { ConnectionString = Configuration.GetConnectionString("Moneteer") });
 
             services.AddSingleton<IConnectionProvider, ConnectionProvider>();
+
+            services.AddTransient<IAuthorizationHandler, SubscriptionAuthorizationHandler>();
 
             // Repositories
             services.AddTransient<IBudgetRepository, BudgetRepository>();
@@ -76,6 +89,7 @@ namespace Moneteer.Backend
             services.AddTransient<ITransactionRepository, TransactionRepository>();
             services.AddTransient<ITransactionAssignmentRepository, TransactionAssignmentRepository>();
             services.AddTransient<IPayeeRepository, PayeeRepository>();
+            services.AddTransient<ISubscriptionRepository, SubscriptionRepository>();
 
             // Guards
             services.AddSingleton<BudgetGuard>();
@@ -92,6 +106,7 @@ namespace Moneteer.Backend
             services.AddTransient<ITransactionManager, TransactionManager>();
             services.AddTransient<IPayeeManager, PayeeManager>();
             services.AddTransient<IEnvelopeManager, EnvelopeManager>();
+            services.AddTransient<ISubscriptionManager, SubscriptionManager>();
 
             // Validation
             services.AddSingleton<AccountValidationStrategy>();
