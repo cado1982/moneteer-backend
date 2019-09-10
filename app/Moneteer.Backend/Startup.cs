@@ -16,7 +16,6 @@ using System;
 using Serilog;
 using Microsoft.AspNetCore.Authorization;
 using Moneteer.Backend.Handlers;
-using Moneteer.Backend.Caching;
 
 namespace Moneteer.Backend
 {
@@ -70,7 +69,6 @@ namespace Moneteer.Backend
             });
 
             services.AddLazyCache();
-            services.AddTransient<SubscriptionStatusCache>();
 
             services.AddHttpContextAccessor();
 

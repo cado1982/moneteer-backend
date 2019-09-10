@@ -2,7 +2,6 @@ using System;
 using System.Threading.Tasks;
 using LazyCache;
 using Microsoft.Extensions.Logging;
-using Moneteer.Backend.Caching;
 using Moneteer.Domain.Entities;
 using Moneteer.Domain.Guards;
 using Moneteer.Domain.Helpers;
@@ -16,6 +15,7 @@ namespace Moneteer.Backend.Managers
         private readonly ISubscriptionRepository _subscriptionRepository;
         private readonly IAppCache _cache;
         private readonly ILogger<SubscriptionManager> _logger;
+        private readonly TimeSpan _cacheExpiry = TimeSpan.FromMinutes(1);
 
         public SubscriptionManager(
             IConnectionProvider connectionProvider,
@@ -44,7 +44,7 @@ namespace Moneteer.Backend.Managers
 
             var cacheKey = GetCacheKey(userId);
 
-            var subscriptionStatus = await _cache.GetOrAdd(cacheKey, statusGetter, DateTime.Now.AddSeconds(20));
+            var subscriptionStatus = await _cache.GetOrAdd(cacheKey, statusGetter, DateTime.Now.Add(_cacheExpiry));
 
             return subscriptionStatus;
         }
