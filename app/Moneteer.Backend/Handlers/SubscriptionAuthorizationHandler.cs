@@ -27,9 +27,9 @@ namespace Moneteer.Backend.Handlers
             var subscriptionStatus = await _subscriptionManager.GetSubscriptionStatus(userGuid);
 
             if (subscriptionStatus.TrialExpiry > DateTime.UtcNow ||
-               (subscriptionStatus.SubscriptionExpiry != null && subscriptionStatus.SubscriptionExpiry > DateTime.UtcNow.AddDays(3))) // 3 days grace period
+               (subscriptionStatus.SubscriptionExpiry != null && subscriptionStatus.SubscriptionExpiry > DateTime.UtcNow))
             {
-                context.Succeed(requirement);   
+                context.Succeed(requirement);
             }
             else 
             {
