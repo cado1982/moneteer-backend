@@ -3,7 +3,6 @@ using System.IO;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 using Serilog;
 
 namespace Moneteer.Backend
@@ -45,7 +44,7 @@ namespace Moneteer.Backend
         public static IWebHostBuilder CreateWebHostBuilder(string[] args)
         {
             return WebHost.CreateDefaultBuilder(args)
-                .SuppressStatusMessages(true)
+                .SuppressStatusMessages(Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Production")
                 .UseConfiguration(Configuration)
                 .UseSerilog()
                 .UseStartup<Startup>();

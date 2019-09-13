@@ -3,12 +3,14 @@ using System.Linq;
 using System.Net;
 using System.Security;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moneteer.Backend.Services;
 
 namespace Moneteer.Backend.Controllers
 {
+    [Authorize(Policy = "Subscriber")]
     public abstract class BaseController<T> : Controller
     {
         protected ILogger<T> Logger { get; }
