@@ -15,7 +15,7 @@ namespace Moneteer.Backend.Managers
         private readonly ISubscriptionRepository _subscriptionRepository;
         private readonly IAppCache _cache;
         private readonly ILogger<SubscriptionManager> _logger;
-        private readonly TimeSpan _cacheExpiry = TimeSpan.FromMinutes(1);
+        private readonly TimeSpan _cacheExpiry = TimeSpan.FromSeconds(10);
 
         public SubscriptionManager(
             IConnectionProvider connectionProvider,
