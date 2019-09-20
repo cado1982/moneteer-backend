@@ -98,13 +98,11 @@ namespace Moneteer.Backend.Managers
 
             if (initialBalance > 0)
             {
-                transaction.Inflow = initialBalance;
                 transaction.Assignments.First().Inflow = initialBalance;
                 //await _budgetRepository.AdjustAvailable(account.BudgetId, initialBalance, conn).ConfigureAwait(false);
             }
             else if (initialBalance < 0)
             {
-                transaction.Outflow = Math.Abs(initialBalance);
                 transaction.Assignments.First().Outflow = Math.Abs(initialBalance);
             }
 

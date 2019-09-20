@@ -34,8 +34,6 @@ namespace Moneteer.Domain.Repositories
                 parameters.Add("@Date", transaction.Date);
                 parameters.Add("@Description", transaction.Description);
                 parameters.Add("@IsReconciled", transaction.IsReconciled);
-                parameters.Add("@Inflow", transaction.Inflow);
-                parameters.Add("@Outflow", transaction.Outflow);
 
                 await connection.ExecuteAsync(TransactionSql.Create, parameters).ConfigureAwait(false);
 
@@ -302,8 +300,6 @@ namespace Moneteer.Domain.Repositories
                 parameters.Add("@Date", transaction.Date);
                 parameters.Add("@Description", transaction.Description);
                 parameters.Add("@IsReconciled", transaction.IsReconciled);
-                parameters.Add("@Inflow", transaction.Inflow);
-                parameters.Add("@Outflow", transaction.Outflow);
 
                 await connection.ExecuteAsync(TransactionSql.Update, parameters).ConfigureAwait(false);
             }

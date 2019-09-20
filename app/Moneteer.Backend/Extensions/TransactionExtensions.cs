@@ -18,8 +18,6 @@ namespace Moneteer.Backend.Extensions
                 Date = entity.Date,
                 Description = entity.Description,
                 Id = entity.Id,
-                Inflow = entity.Inflow,
-                Outflow = entity.Outflow,
                 IsCleared = entity.IsCleared,
                 IsReconciled = entity.IsReconciled,
                 Payee = entity.Payee.ToModel(),
@@ -37,10 +35,8 @@ namespace Moneteer.Backend.Extensions
                 Date = model.Date,
                 Id = model.Id,
                 Description = model.Description,
-                Inflow = model.Inflow,
                 IsCleared = model.IsCleared,
                 IsReconciled = model.IsReconciled,
-                Outflow = model.Outflow,
                 Payee = model.Payee.ToEntity(),
                 Assignments = model.Assignments.ToEntities()?.ToList()
             };

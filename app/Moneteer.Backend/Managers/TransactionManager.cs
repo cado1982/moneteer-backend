@@ -155,8 +155,6 @@ namespace Moneteer.Backend.Managers
 
                 var account = await _accountRepository.Get(existingTransaction.Account.Id, conn).ConfigureAwait(false);
 
-                var inflowDifference = newTransaction.Inflow - existingTransaction.Inflow;
-
                 // Delete all the transaction assignments
                 await _transactionAssignmentRepository.DeleteTransactionAssignmentsByTransactionId(transaction.Id, conn);
                 // Then just recreate them

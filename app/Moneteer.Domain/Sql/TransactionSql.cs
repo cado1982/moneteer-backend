@@ -254,8 +254,8 @@
                     @Date,
                     @Description,
                     @IsReconciled, 
-                    @Inflow,
-                    @Outflow);";
+                    0,
+                    0);";
 
         public static string Delete = @"
             DELETE FROM
@@ -273,8 +273,8 @@
                 date = @Date,
                 description = @Description,
                 is_reconciled = @IsReconciled,
-                inflow = @Inflow,
-                outflow = @Outflow
+                inflow = 0,
+                outflow = 0
             WHERE
                 id = @Id";
 

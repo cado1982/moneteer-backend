@@ -13,22 +13,22 @@ namespace Moneteer.Models.Validation
                 throw new ApplicationException("Assignments must be provided");
             }
             
-            // Assignment outflow sum must equal transaction outflow sum
-            if (model.Outflow > 0 && model.Assignments.Sum(a => a.Outflow) != model.Outflow)
-            {
-                throw new ApplicationException("Sum of assignments outflow must match transaction outflow");
-            }
-
-            // Assignment outflow sum must equal transaction outflow sum
-            if (model.Inflow > 0 && model.Assignments.Sum(a => a.Inflow) != model.Inflow)
-            {
-                throw new ApplicationException("Sum of assignments inflow must match transaction inflow");
-            }
-
             // Envelopes must be provided for all assignments
             if (model.Assignments.Any(a => a.Envelope == null) || model.Assignments.Any(a => a.Envelope.Id == Guid.Empty))
             {
                 throw new ApplicationException("Envelope must be provided on all assignments");
+            }
+
+            // No duplicate envelopes
+            if (model.Assignments.GroupBy(a => a.Envelope.Id).Any(g => g.Count() > 1))
+            {
+                throw new ApplicationException("No duplicate envelopes allowed.");
+            }
+
+            // Must have either outflow OR inflow but not both
+            if (model.Assignments.Sum(a => a.Inflow) > 0 && model.Assignments.Sum(a => a.Outflow) > 0)
+            {
+                throw new ApplicationException("Assignments cannot contain outflow and inflow in the same transaction.");
             }
         }
     }

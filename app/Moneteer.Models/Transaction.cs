@@ -12,8 +12,6 @@ namespace Moneteer.Models
         public DateTime Date { get; set; }
         public string Description { get; set; }
         public bool IsReconciled { get; set; }
-        public decimal Inflow { get; set; }
-        public decimal Outflow { get; set; }
         public List<TransactionAssignment> Assignments { get; set; }
     }
 }

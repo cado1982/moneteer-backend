@@ -6,7 +6,6 @@ namespace Moneteer.Models.Validation
     {
         protected override List<ValidationRule<Transaction>> Rules => new List<ValidationRule<Transaction>>
         {
-            new TransactionInflowOutflowValidationRule(),
             new TransactionAccountValidationRule(),
             new TransactionAssignmentsValidationRule(),
             new TransactionFlagsValidationRule(),

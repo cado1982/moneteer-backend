@@ -86,8 +86,6 @@ namespace Moneteer.Backend.Tests.Managers
                     AccountComparison(t.Account, account) &&
                     t.IsCleared &&
                     t.Date == DateTime.UtcNow.Date &&
-                    t.Inflow == expectedInflow && 
-                    t.Outflow == expectedOutflow &&
                     t.Description == "Automatically entered by Moneteer"
             ), DbConnection)).Returns(Task.FromResult(expectedTransaction)).Verifiable();
 
