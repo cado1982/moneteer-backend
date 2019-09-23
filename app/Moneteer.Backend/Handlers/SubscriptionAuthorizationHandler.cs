@@ -20,7 +20,11 @@ namespace Moneteer.Backend.Handlers
         {
             var userId = context.User.FindFirstValue(JwtClaimTypes.Subject);
 
-            if (userId == null) throw new InvalidOperationException($"User claim is not found");
+            if (userId == null)
+            {
+                context.Fail();
+                return;
+            }
 
             var userGuid = new Guid(userId);
 
