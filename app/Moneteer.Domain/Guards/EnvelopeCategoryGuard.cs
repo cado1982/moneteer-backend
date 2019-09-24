@@ -1,4 +1,5 @@
-﻿using Moneteer.Domain.Repositories;
+﻿using Moneteer.Domain.Exceptions;
+using Moneteer.Domain.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -18,11 +19,14 @@ namespace Moneteer.Domain.Guards
 
         public async Task Guard(Guid envelopeCategoryId, Guid userId, IDbConnection conn)
         {
+            if (envelopeCategoryId == Guid.Empty) throw new ArgumentException("envelopeCategoryId must be provided", nameof(envelopeCategoryId));
+            if (userId == Guid.Empty) throw new ArgumentException("userId must be provided", nameof(userId));
+            
             var envelopeCategoryOwnerId = await _envelopeRepository.GetEnvelopeCategoryOwner(envelopeCategoryId, conn);
 
             if (envelopeCategoryOwnerId != userId)
             {
-                throw new UnauthorizedAccessException();
+                throw new ForbiddenException();
             }
         }
     }

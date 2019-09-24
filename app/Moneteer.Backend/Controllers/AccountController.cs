@@ -73,13 +73,11 @@ namespace Moneteer.Backend.Controllers
                 return Task.FromResult((IActionResult)BadRequest(ModelState));
             }
 
-            return HandleExceptions(async () => 
+            return HandleExceptions(() => 
             {
                 var userId = GetCurrentUserId();
 
-                await _accountManager.Update(account, userId);
-
-                return account;
+                return _accountManager.Update(account, userId);
             });
         }
 

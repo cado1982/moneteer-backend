@@ -1,4 +1,5 @@
-﻿using Moneteer.Domain.Repositories;
+﻿using Moneteer.Domain.Exceptions;
+using Moneteer.Domain.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -23,11 +24,16 @@ namespace Moneteer.Domain.Guards
 
         public async Task Guard(List<Guid> transactionIds, Guid userId, IDbConnection conn)
         {
+            if (transactionIds == null) throw new ArgumentNullException(nameof(transactionIds));
+            if (!transactionIds.Any()) throw new ArgumentException("transactionIds cannot be empty", nameof(transactionIds));
+            if (transactionIds.Any(id => id == Guid.Empty)) throw new ArgumentException("transactionIds cannot be empty guids", nameof(transactionIds));
+            if (userId == Guid.Empty) throw new ArgumentException("userId must be provided", nameof(userId));
+
             var transactionOwnerIds = await _transactionRepository.GetOwners(transactionIds, conn);
             
             if (!transactionOwnerIds.All(t => t == userId))
             {
-                throw new UnauthorizedAccessException();
+                throw new ForbiddenException();
             }
         }
     }

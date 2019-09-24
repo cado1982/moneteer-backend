@@ -1,5 +1,6 @@
 ﻿
 using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -62,25 +63,25 @@ namespace Moneteer.Backend.Controllers
             });
         }
 
-        [HttpPut("api/budget")]
-        public Task<IActionResult> Put([FromBody] Budget budget)
+        //[HttpPut("api/budget")]
+        //public Task<IActionResult> Put([FromBody] Budget budget)
+        //{
+        //    return HandleExceptions(() =>
+        //    {
+        //        var userId = GetCurrentUserId();
+
+        //        throw new NotImplementedException();
+        //    });
+        //}
+
+        [HttpDelete("api/budget/{budgetId:guid}")]
+        public Task<IActionResult> Delete(Guid budgetId)
         {
             return HandleExceptions(() =>
             {
                 var userId = GetCurrentUserId();
 
-                throw new NotImplementedException();
-            });
-        }
-
-        [HttpDelete("api/budget/{budgetId:guid}")]
-        public Task<IActionResult> Delete(Guid budgetId)
-        {
-            return HandleExceptions(async () =>
-            {
-                var userId = GetCurrentUserId();
-
-                await _budgetManager.Delete(budgetId, userId).ConfigureAwait(false);
+                return _budgetManager.Delete(budgetId, userId);
             });
         }
     }

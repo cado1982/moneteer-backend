@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moneteer.Backend.Services;
+using Moneteer.Domain.Exceptions;
 
 namespace Moneteer.Backend.Controllers
 {
@@ -39,37 +40,12 @@ namespace Moneteer.Backend.Controllers
         {
             try
             {
-                await task().ConfigureAwait(false);
+                await task();
                 return Ok();
             }
             catch (ApplicationException ex)
             {
-                return BadRequest(ex.Message);
-            }
-            catch (ArgumentException ex)
-            {
-                return BadRequest(ex.Message);
-            }
-            catch (UnauthorizedAccessException)
-            {
-                return Unauthorized();
-            }
-            catch (Exception)
-            {
-                return StatusCode((int)HttpStatusCode.InternalServerError);
-            }
-        }
-
-        protected async Task<IActionResult> HandleExceptions<TResult>(Func<Task<TResult>> func)
-        {
-            try
-            {
-                var result = await func().ConfigureAwait(false);
-                return Ok(result);
-            }
-            catch (ApplicationException ex)
-            {
-                Logger.LogError(ex, ex.Message);
+                Logger.LogDebug(ex, ex.Message);
                 return BadRequest(ex.Message);
             }
             catch (ArgumentException ex)
@@ -77,9 +53,10 @@ namespace Moneteer.Backend.Controllers
                 Logger.LogError(ex, ex.Message);
                 return BadRequest(ex.Message);
             }
-            catch (UnauthorizedAccessException)
+            catch (ForbiddenException ex)
             {
-                return Unauthorized();
+                Logger.LogError(ex, "Forbidden exception encountered.");
+                return StatusCode((int)HttpStatusCode.Forbidden);
             }
             catch (Exception ex)
             {
@@ -88,16 +65,16 @@ namespace Moneteer.Backend.Controllers
             }
         }
 
-        protected async Task<IActionResult> HandleExceptions(Func<Task<IActionResult>> task)
+        protected async Task<IActionResult> HandleExceptions<TResult>(Func<Task<TResult>> task)
         {
             try
             {
-                var result = await task().ConfigureAwait(false);
-                return result;
+                var result = await task();
+                return Ok(result);
             }
             catch (ApplicationException ex)
             {
-                Logger.LogError(ex, ex.Message);
+                Logger.LogDebug(ex, ex.Message);
                 return BadRequest(ex.Message);
             }
             catch (ArgumentException ex)
@@ -105,9 +82,10 @@ namespace Moneteer.Backend.Controllers
                 Logger.LogError(ex, ex.Message);
                 return BadRequest(ex.Message);
             }
-            catch (UnauthorizedAccessException)
+            catch (ForbiddenException ex)
             {
-                return Unauthorized();
+                Logger.LogError(ex, "Forbidden exception encountered.");
+                return StatusCode((int)HttpStatusCode.Forbidden);
             }
             catch (Exception ex)
             {

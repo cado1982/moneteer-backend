@@ -53,15 +53,13 @@ namespace Moneteer.Backend.Controllers
         [Route("api/budget/{budgetId}/envelopes/categories")]
         public Task<IActionResult> GetAllEnvelopeCategoriesForBudget(Guid budgetId)
         {
-            return HandleExceptions(async () =>
+            return HandleExceptions(() =>
             {
                 if (budgetId == Guid.Empty) throw new ArgumentException("budgetId must be provided", nameof(budgetId));
 
                 var userId = GetCurrentUserId();
 
-                var result = await _envelopeManager.GetEnvelopeCategories(budgetId, userId);
-
-                return result;
+                return _envelopeManager.GetEnvelopeCategories(budgetId, userId);
             });
         }
 
@@ -69,13 +67,13 @@ namespace Moneteer.Backend.Controllers
         [Route("api/budget/{budgetId}/envelopes/category")]
         public Task<IActionResult> CreateEnvelopeCategory(Guid budgetId, [FromBody] EnvelopeCategory envelopeCategory)
         {
-            return HandleExceptions(async () =>
+            return HandleExceptions(() =>
             {
                 if (budgetId == Guid.Empty) throw new ArgumentException("budgetId must be provided", nameof(budgetId));
 
                 var userId = GetCurrentUserId();
 
-                return await _envelopeManager.CreateEnvelopeCategory(budgetId, envelopeCategory, userId);
+                return _envelopeManager.CreateEnvelopeCategory(budgetId, envelopeCategory, userId);
             });
         }
 
@@ -83,13 +81,13 @@ namespace Moneteer.Backend.Controllers
         [Route("api/budget/{budgetId}/envelopes")]
         public Task<IActionResult> CreateEnvelope(Guid budgetId, [FromBody] Envelope envelope)
         {
-            return HandleExceptions(async () =>
+            return HandleExceptions(() =>
             {
                 if (budgetId == Guid.Empty) throw new ArgumentException("budgetId must be provided", nameof(budgetId));
 
                 var userId = GetCurrentUserId();
 
-                return await _envelopeManager.CreateEnvelope(budgetId, envelope, userId);
+                return _envelopeManager.CreateEnvelope(budgetId, envelope, userId);
             });
         }
 
@@ -97,13 +95,13 @@ namespace Moneteer.Backend.Controllers
         [Route("api/envelopes/{fromEnvelopeId}/movebalance")]
         public Task<IActionResult> MoveBalance(Guid fromEnvelopeId, [FromBody] EnvelopeBalanceTarget[] targets)
         {
-            return HandleExceptions(async () =>
+            return HandleExceptions(() =>
             {
                 if (fromEnvelopeId == Guid.Empty) throw new ArgumentException("envelopeId must be provided", nameof(fromEnvelopeId));
 
                 var userId = GetCurrentUserId();
 
-                await _envelopeManager.MoveEnvelopeBalance(fromEnvelopeId, targets.ToList(), userId);
+                return _envelopeManager.MoveEnvelopeBalance(fromEnvelopeId, targets.ToList(), userId);
             });
         }
 
@@ -111,11 +109,11 @@ namespace Moneteer.Backend.Controllers
         [Route("api/envelopes/{envelopeId}")]
         public Task<IActionResult> DeleteEnvelope(Guid envelopeId)
         {
-            return HandleExceptions(async () =>
+            return HandleExceptions(() =>
             {
                 var userId = GetCurrentUserId();
 
-                await _envelopeManager.DeleteEnvelope(envelopeId, userId);
+                return _envelopeManager.DeleteEnvelope(envelopeId, userId);
             });
         }
     }

@@ -364,7 +364,7 @@ namespace Moneteer.Domain.Repositories
                 return transactionEntry;
             }, parameters).ConfigureAwait(false);
 
-            return result.ToList();
+            return transactionDictionary.Values.ToList();
         }
     }
 }

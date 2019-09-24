@@ -1,4 +1,5 @@
-﻿using Moneteer.Domain.Helpers;
+﻿using Moneteer.Domain.Exceptions;
+using Moneteer.Domain.Helpers;
 using Moneteer.Domain.Repositories;
 using System;
 using System.Data;
@@ -17,11 +18,14 @@ namespace Moneteer.Domain.Guards
 
         public async Task Guard(Guid accountId, Guid userId, IDbConnection conn)
         {
+            //if (accountId == Guid.Empty) throw new ArgumentException("accountId must be provided", nameof(accountId));
+            if (userId == Guid.Empty) throw new ArgumentException("userId must be provided", nameof(userId));
+
             var accountOwnerId = await _accountRepository.GetOwner(accountId, conn);
 
             if (accountOwnerId != userId)
             {
-                throw new UnauthorizedAccessException();
+                throw new ForbiddenException();
             }
         }
     }
