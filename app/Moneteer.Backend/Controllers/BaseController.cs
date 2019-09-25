@@ -11,7 +11,7 @@ using Moneteer.Domain.Exceptions;
 
 namespace Moneteer.Backend.Controllers
 {
-    [Authorize(Policy = "Subscriber")]
+    [Authorize]
     public abstract class BaseController<T> : Controller
     {
         protected ILogger<T> Logger { get; }

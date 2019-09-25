@@ -38,10 +38,7 @@ namespace Moneteer.Backend
             }
             
             services.AddMvcCore()
-                    .AddAuthorization(options => 
-                    {
-                        options.AddPolicy("Subscriber", policy => policy.AddRequirements(new SubscriptionAuthorizeRequirement()));
-                    })
+                    .AddAuthorization()
                     .AddJsonFormatters();
 
             services.AddAuthentication(IdentityServerAuthenticationDefaults.AuthenticationScheme)
@@ -72,13 +69,9 @@ namespace Moneteer.Backend
 
             services.AddHttpContextAccessor();
 
-            services.AddSingleton<IAuthorizationHandler, SubscriptionAuthorizationHandler>();
-
             services.AddSingleton(new DatabaseConnectionInfo { ConnectionString = Configuration.GetConnectionString("Moneteer") });
 
             services.AddSingleton<IConnectionProvider, ConnectionProvider>();
-
-            services.AddTransient<IAuthorizationHandler, SubscriptionAuthorizationHandler>();
 
             // Repositories
             services.AddTransient<IBudgetRepository, BudgetRepository>();
@@ -104,7 +97,6 @@ namespace Moneteer.Backend
             services.AddTransient<ITransactionManager, TransactionManager>();
             services.AddTransient<IPayeeManager, PayeeManager>();
             services.AddTransient<IEnvelopeManager, EnvelopeManager>();
-            services.AddTransient<ISubscriptionManager, SubscriptionManager>();
 
             // Validation
             services.AddSingleton<AccountValidationStrategy>();
@@ -124,6 +116,7 @@ namespace Moneteer.Backend
 
             app.UseCors("default");
             app.UseAuthentication();
+            app.UseMiddleware<SubscriptionMiddleware>();
             app.UseMvc();
         }
     }
