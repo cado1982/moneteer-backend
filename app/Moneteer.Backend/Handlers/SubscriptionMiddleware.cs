@@ -31,23 +31,23 @@ namespace Moneteer.Backend.Handlers
             }
 
             var userId = sub.Value;
+            var unixTimeNow = DateTime.UtcNow.Subtract(new DateTime(1970,1,1)).TotalSeconds;
 
             var trialExpiryClaim = user.Claims.Single(c => c.Type == ClaimTypes.TrialExpiry);
             var subscriptionExpiryClaim = user.Claims.SingleOrDefault(c => c.Type == ClaimTypes.SubscriptionExpiry);
 
-            var trialExpiry = DateTime.Parse(trialExpiryClaim.Value);
-            DateTime? subscriptionExpiry = null;
-
+            var trialExpiry = Int32.Parse(trialExpiryClaim.Value);
             logger.LogDebug($"Found trial expiry claim for user {userId} with value {trialExpiry}");
 
+            int? subscriptionExpiry = null;
             if (subscriptionExpiryClaim != null)
             {
-                subscriptionExpiry = DateTime.Parse(subscriptionExpiryClaim.Value);
+                subscriptionExpiry = Int32.Parse(subscriptionExpiryClaim.Value);
                 logger.LogDebug($"Found subscription expiry claim for user {userId} with value {subscriptionExpiry}");
             }
 
-            if (trialExpiry > DateTime.UtcNow ||
-               (subscriptionExpiry != null && subscriptionExpiry > DateTime.UtcNow))
+            if (trialExpiry > unixTimeNow ||
+               (subscriptionExpiry != null && subscriptionExpiry > unixTimeNow))
             {
                 logger.LogDebug($"Subscription or trial active for user {userId}");
                 await _next(context);
