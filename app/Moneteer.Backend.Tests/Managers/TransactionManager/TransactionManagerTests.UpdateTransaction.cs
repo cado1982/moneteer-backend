@@ -1,4 +1,5 @@
 ﻿using Moneteer.Backend.Extensions;
+using Moneteer.Domain.Exceptions;
 using Moq;
 using System;
 using System.Collections.Generic;
@@ -16,7 +17,7 @@ namespace Moneteer.Backend.Tests.Managers
             Mock.Get(TransactionRepository).Setup(r => r.GetOwners(new List<Guid> { TransactionId }, DbConnection))
                                            .ReturnsAsync(new List<Guid> { Guid.NewGuid() });
 
-            await Assert.ThrowsAsync<UnauthorizedAccessException>(() => _sut.UpdateTransaction(Transaction, UserId));
+            await Assert.ThrowsAsync<ForbiddenException>(() => _sut.UpdateTransaction(Transaction, UserId));
         }
 
         [Fact]

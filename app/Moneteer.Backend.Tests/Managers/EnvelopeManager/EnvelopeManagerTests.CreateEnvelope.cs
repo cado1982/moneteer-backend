@@ -1,4 +1,5 @@
-﻿using Moneteer.Models;
+﻿using Moneteer.Domain.Exceptions;
+using Moneteer.Models;
 using Moq;
 using System;
 using System.Threading.Tasks;
@@ -13,7 +14,7 @@ namespace Moneteer.Backend.Tests.Managers
         {
             Mock.Get(BudgetRepository).Setup(r => r.GetOwner(BudgetId, DbConnection)).ReturnsAsync(Guid.NewGuid());
 
-            await Assert.ThrowsAsync<UnauthorizedAccessException>(() => _sut.CreateEnvelope(BudgetId, new Envelope(), UserId));
+            await Assert.ThrowsAsync<ForbiddenException>(() => _sut.CreateEnvelope(BudgetId, new Envelope(), UserId));
         }
 
         [Fact]

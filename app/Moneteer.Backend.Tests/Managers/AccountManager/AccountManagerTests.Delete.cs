@@ -3,6 +3,7 @@ using System;
 using System.Threading.Tasks;
 using Xunit;
 using FluentAssertions;
+using Moneteer.Domain.Exceptions;
 
 namespace Moneteer.Backend.Tests.Managers
 {
@@ -17,7 +18,7 @@ namespace Moneteer.Backend.Tests.Managers
 
             Func<Task> testCase = () => _sut.Delete(accountId, UserId);
 
-            testCase.Should().Throw<UnauthorizedAccessException>();
+            testCase.Should().Throw<ForbiddenException>();
         }
 
         [Fact]

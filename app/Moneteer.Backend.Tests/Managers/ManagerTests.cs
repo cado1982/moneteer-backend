@@ -29,11 +29,13 @@ namespace Moneteer.Backend.Tests.Managers
         protected Guid AccountId = Guid.NewGuid();
         protected Guid PayeeId = Guid.NewGuid();
         protected Guid EnvelopeId = Guid.NewGuid();
+        protected Guid AvailableIncomeEnvelopeId = Guid.NewGuid();
         protected Guid EnvelopeCategoryId = Guid.NewGuid();
 
         protected Account Account;
         protected Payee Payee;
         protected Envelope Envelope;
+        protected Envelope AvailableIncomeEnvelope;
         protected EnvelopeCategory EnvelopeCategory;
 
         protected Guards Guards;
@@ -79,6 +81,17 @@ namespace Moneteer.Backend.Tests.Managers
                 EnvelopeCategory = EnvelopeCategory
             };
 
+            AvailableIncomeEnvelope = new Envelope
+            {
+                Id = AvailableIncomeEnvelopeId,
+                Name = "Available Income",
+                EnvelopeCategory = new EnvelopeCategory
+                {
+                    Id = Guid.NewGuid(),
+                    Name = "Income"
+                }
+            };
+
             Mock.Get(AccountRepository).Setup(r => r.Get(AccountId, DbConnection))
                                        .ReturnsAsync(Account.ToEntity());
 
@@ -91,7 +104,8 @@ namespace Moneteer.Backend.Tests.Managers
             Mock.Get(EnvelopeRepository).Setup(r => r.GetBudgetEnvelopes(BudgetId, DbConnection))
                                         .ReturnsAsync(new List<Domain.Entities.Envelope>
                                         {
-                                            Envelope.ToEntity()
+                                            Envelope.ToEntity(),
+                                            AvailableIncomeEnvelope.ToEntity()
                                         });
 
             Mock.Get(EnvelopeRepository).Setup(r => r.GetEnvelopeBalances(BudgetId, DbConnection))

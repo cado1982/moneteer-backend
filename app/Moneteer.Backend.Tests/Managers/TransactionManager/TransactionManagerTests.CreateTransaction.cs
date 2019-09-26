@@ -5,6 +5,7 @@ using Xunit;
 using Moneteer.Models;
 using Moneteer.Backend.Extensions;
 using System.Collections.Generic;
+using Moneteer.Domain.Exceptions;
 
 namespace Moneteer.Backend.Tests.Managers
 {
@@ -15,7 +16,7 @@ namespace Moneteer.Backend.Tests.Managers
         {
             Mock.Get(AccountRepository).Setup(r => r.GetOwner(AccountId, DbConnection)).ReturnsAsync(Guid.NewGuid());
 
-            await Assert.ThrowsAsync<UnauthorizedAccessException>(() => _sut.CreateTransaction(Transaction, UserId));
+            await Assert.ThrowsAsync<ForbiddenException>(() => _sut.CreateTransaction(Transaction, UserId));
         }
 
         [Fact]

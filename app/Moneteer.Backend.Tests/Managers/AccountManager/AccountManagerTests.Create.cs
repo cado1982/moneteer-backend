@@ -8,6 +8,7 @@ using FluentAssertions;
 using System.Data;
 using System.Collections.Generic;
 using System.Linq;
+using Moneteer.Domain.Exceptions;
 
 namespace Moneteer.Backend.Tests.Managers
 {
@@ -25,7 +26,7 @@ namespace Moneteer.Backend.Tests.Managers
 
             Func<Task> testCase = () => _sut.Create(account, UserId);
 
-            testCase.Should().Throw<UnauthorizedAccessException>();
+            testCase.Should().Throw<ForbiddenException>();
         }
 
         [Fact]
@@ -86,7 +87,7 @@ namespace Moneteer.Backend.Tests.Managers
                     AccountComparison(t.Account, account) &&
                     t.IsCleared &&
                     t.Date == DateTime.UtcNow.Date &&
-                    t.Description == "Automatically entered by Moneteer"
+                    t.Description == "Initial Balance"
             ), DbConnection)).Returns(Task.FromResult(expectedTransaction)).Verifiable();
 
             Mock.Get(TransactionAssignmentRepository)

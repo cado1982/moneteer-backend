@@ -1,4 +1,5 @@
-﻿using Moneteer.Domain.Guards;
+﻿using Moneteer.Domain.Exceptions;
+using Moneteer.Domain.Guards;
 using Moneteer.Domain.Helpers;
 using Moneteer.Domain.Repositories;
 using Moq;
@@ -32,7 +33,7 @@ namespace Moneteer.Domain.Tests.Guards
         [Fact]
         public Task Blocks()
         {
-            return Assert.ThrowsAsync<UnauthorizedAccessException>(() => _sut.Guard(_transactionId, Guid.NewGuid(), _connectionMock.Object));
+            return Assert.ThrowsAsync<ForbiddenException>(() => _sut.Guard(_transactionId, Guid.NewGuid(), _connectionMock.Object));
         }
 
         [Fact]
