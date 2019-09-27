@@ -7,8 +7,6 @@ using Moneteer.Models;
 using Moneteer.Models.Validation;
 using System;
 using System.Linq;
-using System.Net;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace Moneteer.Backend.Controllers
@@ -90,7 +88,7 @@ namespace Moneteer.Backend.Controllers
                 return _envelopeManager.CreateEnvelope(budgetId, envelope, userId);
             });
         }
-
+        
         [HttpPost]
         [Route("api/envelopes/{fromEnvelopeId}/movebalance")]
         public Task<IActionResult> MoveBalance(Guid fromEnvelopeId, [FromBody] EnvelopeBalanceTarget[] targets)

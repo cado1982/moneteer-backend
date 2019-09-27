@@ -3,11 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moneteer.Backend.Managers;
 using Moneteer.Backend.Services;
-using Moneteer.Domain;
 using Moneteer.Models;
-using Npgsql;
 using System;
-using System.Net;
 using System.Threading.Tasks;
 
 namespace Moneteer.Backend.Controllers

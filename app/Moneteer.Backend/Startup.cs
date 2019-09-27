@@ -43,12 +43,14 @@ namespace Moneteer.Backend
 
             services.AddAuthentication(IdentityServerAuthenticationDefaults.AuthenticationScheme)
                     .AddIdentityServerAuthentication(options =>
-            {
-                options.Authority = Configuration["OpenIdConnectAuthority"];
-                options.RequireHttpsMetadata = false;
-                options.ApiName = "moneteer-api";
-                options.ApiSecret = Configuration["ApiSecret"];
-            });
+                    {
+                        options.Authority = Configuration["OpenIdConnectAuthority"];
+                        options.RequireHttpsMetadata = false;
+                        options.ApiName = "moneteer-api";
+                        options.ApiSecret = Configuration["ApiSecret"];
+                        options.EnableCaching = true;
+                        options.CacheDuration = TimeSpan.FromMinutes(10);
+                    });
 
             services.Configure<ForwardedHeadersOptions>(options =>
             {

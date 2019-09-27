@@ -18,9 +18,9 @@ namespace Moneteer.Models.Validation
             {
                 throw new ApplicationException("Decimal Places cannot be less than 0");
             }
-            if (String.IsNullOrWhiteSpace(model.Currency.Symbol))
+            if (String.IsNullOrWhiteSpace(model.Currency.Code))
             {
-                throw new ApplicationException("Currency Symbol must be provided");
+                throw new ApplicationException("Currency Code must be provided");
             }
             if (String.IsNullOrWhiteSpace(model.DateFormat))
             {

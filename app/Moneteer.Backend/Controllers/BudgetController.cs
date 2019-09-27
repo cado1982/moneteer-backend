@@ -1,7 +1,7 @@
 ﻿
 using System;
 using System.Collections.Generic;
-using System.Net;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -28,11 +28,38 @@ namespace Moneteer.Backend.Controllers
         [HttpGet("api/budget")]
         public Task<IActionResult> GetForUser()
         {
-            return HandleExceptions(() =>
+            return HandleExceptions(async () =>
             {
                 var userId = GetCurrentUserId();
 
-                return _budgetManager.GetAllForUser(userId);
+                var budgets = await _budgetManager.GetAllForUser(userId);
+
+                if (budgets.Any())
+                {
+                    return budgets;
+                }
+                else
+                {
+                    var budget = new Budget
+                    {
+                        Currency = new Currency
+                        {
+                            Code = "USD"
+                        },
+                        CurrencyFormat = new CurrencyFormat
+                        {
+                            DecimalPlaces = 2,
+                            DecimalSeparator = ".",
+                            ThousandsSeparator = ","
+                        },
+                        CurrencySymbolLocation = SymbolLocation.Before,
+                        DateFormat = "dd/MM/yyyy",
+                        Name = "My Budget",
+                    };
+
+                    var newBudget = await _budgetManager.Create(budget, userId);
+                    return new List<Budget> { newBudget };
+                }
             });
         }
 
