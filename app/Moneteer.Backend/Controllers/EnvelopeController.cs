@@ -11,26 +11,19 @@ using System.Threading.Tasks;
 
 namespace Moneteer.Backend.Controllers
 {
-    [Authorize]
     public class EnvelopeController : BaseController<EnvelopeController>
     {
         private readonly ILogger<EnvelopeController> _logger;
         private readonly IEnvelopeManager _envelopeManager;
-        private readonly EnvelopeCategoryValidationStrategy _masterCategoryValidationStrategy;
-        private readonly EnvelopeValidationStrategy _childCategoryValidationStrategy;
 
         public EnvelopeController(
             ILogger<EnvelopeController> logger,
             IEnvelopeManager envelopeManager, 
-            EnvelopeCategoryValidationStrategy masterCategoryValidationStrategy, 
-            EnvelopeValidationStrategy childCategoryValidationStrategy,
             IUserInfoService userInfoService)
                 :base(logger, userInfoService)
         {
             _logger = logger;
             _envelopeManager = envelopeManager;
-            _masterCategoryValidationStrategy = masterCategoryValidationStrategy;
-            _childCategoryValidationStrategy = childCategoryValidationStrategy;
         }
 
         [HttpGet]

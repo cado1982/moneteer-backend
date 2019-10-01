@@ -12,7 +12,6 @@ using Moneteer.Models;
 
 namespace Moneteer.Backend.Controllers
 {
-    [Authorize]
     public class BudgetController : BaseController<BudgetController>
     {
         private readonly IBudgetManager _budgetManager;
@@ -77,11 +76,6 @@ namespace Moneteer.Backend.Controllers
         [HttpPost("api/budget")]
         public Task<IActionResult> Post([FromBody] Budget budget)
         {
-            if (!ModelState.IsValid)
-            {
-                return Task.FromResult((IActionResult)BadRequest(ModelState));
-            }
-
             return HandleExceptions(() =>
             {
                 var userId = GetCurrentUserId();

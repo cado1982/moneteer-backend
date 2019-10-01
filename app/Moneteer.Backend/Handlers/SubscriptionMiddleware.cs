@@ -37,24 +37,24 @@ namespace Moneteer.Backend.Handlers
             var subscriptionExpiryClaim = user.Claims.SingleOrDefault(c => c.Type == ClaimTypes.SubscriptionExpiry);
 
             var trialExpiry = Int32.Parse(trialExpiryClaim.Value);
-            logger.LogDebug($"Found trial expiry claim for user {userId} with value {trialExpiry}");
+            logger.LogTrace($"Found trial expiry claim for user {userId} with value {trialExpiry}");
 
             int? subscriptionExpiry = null;
             if (subscriptionExpiryClaim != null)
             {
                 subscriptionExpiry = Int32.Parse(subscriptionExpiryClaim.Value);
-                logger.LogDebug($"Found subscription expiry claim for user {userId} with value {subscriptionExpiry}");
+                logger.LogTrace($"Found subscription expiry claim for user {userId} with value {subscriptionExpiry}");
             }
 
             if (trialExpiry > unixTimeNow ||
                (subscriptionExpiry != null && subscriptionExpiry > unixTimeNow))
             {
-                logger.LogDebug($"Subscription or trial active for user {userId}");
+                logger.LogTrace($"Subscription or trial active for user {userId}");
                 await _next(context);
             }
             else 
             {
-                logger.LogDebug($"Subscription or trial expired for user {userId}");
+                logger.LogTrace($"Subscription or trial expired for user {userId}");
                 context.Response.StatusCode = 402;
             }
         }

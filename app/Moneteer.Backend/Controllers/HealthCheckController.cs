@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Moneteer.Backend.Controllers
 {
     [AllowAnonymous]
-    public class HealthCheckController : Controller
+    public class HealthCheckController : ControllerBase
     {
         [Route("healthcheck")]
         public IActionResult Index()

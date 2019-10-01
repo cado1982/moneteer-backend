@@ -21,14 +21,6 @@ namespace Moneteer.Backend.Tests.Managers
         }
 
         [Fact]
-        public async Task UpdateTransaction_RunsValidation()
-        {
-            await _sut.UpdateTransaction(Transaction, UserId);
-
-            Mock.Get(ValidationStrategy).Verify(s => s.RunRules(Transaction), Times.Once);
-        }
-
-        [Fact]
         public async Task UpdateTransaction_WhenTransactionNotFound_ThrowsException()
         {
             Mock.Get(TransactionRepository).Setup(r => r.GetById(TransactionId, DbConnection))

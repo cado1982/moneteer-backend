@@ -18,7 +18,6 @@ namespace Moneteer.Backend.Managers
         private readonly IAccountRepository _accountRepository;
         private readonly ITransactionAssignmentRepository _transactionAssignmentRepository;
         private readonly IPayeeRepository _payeeRepository;
-        private readonly IDataValidationStrategy<Transaction> _validationStrategy;
         private readonly IConnectionProvider _connectionProvider;
         private readonly IEnvelopeRepository _envelopeRepository;
         private readonly IBudgetRepository _budgetRepository;
@@ -30,7 +29,6 @@ namespace Moneteer.Backend.Managers
             IPayeeRepository payeeRepository,
             IEnvelopeRepository envelopeRepository,
             IBudgetRepository budgetRepository,
-            IDataValidationStrategy<Transaction> validationStrategy,
             Guards guards,
             IConnectionProvider connectionProvider)
             : base(guards)
@@ -39,7 +37,6 @@ namespace Moneteer.Backend.Managers
             _accountRepository = accountRepository;
             _transactionAssignmentRepository = transactionAssignmentRepository;
             _payeeRepository = payeeRepository;
-            _validationStrategy = validationStrategy;
             _connectionProvider = connectionProvider;
             _envelopeRepository = envelopeRepository;
             _budgetRepository = budgetRepository;
@@ -51,14 +48,17 @@ namespace Moneteer.Backend.Managers
             {
                 await GuardAccount(transaction.Account.Id, userId, conn).ConfigureAwait(false);
 
-                _validationStrategy.RunRules(transaction);
-
                 var transactionEntity = transaction.ToEntity();
 
                 using (var dbTransaction = conn.BeginTransaction())
                 {
                     var account = await _accountRepository.Get(transactionEntity.Account.Id, conn).ConfigureAwait(false);
-                    transactionEntity.Account = account ?? throw new ApplicationException("Account not found");
+
+                    if (account == null) {
+                        throw new ApplicationException("Account does not exist");
+                    }
+
+                    transactionEntity.Account = account;
 
                     if (transactionEntity.Payee?.Id == Guid.Empty)
                     {
@@ -87,13 +87,6 @@ namespace Moneteer.Backend.Managers
                 await GuardTransactions(transactionIds, userId, conn).ConfigureAwait(false);
             
                 var transactions = await _transactionRepository.GetByIds(transactionIds, conn).ConfigureAwait(false);
-
-                // Make sure we're only dealing with one budget
-                var budgetId = transactions.Select(t => t.Account.BudgetId).Distinct().SingleOrDefault();
-                if (budgetId == Guid.Empty)
-                {
-                    throw new InvalidOperationException("Budget could not be found for transaction");
-                }
 
                 await _transactionRepository.DeleteTransactions(transactionIds, conn).ConfigureAwait(false);
 
@@ -142,8 +135,6 @@ namespace Moneteer.Backend.Managers
             {
                 await GuardTransaction(transaction.Id, userId, conn).ConfigureAwait(false);
 
-                _validationStrategy.RunRules(transaction);
-
                 var newTransaction = transaction.ToEntity();
 
                 var existingTransaction = await _transactionRepository.GetById(transaction.Id, conn).ConfigureAwait(false);
@@ -152,8 +143,6 @@ namespace Moneteer.Backend.Managers
                 {
                     throw new ApplicationException("Transaction not found");
                 }
-
-                var account = await _accountRepository.Get(existingTransaction.Account.Id, conn).ConfigureAwait(false);
 
                 // Delete all the transaction assignments
                 await _transactionAssignmentRepository.DeleteTransactionAssignmentsByTransactionId(transaction.Id, conn);

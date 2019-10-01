@@ -3,7 +3,7 @@ using System;
 
 namespace Moneteer.Models
 {
-    public class Budget : INamedModel
+    public class Budget
     {
         public Guid Id { get; set; }
 

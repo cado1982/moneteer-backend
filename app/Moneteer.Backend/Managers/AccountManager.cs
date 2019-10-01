@@ -19,7 +19,6 @@ namespace Moneteer.Backend.Managers
         private readonly IEnvelopeRepository _envelopeRepository;
         private readonly ITransactionRepository _transactionRepository;
         private readonly ITransactionAssignmentRepository _transactionAssignmentRepository;
-        private readonly AccountValidationStrategy _validationStrategy;
         private readonly IConnectionProvider _connectionProvider;
         private readonly IBudgetRepository _budgetRepository;
 
@@ -29,7 +28,6 @@ namespace Moneteer.Backend.Managers
             IEnvelopeRepository envelopeRepository,
             ITransactionRepository transactionRepository,
             ITransactionAssignmentRepository transactionAssignmentRepository,
-            AccountValidationStrategy validationStrategy,
             IConnectionProvider connectionProvider,
             Guards guards)
                 : base(guards)
@@ -38,7 +36,6 @@ namespace Moneteer.Backend.Managers
             _transactionRepository = transactionRepository;
             _envelopeRepository = envelopeRepository;
             _transactionAssignmentRepository = transactionAssignmentRepository;
-            _validationStrategy = validationStrategy;
             _connectionProvider = connectionProvider;
             _budgetRepository = budgetRepository;
         }
@@ -49,8 +46,6 @@ namespace Moneteer.Backend.Managers
             using (var dbTransaction = conn.BeginTransaction())
             {
                 await GuardBudget(account.BudgetId, userId, conn);
-
-                _validationStrategy.RunRules(account);
 
                 var entity = account.ToEntity();
 
@@ -152,8 +147,6 @@ namespace Moneteer.Backend.Managers
             using (var conn = _connectionProvider.GetOpenConnection())
             {
                 await GuardAccount(account.Id, userId, conn);
-
-                _validationStrategy.RunRules(account);
 
                 var entity = new Entities.Account
                 {

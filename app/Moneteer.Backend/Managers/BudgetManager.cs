@@ -16,26 +16,21 @@ namespace Moneteer.Backend.Managers
     {
         private readonly IBudgetRepository _budgetRepository;
         private readonly IEnvelopeRepository _categoryRepository;
-        private readonly BudgetValidationStrategy _validationStrategy;
         private readonly IConnectionProvider _connectionProvider;
 
         public BudgetManager(IBudgetRepository budgetRepository,
                              IEnvelopeRepository categoryRepository,
-                             BudgetValidationStrategy validationStrategy,
                              IConnectionProvider connectionProvider,
                              Guards guards)
             : base(guards)
         {
             _budgetRepository = budgetRepository;
             _categoryRepository = categoryRepository;
-            _validationStrategy = validationStrategy;
             _connectionProvider = connectionProvider;
         }
 
         public async Task<Models.Budget> Create(Models.Budget budget, Guid userId)
         {
-            _validationStrategy.RunRules(budget);
-
             var entity = budget.ToEntity(userId);
 
             using (var conn = _connectionProvider.GetOpenConnection())

@@ -20,7 +20,6 @@ namespace Moneteer.Backend.Extensions
                 Id = entity.Id,
                 IsCleared = entity.IsCleared,
                 IsReconciled = entity.IsReconciled,
-                Payee = entity.Payee.ToModel(),
                 Assignments = entity.Assignments.ToModels().ToList()
             };
         }
@@ -37,7 +36,6 @@ namespace Moneteer.Backend.Extensions
                 Description = model.Description,
                 IsCleared = model.IsCleared,
                 IsReconciled = model.IsReconciled,
-                Payee = model.Payee.ToEntity(),
                 Assignments = model.Assignments.ToEntities()?.ToList()
             };
         }

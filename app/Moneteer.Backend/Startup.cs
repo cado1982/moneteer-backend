@@ -14,9 +14,10 @@ using Moneteer.Models;
 using Microsoft.AspNetCore.HttpOverrides;
 using System;
 using Serilog;
-using Microsoft.AspNetCore.Authorization;
 using Moneteer.Backend.Handlers;
+using Microsoft.AspNetCore.Mvc;
 
+[assembly:ApiController]
 namespace Moneteer.Backend
 {
     public class Startup
@@ -38,6 +39,8 @@ namespace Moneteer.Backend
             }
             
             services.AddMvcCore()
+                    .SetCompatibilityVersion(CompatibilityVersion.Latest)
+                    .AddDataAnnotations()
                     .AddAuthorization()
                     .AddJsonFormatters();
 
@@ -99,13 +102,6 @@ namespace Moneteer.Backend
             services.AddTransient<ITransactionManager, TransactionManager>();
             services.AddTransient<IPayeeManager, PayeeManager>();
             services.AddTransient<IEnvelopeManager, EnvelopeManager>();
-
-            // Validation
-            services.AddSingleton<AccountValidationStrategy>();
-            services.AddSingleton<BudgetValidationStrategy>();
-            services.AddSingleton<EnvelopeValidationStrategy>();
-            services.AddSingleton<EnvelopeCategoryValidationStrategy>();
-            services.AddSingleton<IDataValidationStrategy<Transaction>, TransactionValidationStrategy>();
 
             // Services
             services.AddTransient<IUserInfoService, UserInfoService>();

@@ -12,7 +12,7 @@ using Moneteer.Domain.Exceptions;
 namespace Moneteer.Backend.Controllers
 {
     [Authorize]
-    public abstract class BaseController<T> : Controller
+    public abstract class BaseController<T> : ControllerBase
     {
         protected ILogger<T> Logger { get; }
 

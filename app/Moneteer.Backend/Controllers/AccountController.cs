@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 
 namespace Moneteer.Backend.Controllers
 {
-    [Authorize]
     public class AccountController : BaseController<AccountController>
     {
         private readonly IAccountManager _accountManager;
@@ -48,11 +47,6 @@ namespace Moneteer.Backend.Controllers
         [Route("api/account")]
         public Task<IActionResult> Post([FromBody] Account account)
         {
-            if (!ModelState.IsValid)
-            {
-                return Task.FromResult((IActionResult)BadRequest(ModelState));
-            }
-
             return HandleExceptions(() => 
             {
                 var userId = GetCurrentUserId();
@@ -65,11 +59,6 @@ namespace Moneteer.Backend.Controllers
         [Route("api/account")]
         public Task<IActionResult> Put([FromBody] Account account)
         {
-            if (!ModelState.IsValid)
-            {
-                return Task.FromResult((IActionResult)BadRequest(ModelState));
-            }
-
             return HandleExceptions(() => 
             {
                 var userId = GetCurrentUserId();

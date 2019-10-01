@@ -13,8 +13,6 @@ namespace Moneteer.Backend.Tests.Managers
     {
         private readonly TransactionManager _sut;
 
-        protected readonly IDataValidationStrategy<Transaction> ValidationStrategy = Mock.Of<IDataValidationStrategy<Transaction>>();
-        
         protected Guid TransactionId = Guid.NewGuid();
         protected Guid TransactionAssignmentId = Guid.NewGuid();
         protected Transaction Transaction;
@@ -28,7 +26,6 @@ namespace Moneteer.Backend.Tests.Managers
                 PayeeRepository,
                 EnvelopeRepository,
                 BudgetRepository,
-                ValidationStrategy,
                 Guards,
                 ConnectionProvider
             );

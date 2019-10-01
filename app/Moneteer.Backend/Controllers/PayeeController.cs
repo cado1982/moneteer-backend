@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 
 namespace Moneteer.Backend.Controllers
 {
-    [Authorize]
     public class PayeeController : BaseController<PayeeController>
     {
         private readonly ILogger<PayeeController> _logger;
@@ -38,11 +37,6 @@ namespace Moneteer.Backend.Controllers
         [Route("api/payee")]
         public Task<IActionResult> Put([FromBody] Payee payee)
         {
-            if (!ModelState.IsValid)
-            {
-                return Task.FromResult((IActionResult)BadRequest(ModelState));
-            }
-
             return HandleExceptions(() =>
             {
                 var userId = GetCurrentUserId();

@@ -11,7 +11,7 @@ namespace Moneteer.Backend.Tests.Managers
         {
             _sut = new AccountManager(BudgetRepository, AccountRepository, 
                 EnvelopeRepository, TransactionRepository, TransactionAssignmentRepository,
-                new AccountValidationStrategy(), ConnectionProvider, Guards);
+                ConnectionProvider, Guards);
         }
     }
 }

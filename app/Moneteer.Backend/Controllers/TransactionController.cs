@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Logging;
 using Moneteer.Backend.Managers;
 using Moneteer.Backend.Services;
@@ -13,7 +14,6 @@ using System.Threading.Tasks;
 
 namespace Moneteer.Backend.Controllers
 {
-    [Authorize]
     public class TransactionController : BaseController<TransactionController>
     {
         private readonly ILogger<TransactionController> _logger;
@@ -52,16 +52,19 @@ namespace Moneteer.Backend.Controllers
 
         [HttpPost]
         [Route("api/transaction")]
-        public Task<IActionResult> Post([FromBody] Transaction transaction)
+        public Task<IActionResult> Post([FromBody] CreateTransactionRequest request)
         {
-            if (!ModelState.IsValid)
-            {
-                return Task.FromResult((IActionResult)BadRequest(ModelState));
-            }
-
             return HandleExceptions(() =>
             {
                 var userId = GetCurrentUserId();
+
+                var transaction = new Transaction();
+                transaction.Account = new Account { Id = request.AccountId };
+                transaction.Date = request.Date;
+                transaction.Assignments = request.Assignments;
+                transaction.Description = request.Description;
+                transaction.IsCleared = request.IsCleared;
+                transaction.IsReconciled = false;
 
                 return _transactionManager.CreateTransaction(transaction, userId);
             });
@@ -71,11 +74,6 @@ namespace Moneteer.Backend.Controllers
         [Route("api/transaction")]
         public Task<IActionResult> Put([FromBody] Transaction transaction)
         {
-            if (!ModelState.IsValid)
-            {
-                return Task.FromResult((IActionResult)BadRequest(ModelState));
-            }
-
             return HandleExceptions(() =>
             {
                 var userId = GetCurrentUserId();

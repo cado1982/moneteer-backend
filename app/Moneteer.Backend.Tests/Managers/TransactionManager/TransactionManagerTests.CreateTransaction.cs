@@ -20,14 +20,6 @@ namespace Moneteer.Backend.Tests.Managers
         }
 
         [Fact]
-        public async Task CreateTransaction_RunsValidationRules()
-        {
-            await _sut.CreateTransaction(Transaction, UserId);
-
-            Mock.Get(ValidationStrategy).Verify(s => s.RunRules(Transaction), Times.Once);
-        }
-
-        [Fact]
         public async Task CreateTransaction_OpensDbConnection()
         {
             await _sut.CreateTransaction(Transaction, UserId);
@@ -49,16 +41,6 @@ namespace Moneteer.Backend.Tests.Managers
             await _sut.CreateTransaction(Transaction, UserId);
 
             Mock.Get(DbTransaction).Verify(s => s.Commit(), Times.Once);
-        }
-
-        [Fact]
-        public async Task CreateTransaction_WhenNewPayeeProvided_CreateNewPayee()
-        {
-            Transaction.Payee = new Payee();
-
-            var actual = await _sut.CreateTransaction(Transaction, UserId);
-
-            Mock.Get(PayeeRepository).Verify(r => r.CreatePayee(It.Is<Domain.Entities.Payee>(p => p.Id == Guid.Empty && p.BudgetId == BudgetId), DbConnection), Times.Once);
         }
 
         [Fact]
