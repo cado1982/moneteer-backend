@@ -4,6 +4,7 @@ WORKDIR /app
 
 COPY Moneteer.Backend.sln .
 COPY Moneteer.Backend/Moneteer.Backend.csproj ./Moneteer.Backend/
+COPY Moneteer.Backend.Client/Moneteer.Backend.Client.csproj ./Moneteer.Backend.Client/
 COPY Moneteer.Backend.Tests/Moneteer.Backend.Tests.csproj ./Moneteer.Backend.Tests/
 COPY Moneteer.Domain/Moneteer.Domain.csproj ./Moneteer.Domain/
 COPY Moneteer.Domain.Tests/Moneteer.Domain.Tests.csproj ./Moneteer.Domain.Tests/
