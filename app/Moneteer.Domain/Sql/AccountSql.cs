@@ -43,16 +43,31 @@
         public static string Update = @"UPDATE app.account SET name = @Name, is_budget = @IsBudget WHERE id = @AccountId";
 
         public static string GetAccountBalances = @"
-            WITH transactions AS (
-                SELECT * FROM app.transaction INNER JOIN app.account ON transaction.account_id = account.id WHERE account.budget_id = @BudgetId
+            WITH transaction_assignments AS (
+                SELECT 
+                    ta.envelope_id,
+                    ta.inflow,
+                    ta.outflow,
+                    t.account_id,
+                    t.is_cleared
+                FROM 
+                    app.transaction_assignment ta
+                INNER JOIN
+                    app.transaction t ON t.id = ta.transaction_id 
+                INNER JOIN 
+                    app.account a ON t.account_id = a.id 
+                WHERE 
+                    a.budget_id = @BudgetId
             )
 
             SELECT 
                 a.id as AccountId,
-                (SELECT COALESCE(SUM(inflow) - SUM(outflow), 0) as ClearedBalance FROM transactions t WHERE t.is_cleared = true AND t.account_id = a.id),
-                (SELECT COALESCE(SUM(inflow) - SUM(outflow), 0) as UnclearedBalance FROM transactions t WHERE t.is_cleared = false AND t.account_id = a.id)
+                (SELECT COALESCE(SUM(inflow) - SUM(outflow), 0) as ClearedBalance FROM transaction_assignments t WHERE t.is_cleared = true AND t.account_id = a.id),
+                (SELECT COALESCE(SUM(inflow) - SUM(outflow), 0) as UnclearedBalance FROM transaction_assignments t WHERE t.is_cleared = false AND t.account_id = a.id)
             FROM
-                app.account a";
+                app.account a
+            WHERE
+                a.budget_id = @BudgetId";
 
         public static string GetAccountBalance = @"
             WITH transactions AS (

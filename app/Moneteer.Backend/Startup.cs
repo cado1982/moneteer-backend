@@ -16,6 +16,8 @@ using System;
 using Serilog;
 using Moneteer.Backend.Handlers;
 using Microsoft.AspNetCore.Mvc;
+using FluentValidation.AspNetCore;
+using FluentValidation;
 
 [assembly:ApiController]
 namespace Moneteer.Backend
@@ -40,9 +42,13 @@ namespace Moneteer.Backend
             
             services.AddMvcCore()
                     .SetCompatibilityVersion(CompatibilityVersion.Latest)
-                    .AddDataAnnotations()
                     .AddAuthorization()
-                    .AddJsonFormatters();
+                    .AddJsonFormatters()
+                    .AddFluentValidation(fv => 
+                    {
+                        fv.RunDefaultMvcValidationAfterFluentValidationExecutes = false;
+                        fv.RegisterValidatorsFromAssemblyContaining<TransactionValidator>();
+                    });
 
             services.AddAuthentication(IdentityServerAuthenticationDefaults.AuthenticationScheme)
                     .AddIdentityServerAuthentication(options =>
@@ -77,6 +83,10 @@ namespace Moneteer.Backend
             services.AddSingleton(new DatabaseConnectionInfo { ConnectionString = Configuration.GetConnectionString("Moneteer") });
 
             services.AddSingleton<IConnectionProvider, ConnectionProvider>();
+
+            // Validation
+            // services.AddTransient<IValidator<Transaction>, TransactionValidator>(); 
+            // services.AddTransient<IValidator<TransactionAssignment>, TransactionAssignmentValidator>(); 
 
             // Repositories
             services.AddTransient<IBudgetRepository, BudgetRepository>();

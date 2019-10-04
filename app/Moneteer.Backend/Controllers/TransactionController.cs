@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using FluentValidation.AspNetCore;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Logging;
@@ -6,6 +7,7 @@ using Moneteer.Backend.Managers;
 using Moneteer.Backend.Services;
 using Moneteer.Domain;
 using Moneteer.Models;
+using Moneteer.Models.Validation;
 using Npgsql;
 using System;
 using System.Linq;
@@ -52,31 +54,32 @@ namespace Moneteer.Backend.Controllers
 
         [HttpPost]
         [Route("api/transaction")]
-        public Task<IActionResult> Post([FromBody] CreateTransactionRequest request)
+        public Task<IActionResult> Post([FromBody] Transaction transaction)
         {
             return HandleExceptions(() =>
             {
                 var userId = GetCurrentUserId();
-
-                var transaction = new Transaction();
-                transaction.Account = new Account { Id = request.AccountId };
-                transaction.Date = request.Date;
-                transaction.Assignments = request.Assignments;
-                transaction.Description = request.Description;
-                transaction.IsCleared = request.IsCleared;
-                transaction.IsReconciled = false;
-
+                
                 return _transactionManager.CreateTransaction(transaction, userId);
             });
         }
 
         [HttpPut]
         [Route("api/transaction")]
-        public Task<IActionResult> Put([FromBody] Transaction transaction)
+        public Task<IActionResult> Put([FromBody] UpdateTransactionRequest request)
         {
             return HandleExceptions(() =>
             {
                 var userId = GetCurrentUserId();
+
+                var transaction = new Transaction();
+                transaction.Id = request.TransactionId;
+                transaction.Account = new Account { Id = request.AccountId };
+                transaction.Date = request.Date;
+                transaction.Assignments = request.Assignments;
+                transaction.Description = request.Description;
+                transaction.IsCleared = request.IsCleared;
+                transaction.IsReconciled = false;
 
                 return _transactionManager.UpdateTransaction(transaction, userId);
             });

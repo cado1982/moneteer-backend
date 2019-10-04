@@ -83,23 +83,15 @@ namespace Moneteer.Backend.Managers
                 Assignments = new List<Entities.TransactionAssignment>
                 {
                     new Entities.TransactionAssignment{
-                        Envelope = availableIncomeEnvelope
-                    }
+                        Envelope = availableIncomeEnvelope,
+                        Inflow = initialBalance > 0 ? initialBalance : 0,
+                        Outflow = initialBalance < 0 ? +initialBalance : 0
+                    },
                 },
                 IsCleared = true,
                 IsReconciled = false,
                 Description = "Initial Balance"
             };
-
-            if (initialBalance > 0)
-            {
-                transaction.Assignments.First().Inflow = initialBalance;
-                //await _budgetRepository.AdjustAvailable(account.BudgetId, initialBalance, conn).ConfigureAwait(false);
-            }
-            else if (initialBalance < 0)
-            {
-                transaction.Assignments.First().Outflow = Math.Abs(initialBalance);
-            }
 
             var newTransaction = await _transactionRepository.CreateTransaction(transaction, conn);
             await _transactionAssignmentRepository.CreateTransactionAssignments(transaction.Assignments, newTransaction.Id, conn);
