@@ -153,7 +153,9 @@ namespace Moneteer.Backend.Managers
 
                 dbTrans.Commit();
 
-                return transaction;
+                var trans = await _transactionRepository.GetById(transaction.Id, conn);
+
+                return trans.ToModel();
             }
         }
 

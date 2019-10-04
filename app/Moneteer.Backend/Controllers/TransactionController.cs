@@ -66,20 +66,11 @@ namespace Moneteer.Backend.Controllers
 
         [HttpPut]
         [Route("api/transaction")]
-        public Task<IActionResult> Put([FromBody] UpdateTransactionRequest request)
+        public Task<IActionResult> Put([FromBody] Transaction transaction)
         {
             return HandleExceptions(() =>
             {
                 var userId = GetCurrentUserId();
-
-                var transaction = new Transaction();
-                transaction.Id = request.TransactionId;
-                transaction.Account = new Account { Id = request.AccountId };
-                transaction.Date = request.Date;
-                transaction.Assignments = request.Assignments;
-                transaction.Description = request.Description;
-                transaction.IsCleared = request.IsCleared;
-                transaction.IsReconciled = false;
 
                 return _transactionManager.UpdateTransaction(transaction, userId);
             });
