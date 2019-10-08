@@ -84,10 +84,6 @@ namespace Moneteer.Backend
 
             services.AddSingleton<IConnectionProvider, ConnectionProvider>();
 
-            // Validation
-            // services.AddTransient<IValidator<Transaction>, TransactionValidator>(); 
-            // services.AddTransient<IValidator<TransactionAssignment>, TransactionAssignmentValidator>(); 
-
             // Repositories
             services.AddTransient<IBudgetRepository, BudgetRepository>();
             services.AddTransient<IAccountRepository, AccountRepository>();
