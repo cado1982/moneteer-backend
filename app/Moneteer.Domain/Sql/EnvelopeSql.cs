@@ -3,7 +3,7 @@
     public static class EnvelopeSql
     {
         public static string CreateEnvelopeCategory = @"
-            INSERT INTO app.envelope_category (id, budget_id, name, is_deleted, is_hidden) VALUES (@Id, @BudgetId, @Name, false, false);";
+            INSERT INTO app.envelope_category (id, budget_id, name, is_hidden) VALUES (@Id, @BudgetId, @Name, false);";
 
         public static string CreateEnvelope = @"
             INSERT INTO 
@@ -11,14 +11,12 @@
                     id,
                     envelope_category_id,
                     name,
-                    is_deleted,
                     is_hidden,
                     assigned) 
                 VALUES (
                     @Id,
                     @EnvelopeCategoryId,
                     @Name,
-                    false,
                     false,
                     0);";
 
@@ -65,7 +63,6 @@
  	            e.id,
 	            e.name,
 	            e.envelope_category_id,
-	            e.is_deleted,
 	            e.is_hidden,
 	            e.assigned,
 	            COALESCE((SELECT SpendingLast30Days FROM spending WHERE EnvelopeId = e.id), 0) as SpendingLast30Days,
@@ -73,16 +70,13 @@
 	            ec.id,
 	            ec.name,
 	            ec.budget_id,
-	            ec.is_deleted,
 	            ec.is_hidden
             FROM 
 	            app.envelope e 
             INNER JOIN 
 	            app.envelope_category ec ON e.envelope_category_id = ec.id 
             WHERE    
-                ec.budget_id = @BudgetId AND
-	            e.is_deleted = false AND 
-	            ec.is_deleted = false";
+                ec.budget_id = @BudgetId";
 
         public static string AdjustAssigned = @"
             UPDATE
@@ -99,8 +93,7 @@
             FROM
 	            app.envelope_category
             WHERE
-	            budget_id = @BudgetId AND
-	            is_deleted = false";
+	            budget_id = @BudgetId";
 
         public static string GetEnvelopeOwner = @"
             SELECT 
@@ -160,5 +153,16 @@
 	            transaction_assignments ta ON ta.envelope_id = e.id
             WHERE
                 ec.budget_id = @BudgetId";
+
+        public static string UpdateEnvelope = @"
+            UPDATE 
+                app.envelope
+            SET
+                name = @Name,
+                envelope_category_id = @EnvelopeCategoryId,
+                is_hidden = @IsHidden,
+                assigned = @Assigned
+            WHERE
+                envelope.id = @EnvelopeId";
     }
 }

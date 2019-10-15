@@ -24,7 +24,7 @@ namespace Moneteer.Domain.Guards
 
             if (payeeOwnerId != userId)
             {
-                throw new ForbiddenException();
+                throw new ForbiddenException($"User {userId} does not have access to payee {payeeId}");
             }
         }
     }

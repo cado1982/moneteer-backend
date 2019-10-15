@@ -18,32 +18,6 @@ namespace Moneteer.Domain.Repositories
         {
 
         }
-
-        //public async Task AdjustBalance(Guid accountId, decimal amount, IDbConnection connection)
-        //{
-        //    try
-        //    {
-        //        var parameters = new DynamicParameters();
-
-        //        parameters.Add("@AccountId", accountId);
-        //        parameters.Add("@Adjustment", amount, DbType.Decimal);
-
-        //        await connection.ExecuteAsync(AccountSql.AdjustBalance, parameters).ConfigureAwait(false);
-        //    }
-        //    catch (PostgresException ex)
-        //    {
-        //        LogPostgresException(ex, $"Error changing balance amount for account: {accountId}");
-        //        throw new ApplicationException("Oops! Something went wrong. Please try again");
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Logger.LogError(ex, $"Error changing balance amount for account: {accountId}");
-        //        throw new ApplicationException("Oops! Something went wrong. Please try again");
-        //    }
-        //}
-
-        
-
         public async Task Create(Account account, IDbConnection connection)
         {
             try
@@ -67,12 +41,12 @@ namespace Moneteer.Domain.Repositories
                 }
                 
                 LogPostgresException(ex, "Error creating account");
-                throw new ApplicationException("Oops! Something went wrong. Please try again");
+                throw;
             }
             catch (Exception ex)
             {
                 Logger.LogError(ex, "Error creating account");
-                throw new ApplicationException("Oops! Something went wrong. Please try again");
+                throw;
             }
         }
 
@@ -89,12 +63,12 @@ namespace Moneteer.Domain.Repositories
             catch (PostgresException ex)
             {
                 LogPostgresException(ex, $"Error deleting account: {accountId}");
-                throw new ApplicationException("Oops! Something went wrong. Please try again");
+                throw;
             }
             catch (Exception ex)
             {
                 Logger.LogError(ex, $"Error deleting account: {accountId}");
-                throw new ApplicationException("Oops! Something went wrong. Please try again");
+                throw;
             }
         }
 
@@ -111,12 +85,12 @@ namespace Moneteer.Domain.Repositories
             catch (PostgresException ex)
             {
                 LogPostgresException(ex, $"Error getting account: {accountId}");
-                throw new ApplicationException("Oops! Something went wrong. Please try again");
+                throw;
             }
             catch (Exception ex)
             {
                 Logger.LogError(ex, $"Error getting account: {accountId}");
-                throw new ApplicationException("Oops! Something went wrong. Please try again");
+                throw;
             }
         }
 
@@ -134,12 +108,12 @@ namespace Moneteer.Domain.Repositories
             catch (PostgresException ex)
             {
                 LogPostgresException(ex, $"Error getting account balance for account: {accountId}");
-                throw new ApplicationException("Oops! Something went wrong. Please try again");
+                throw;
             }
             catch (Exception ex)
             {
                 Logger.LogError(ex, $"Error getting account balance for account: {accountId}");
-                throw new ApplicationException("Oops! Something went wrong. Please try again");
+                throw;
             }
         }
 
@@ -158,12 +132,12 @@ namespace Moneteer.Domain.Repositories
             catch (PostgresException ex)
             {
                 LogPostgresException(ex, $"Error getting account balances for budget: {budgetId}");
-                throw new ApplicationException("Oops! Something went wrong. Please try again");
+                throw;
             }
             catch (Exception ex)
             {
                 Logger.LogError(ex, $"Error getting account balances for budget: {budgetId}");
-                throw new ApplicationException("Oops! Something went wrong. Please try again");
+                throw;
             }
         }
 
@@ -182,12 +156,12 @@ namespace Moneteer.Domain.Repositories
             catch (PostgresException ex)
             {
                 LogPostgresException(ex, $"Error getting accounts for budget: {budgetId}");
-                throw new ApplicationException("Oops! Something went wrong. Please try again");
+                throw;
             }
             catch (Exception ex)
             {
                 Logger.LogError(ex, $"Error getting accounts for budget: {budgetId}");
-                throw new ApplicationException("Oops! Something went wrong. Please try again");
+                throw;
             }
         }
 
@@ -206,12 +180,12 @@ namespace Moneteer.Domain.Repositories
             catch (PostgresException ex)
             {
                 LogPostgresException(ex, $"Error getting owner for account: {accountId}");
-                throw new ApplicationException("Oops! Something went wrong. Please try again");
+                throw;
             }
             catch (Exception ex)
             {
                 Logger.LogError(ex, $"Error getting owner for account: {accountId}");
-                throw new ApplicationException("Oops! Something went wrong. Please try again");
+                throw;
             }
         }
 
@@ -232,12 +206,12 @@ namespace Moneteer.Domain.Repositories
             catch (PostgresException ex)
             {
                 LogPostgresException(ex, $"Error updating account: {account?.Id}");
-                throw new ApplicationException("Oops! Something went wrong. Please try again");
+                throw;
             }
             catch (Exception ex)
             {
                 Logger.LogError(ex, $"Error updating account: {account?.Id}");
-                throw new ApplicationException("Oops! Something went wrong. Please try again");
+                throw;
             }
         }
 

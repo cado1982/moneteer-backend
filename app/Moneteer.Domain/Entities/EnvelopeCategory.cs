@@ -8,6 +8,5 @@ namespace Moneteer.Domain.Entities
         public string Name { get; set; }
         public Guid BudgetId { get; set; }
         public bool IsHidden { get; set; }
-        public bool IsDeleted { get; set; }
     }
 }

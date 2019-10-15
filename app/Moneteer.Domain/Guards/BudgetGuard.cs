@@ -25,7 +25,7 @@ namespace Moneteer.Domain.Guards
 
             if (budgetOwnerId != userId)
             {
-                throw new ForbiddenException();
+                throw new ForbiddenException($"User {userId} does not have access to budget {budgetId}");
             }
         }
     }

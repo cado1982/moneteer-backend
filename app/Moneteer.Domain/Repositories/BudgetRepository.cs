@@ -47,12 +47,12 @@ namespace Moneteer.Domain.Repositories
                 }
 
                 LogPostgresException(ex, "Error creating budget");
-                throw new ApplicationException("Oops! Something went wrong. Please try again");
+                throw;
             }
             catch (Exception ex)
             {
                 Logger.LogError(ex, "Error creating budget");
-                throw new ApplicationException("Oops! Something went wrong. Please try again");
+                throw;
             }
         }
 
@@ -69,12 +69,12 @@ namespace Moneteer.Domain.Repositories
             catch (PostgresException ex)
             {
                 LogPostgresException(ex, $"Error deleting budget: {budgetId}");
-                throw new ApplicationException("Oops! Something went wrong. Please try again");
+                throw;
             }
             catch (Exception ex)
             {
                 Logger.LogError(ex, $"Error deleting budget: {budgetId}");
-                throw new ApplicationException("Oops! Something went wrong. Please try again");
+                throw;
             }
         }
 
@@ -91,12 +91,12 @@ namespace Moneteer.Domain.Repositories
             catch (PostgresException ex)
             {
                 LogPostgresException(ex, $"Error getting budget: {budgetId}");
-                throw new ApplicationException("Oops! Something went wrong. Please try again");
+                throw;
             }
             catch (Exception ex)
             {
                 Logger.LogError(ex, $"Error getting budget: {budgetId}");
-                throw new ApplicationException("Oops! Something went wrong. Please try again");
+                throw;
             }
         }
 
@@ -115,12 +115,12 @@ namespace Moneteer.Domain.Repositories
             catch (PostgresException ex)
             {
                 LogPostgresException(ex, $"Error getting budgets for user: {userId}");
-                throw new ApplicationException("Oops! Something went wrong. Please try again");
+                throw;
             }
             catch (Exception ex)
             {
                 Logger.LogError(ex, $"Error getting budgets for user: {userId}");
-                throw new ApplicationException("Oops! Something went wrong. Please try again");
+                throw;
             }
         }
 
@@ -137,12 +137,12 @@ namespace Moneteer.Domain.Repositories
             catch (PostgresException ex)
             {
                 LogPostgresException(ex, $"Error getting owner for budget: {budgetId}");
-                throw new ApplicationException("Oops! Something went wrong. Please try again");
+                throw;
             }
             catch (Exception ex)
             {
                 Logger.LogError(ex, $"Error getting owner for budget: {budgetId}");
-                throw new ApplicationException("Oops! Something went wrong. Please try again");
+                throw;
             }
         }
     }

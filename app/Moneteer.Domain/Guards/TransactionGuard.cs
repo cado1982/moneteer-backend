@@ -33,7 +33,7 @@ namespace Moneteer.Domain.Guards
             
             if (!transactionOwnerIds.All(t => t == userId))
             {
-                throw new ForbiddenException();
+                throw new ForbiddenException($"User {userId} does not have access to one or more transactions {String.Join(",", transactionIds)}");
             }
         }
     }

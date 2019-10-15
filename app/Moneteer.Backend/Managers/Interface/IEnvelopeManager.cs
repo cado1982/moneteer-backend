@@ -13,6 +13,7 @@ namespace Moneteer.Backend.Managers
         Task<Envelope> CreateEnvelope(Guid budgetId, Envelope envelope, Guid userId);
         Task<List<EnvelopeCategory>> GetEnvelopeCategories(Guid budgetId, Guid userId);
         Task DeleteEnvelope(Guid envelopeId, Guid userId);
+        Task UpdateEnvelope(Envelope envelope, Guid userId);
         Task MoveEnvelopeBalance(Guid fromEnvelopeId, List<EnvelopeBalanceTarget> targets, Guid userId);
     }
 }

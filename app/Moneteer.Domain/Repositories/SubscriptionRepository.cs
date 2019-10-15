@@ -33,12 +33,12 @@ namespace Moneteer.Domain.Repositories
             catch (PostgresException ex)
             {
                 LogPostgresException(ex, $"Error getting subscription status for user: {userId}");
-                throw new ApplicationException("Oops! Something went wrong. Please try again");
+                throw;
             }
             catch (Exception ex)
             {
                 Logger.LogError(ex, $"Error getting subscription status for user: {userId}");
-                throw new ApplicationException("Oops! Something went wrong. Please try again");
+                throw;
             }
         }
     }

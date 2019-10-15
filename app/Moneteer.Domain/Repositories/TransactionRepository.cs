@@ -42,12 +42,12 @@ namespace Moneteer.Domain.Repositories
             catch (PostgresException ex)
             {
                 LogPostgresException(ex, "Error creating transaction");
-                throw new ApplicationException("Oops! Something went wrong. Please try again");
+                throw;
             }
             catch (Exception ex)
             {
                 Logger.LogError(ex, "Error creating transaction");
-                throw new ApplicationException("Oops! Something went wrong. Please try again");
+                throw;
             }
         }
 
@@ -64,12 +64,12 @@ namespace Moneteer.Domain.Repositories
             catch (PostgresException ex)
             {
                 LogPostgresException(ex, "Error deleting transaction");
-                throw new ApplicationException("Oops! Something went wrong. Please try again");
+                throw;
             }
             catch (Exception ex)
             {
                 Logger.LogError(ex, "Error deleting transaction");
-                throw new ApplicationException("Oops! Something went wrong. Please try again");
+                throw;
             }
         }
 
@@ -86,12 +86,12 @@ namespace Moneteer.Domain.Repositories
             catch (PostgresException ex)
             {
                 LogPostgresException(ex, "Error getting transactions for account");
-                throw new ApplicationException("Oops! Something went wrong. Please try again");
+                throw;
             }
             catch (Exception ex)
             {
                 Logger.LogError(ex, "Error getting transactions for account");
-                throw new ApplicationException("Oops! Something went wrong. Please try again");
+                throw;
             }
         }
 
@@ -108,12 +108,12 @@ namespace Moneteer.Domain.Repositories
             catch (PostgresException ex)
             {
                 LogPostgresException(ex, "Error getting transations for budget");
-                throw new ApplicationException("Oops! Something went wrong. Please try again");
+                throw;
             }
             catch (Exception ex)
             {
                 Logger.LogError(ex, "Error getting transations for budget");
-                throw new ApplicationException("Oops! Something went wrong. Please try again");
+                throw;
             }
         }
 
@@ -132,12 +132,12 @@ namespace Moneteer.Domain.Repositories
             catch (PostgresException ex)
             {
                 LogPostgresException(ex, "Error getting transations for budget");
-                throw new ApplicationException("Oops! Something went wrong. Please try again");
+                throw;
             }
             catch (Exception ex)
             {
                 Logger.LogError(ex, "Error getting transations for budget");
-                throw new ApplicationException("Oops! Something went wrong. Please try again");
+                throw;
             }
         }
 
@@ -154,12 +154,12 @@ namespace Moneteer.Domain.Repositories
             catch (PostgresException ex)
             {
                 LogPostgresException(ex, "Error getting transations by ids");
-                throw new ApplicationException("Oops! Something went wrong. Please try again");
+                throw;
             }
             catch (Exception ex)
             {
                 Logger.LogError(ex, "Error getting transations by ids");
-                throw new ApplicationException("Oops! Something went wrong. Please try again");
+                throw;
             }
         }
 
@@ -185,12 +185,12 @@ namespace Moneteer.Domain.Repositories
             catch (PostgresException ex)
             {
                 LogPostgresException(ex, "Error getting transations for budget");
-                throw new ApplicationException("Oops! Something went wrong. Please try again");
+                throw;
             }
             catch (Exception ex)
             {
                 Logger.LogError(ex, "Error getting transations for budget");
-                throw new ApplicationException("Oops! Something went wrong. Please try again");
+                throw;
             }
         }
 
@@ -209,12 +209,12 @@ namespace Moneteer.Domain.Repositories
             catch (PostgresException ex)
             {
                 LogPostgresException(ex, "Error getting transations for budget");
-                throw new ApplicationException("Oops! Something went wrong. Please try again");
+                throw;
             }
             catch (Exception ex)
             {
                 Logger.LogError(ex, "Error getting transations for budget");
-                throw new ApplicationException("Oops! Something went wrong. Please try again");
+                throw;
             }
         }
 
@@ -231,12 +231,12 @@ namespace Moneteer.Domain.Repositories
             catch (PostgresException ex)
             {
                 LogPostgresException(ex, "Error getting owner for transaction");
-                throw new ApplicationException("Oops! Something went wrong. Please try again");
+                throw;
             }
             catch (Exception ex)
             {
                 Logger.LogError(ex, "Error getting owner for transaction");
-                throw new ApplicationException("Oops! Something went wrong. Please try again");
+                throw;
             }
         }
 
@@ -255,12 +255,12 @@ namespace Moneteer.Domain.Repositories
             catch (PostgresException ex)
             {
                 LogPostgresException(ex, "Error getting owner for transaction");
-                throw new ApplicationException("Oops! Something went wrong. Please try again");
+                throw;
             }
             catch (Exception ex)
             {
                 Logger.LogError(ex, "Error getting owner for transaction");
-                throw new ApplicationException("Oops! Something went wrong. Please try again");
+                throw;
             }
         }
 
@@ -278,12 +278,12 @@ namespace Moneteer.Domain.Repositories
             catch (PostgresException ex)
             {
                 LogPostgresException(ex, "Error setting isCleared for transaction");
-                throw new ApplicationException("Oops! Something went wrong. Please try again");
+                throw;
             }
             catch (Exception ex)
             {
                 Logger.LogError(ex, "Error setting isCleared for transaction");
-                throw new ApplicationException("Oops! Something went wrong. Please try again");
+                throw;
             }
         }
 
@@ -306,12 +306,12 @@ namespace Moneteer.Domain.Repositories
             catch (PostgresException ex)
             {
                 LogPostgresException(ex, "Error updating transaction");
-                throw new ApplicationException("Oops! Something went wrong. Please try again");
+                throw;
             }
             catch (Exception ex)
             {
                 Logger.LogError(ex, "Error updating transaction");
-                throw new ApplicationException("Oops! Something went wrong. Please try again");
+                throw;
             }
         }
 
@@ -331,12 +331,12 @@ namespace Moneteer.Domain.Repositories
             catch (PostgresException ex)
             {
                 LogPostgresException(ex, "Error getting recent transactions");
-                throw new ApplicationException("Oops! Something went wrong. Please try again");
+                throw;
             }
             catch (Exception ex)
             {
                 Logger.LogError(ex, "Error getting recent transactions");
-                throw new ApplicationException("Oops! Something went wrong. Please try again");
+                throw;
             }
         }
 

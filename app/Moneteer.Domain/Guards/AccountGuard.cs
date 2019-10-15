@@ -25,7 +25,7 @@ namespace Moneteer.Domain.Guards
 
             if (accountOwnerId != userId)
             {
-                throw new ForbiddenException();
+                throw new ForbiddenException($"User {userId} does not have access to account {accountId}");
             }
         }
     }

@@ -26,7 +26,7 @@ namespace Moneteer.Domain.Guards
 
             if (envelopeCategoryOwnerId != userId)
             {
-                throw new ForbiddenException();
+                throw new ForbiddenException($"User {userId} does not have access to envelope category {envelopeCategoryId}");
             }
         }
     }

@@ -19,5 +19,6 @@ namespace Moneteer.Domain.Repositories
         Task<Guid> GetEnvelopeCategoryOwner(Guid envelopeCategoryId, IDbConnection conn);
         Task<List<EnvelopeBalance>> GetEnvelopeBalances(Guid budgetId, IDbConnection conn);
         Task MoveEnvelopeBalanceMultiple(Guid fromEnvelopeId, List<Tuple<Guid, decimal>> targets, IDbConnection conn);
+        Task UpdateEnvelope(Envelope envelope, IDbConnection conn);
     }
 }

@@ -49,12 +49,12 @@ namespace Moneteer.Domain.Repositories
                 }
 
                 LogPostgresException(ex, $"Error creating envelope for category: {envelope.EnvelopeCategory.Id}");
-                throw new ApplicationException("Oops! Something went wrong. Please try again");
+                throw;
             }
             catch (Exception ex)
             {
                 Logger.LogError(ex, $"Error creating envelope for category: {envelope.EnvelopeCategory.Id}");
-                throw new ApplicationException("Oops! Something went wrong. Please try again");
+                throw;
             }
         }
 
@@ -81,12 +81,12 @@ namespace Moneteer.Domain.Repositories
             catch (PostgresException ex)
             {
                 LogPostgresException(ex, $"Error creating default envelopes for budget: {budgetId}");
-                throw new ApplicationException("Oops! Something went wrong. Please try again");
+                throw;
             }
             catch (Exception ex)
             {
                 Logger.LogError(ex, $"Error creating default envelopes for budget: {budgetId}");
-                throw new ApplicationException("Oops! Something went wrong. Please try again");
+                throw;
             }
         }
 
@@ -114,12 +114,12 @@ namespace Moneteer.Domain.Repositories
                 }
 
                 LogPostgresException(ex, $"Error creating envelope category for budget: {budgetId}");
-                throw new ApplicationException("Oops! Something went wrong. Please try again");
+                throw;
             }
             catch (Exception ex)
             {
                 Logger.LogError(ex, $"Error creating envelope category for budget: {budgetId}");
-                throw new ApplicationException("Oops! Something went wrong. Please try again");
+                throw;
             }
         }
 
@@ -142,12 +142,12 @@ namespace Moneteer.Domain.Repositories
             catch (PostgresException ex)
             {
                 LogPostgresException(ex, $"Error getting envelopes for budget: {budgetId}");
-                throw new ApplicationException("Oops! Something went wrong. Please try again");
+                throw;
             }
             catch (Exception ex)
             {
                 Logger.LogError(ex, $"Error getting envelopes for budget: {budgetId}");
-                throw new ApplicationException("Oops! Something went wrong. Please try again");
+                throw;
             }
         }
 
@@ -165,12 +165,12 @@ namespace Moneteer.Domain.Repositories
             catch (PostgresException ex)
             {
                 LogPostgresException(ex, $"Error adjusting assigned by {assignedAdjustment} for envelope: {envelopeId}");
-                throw new ApplicationException("Oops! Something went wrong. Please try again");
+                throw;
             }
             catch (Exception ex)
             {
                 Logger.LogError(ex, $"Error adjusting assigned by {assignedAdjustment} for envelope: {envelopeId}");
-                throw new ApplicationException("Oops! Something went wrong. Please try again");
+                throw;
             }
         }
 
@@ -192,12 +192,12 @@ namespace Moneteer.Domain.Repositories
                 }
 
                 LogPostgresException(ex, $"Error deleting envelope: {envelopeId}");
-                throw new ApplicationException("Oops! Something went wrong. Please try again");
+                throw;
             }
             catch (Exception ex)
             {
                 Logger.LogError(ex, $"Error deleting envelope: {envelopeId}");
-                throw new ApplicationException("Oops! Something went wrong. Please try again");
+                throw;
             }
         }
 
@@ -216,12 +216,12 @@ namespace Moneteer.Domain.Repositories
             catch (PostgresException ex)
             {
                 LogPostgresException(ex, $"Error getting envelope categories for budget: {budgetId}");
-                throw new ApplicationException("Oops! Something went wrong. Please try again");
+                throw;
             }
             catch (Exception ex)
             {
                 Logger.LogError(ex, $"Error getting envelope categories for budget: {budgetId}");
-                throw new ApplicationException("Oops! Something went wrong. Please try again");
+                throw;
             }
         }
 
@@ -238,12 +238,12 @@ namespace Moneteer.Domain.Repositories
             catch (PostgresException ex)
             {
                 LogPostgresException(ex, $"Error getting owner for envelope: {envelopeId}");
-                throw new ApplicationException("Oops! Something went wrong. Please try again");
+                throw;
             }
             catch (Exception ex)
             {
                 Logger.LogError(ex, $"Error getting owner for envelope: {envelopeId}");
-                throw new ApplicationException("Oops! Something went wrong. Please try again");
+                throw;
             }
         }
 
@@ -260,12 +260,12 @@ namespace Moneteer.Domain.Repositories
             catch (PostgresException ex)
             {
                 LogPostgresException(ex, $"Error getting owner for envelope category: {envelopeCategoryId}");
-                throw new ApplicationException("Oops! Something went wrong. Please try again");
+                throw;
             }
             catch (Exception ex)
             {
                 Logger.LogError(ex, $"Error getting owner for envelope category: {envelopeCategoryId}");
-                throw new ApplicationException("Oops! Something went wrong. Please try again");
+                throw;
             }
         }
 
@@ -286,12 +286,12 @@ namespace Moneteer.Domain.Repositories
             catch (PostgresException ex)
             {
                 LogPostgresException(ex, $"Error getting envelope balances for budget: {budgetId}");
-                throw new ApplicationException("Oops! Something went wrong. Please try again");
+                throw;
             }
             catch (Exception ex)
             {
                 Logger.LogError(ex, $"Error getting envelope balances for budget: {budgetId}");
-                throw new ApplicationException("Oops! Something went wrong. Please try again");
+                throw;
             }
         }
 
@@ -322,12 +322,43 @@ namespace Moneteer.Domain.Repositories
             catch (PostgresException ex)
             {
                 LogPostgresException(ex, $"Error moving multiple balances from envelope {fromEnvelopeId}");
-                throw new ApplicationException("Oops! Something went wrong. Please try again");
+                throw;
             }
             catch (Exception ex)
             {
                 Logger.LogError(ex, $"Error moving multiple balances from envelope {fromEnvelopeId}");
-                throw new ApplicationException("Oops! Something went wrong. Please try again");
+                throw;
+            }
+        }
+
+        public async Task UpdateEnvelope(Envelope envelope, IDbConnection conn)
+        {
+            if (conn == null) throw new ArgumentNullException(nameof(conn));
+            if (envelope == null) throw new ArgumentNullException(nameof(envelope));
+            if (envelope.Id == Guid.Empty) throw new ArgumentException("Envelope id must be provided", nameof(envelope));
+            if (envelope.EnvelopeCategory == null) throw new ArgumentException(nameof(envelope));
+            if (envelope.EnvelopeCategory.Id == Guid.Empty) throw new ArgumentException("Envelope category id must be provided", nameof(envelope));
+            
+            try
+            {
+                var parameters = new DynamicParameters();
+
+                parameters.Add("@EnvelopeId", envelope.Id);
+                parameters.Add("@EnvelopeCategoryId", envelope.EnvelopeCategory.Id);
+                parameters.Add("@IsHidden", envelope.IsHidden);
+                parameters.Add("@Assigned", envelope.Assigned);
+
+                var result = await conn.ExecuteAsync(EnvelopeSql.UpdateEnvelope, parameters).ConfigureAwait(false);
+            }
+            catch (PostgresException ex)
+            {
+                LogPostgresException(ex, $"Error updating envelope: {envelope.Id}");
+                throw;
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, $"Error updating envelope: {envelope.Id}");
+                throw;
             }
         }
     }

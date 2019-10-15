@@ -39,12 +39,12 @@ namespace Moneteer.Domain.Repositories
             catch (PostgresException ex)
             {
                 LogPostgresException(ex, "Error creating transaction assignment");
-                throw new ApplicationException("Oops! Something went wrong. Please try again");
+                throw;
             }
             catch (Exception ex)
             {
                 Logger.LogError(ex, "Error creating transaction assignment");
-                throw new ApplicationException("Oops! Something went wrong. Please try again");
+                throw;
             }
         }
 
@@ -64,12 +64,12 @@ namespace Moneteer.Domain.Repositories
             catch (PostgresException ex)
             {
                 LogPostgresException(ex, "Error deleting transaction assignments");
-                throw new ApplicationException("Oops! Something went wrong. Please try again");
+                throw;
             }
             catch (Exception ex)
             {
                 Logger.LogError(ex, "Error deleting transaction assignments");
-                throw new ApplicationException("Oops! Something went wrong. Please try again");
+                throw;
             }
         }
 
@@ -86,12 +86,12 @@ namespace Moneteer.Domain.Repositories
             catch (PostgresException ex)
             {
                 LogPostgresException(ex, $"Error deleting transaction assignments by transaction {transactionId}");
-                throw new ApplicationException("Oops! Something went wrong. Please try again");
+                throw;
             }
             catch (Exception ex)
             {
                 Logger.LogError(ex, $"Error deleting transaction assignments by transaction {transactionId}");
-                throw new ApplicationException("Oops! Something went wrong. Please try again");
+                throw;
             }
         }
     }

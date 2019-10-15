@@ -166,5 +166,22 @@ namespace Moneteer.Backend.Managers
                 return availableIncomeEnvelope == null ? Guid.Empty : availableIncomeEnvelope.Id;
             }
         }
+
+        public async Task UpdateEnvelope(Envelope envelope, Guid userId)
+        {
+            if (envelope == null) throw new ArgumentNullException(nameof(envelope));
+            if (envelope.Id == Guid.Empty) throw new ArgumentException("Envelope id must be provided", nameof(envelope));
+            if (envelope.EnvelopeCategory == null) throw new ArgumentException("Envelope category must be provided", nameof(envelope));
+            if (envelope.EnvelopeCategory.Id == Guid.Empty) throw new ArgumentException("Envelope category id must be provided", nameof(envelope));
+
+            using (var conn = _connectionProvider.GetOpenConnection())
+            {
+                await GuardEnvelope(envelope.Id, userId, conn);
+
+                var entity = envelope.ToEntity();
+
+                await _envelopeRepository.UpdateEnvelope(entity, conn);
+            }
+        }
     }
 }
