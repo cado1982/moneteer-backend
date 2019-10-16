@@ -15,16 +15,19 @@ namespace Moneteer.Backend.Managers
         private readonly IConnectionProvider _connectionProvider;
         private readonly IEnvelopeRepository _envelopeRepository;
         private readonly IBudgetRepository _budgetRepository;
+        private readonly ITransactionRepository _transactionRepository;
 
         public EnvelopeManager(IConnectionProvider connectionProvider,
                                IEnvelopeRepository categoryRepository,
                                IBudgetRepository budgetRepository,
+                               ITransactionRepository transactionRepository,
                                Guards guards)
             : base(guards)
         {
             _connectionProvider = connectionProvider;
             _envelopeRepository = categoryRepository;
             _budgetRepository = budgetRepository;
+            _transactionRepository = transactionRepository;
         }
 
         public async Task<Envelope> CreateEnvelope(Guid budgetId, Envelope envelope, Guid userId)
@@ -123,6 +126,29 @@ namespace Moneteer.Backend.Managers
             {
                 await GuardEnvelope(envelopeId, userId, conn);
 
+                var envelope = await _envelopeRepository.GetEnvelope(envelopeId, conn);
+
+                if (envelope == null) throw new ApplicationException("Envelope does not exist");
+                if (envelope.Assigned < 0) throw new ApplicationException("Cannot delete envelopes who have a negative balance");
+
+                // Move any existing balance to the Available Income envelope
+                if (envelope.Assigned > 0) {
+                    await MoveEnvelopeBalance(envelopeId, new List<EnvelopeBalanceTarget>{
+                        new EnvelopeBalanceTarget
+                        {
+                            Amount = envelope.Assigned,
+                            EnvelopeId = await _envelopeRepository.GetAvailableIncomeEnvelopeId(envelope.EnvelopeCategory.BudgetId, conn)
+                        }
+                    }, userId);
+                }
+
+                // Block delete if any transactions are still using this envelope
+                var transactions = await _transactionRepository.GetByEnvelopeId(envelopeId, conn);
+
+                if (transactions.Any()) {
+                    throw new ApplicationException("Cannot delete envelope with existing transactions");
+                }
+
                 await _envelopeRepository.DeleteEnvelope(envelopeId, conn);
             }
         }
@@ -148,22 +174,6 @@ namespace Moneteer.Backend.Managers
                 await _envelopeRepository.MoveEnvelopeBalanceMultiple(fromEnvelopeId, tupleRequests, conn);
 
                 trans.Commit();
-            }
-        }
-
-        private async Task<Guid> GetAvailableIncomeEnvelopeId(Guid budgetId, Guid userId)
-        {
-            if (budgetId == Guid.Empty) throw new ArgumentException("budgetId must be provided");
-
-            using (var conn = _connectionProvider.GetOpenConnection())
-            {
-                await GuardBudget(budgetId, userId, conn);
-
-                var envelopes = await _envelopeRepository.GetBudgetEnvelopes(budgetId, conn);
-
-                var availableIncomeEnvelope = envelopes.SingleOrDefault(e => e.Name == "Available Income" && e.EnvelopeCategory.Name == "Income");
-
-                return availableIncomeEnvelope == null ? Guid.Empty : availableIncomeEnvelope.Id;
             }
         }
 

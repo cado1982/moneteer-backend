@@ -14,6 +14,7 @@ namespace Moneteer.Domain.Repositories
         Task<List<Transaction>> GetOnOrBefore(Guid budgetId, short year, short month, IDbConnection connection);
         Task<List<Transaction>> GetByIds(List<Guid> transactionIds, IDbConnection connection);
         Task<Transaction> GetById(Guid transactionId, IDbConnection connection);
+        Task<List<Transaction>> GetByEnvelopeId(Guid envelopeId, IDbConnection connection);
 
         /// <summary>
         /// Gets transactions that come from budget accounts. A budget account has the isBudget flag set to true

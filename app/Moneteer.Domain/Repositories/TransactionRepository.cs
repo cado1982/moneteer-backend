@@ -218,6 +218,28 @@ namespace Moneteer.Domain.Repositories
             }
         }
 
+        public async Task<List<Transaction>> GetByEnvelopeId(Guid envelopeId, IDbConnection connection)
+        {
+            try
+            {
+                var parameters = new DynamicParameters();
+
+                parameters.Add("@EnvelopeId", envelopeId);
+
+                return await QueryTransactions(parameters, TransactionSql.GetForEnvelope, connection).ConfigureAwait(false);
+            }
+            catch (PostgresException ex)
+            {
+                LogPostgresException(ex, $"Error getting transations for envelope: {envelopeId}");
+                throw;
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, $"Error getting transations for envelope: {envelopeId}");
+                throw;
+            }
+        }
+
         public async Task<Guid> GetOwner(Guid transactionId, IDbConnection connection)
         {
             try

@@ -386,5 +386,62 @@ namespace Moneteer.Domain.Repositories
                 throw;
             }
         }
+
+        public async Task<Envelope> GetEnvelope(Guid envelopeId, IDbConnection conn)
+        {
+            if (envelopeId == Guid.Empty) throw new ArgumentException("envelopeId must be provided", nameof(envelopeId));
+            if (conn == null) throw new ArgumentNullException(nameof(conn));
+
+            try
+            {
+                var parameters = new DynamicParameters();
+
+                parameters.Add("@EnvelopeId", envelopeId);
+
+                var result = await conn.QueryAsync<Envelope, EnvelopeCategory, Envelope>(EnvelopeSql.GetEnvelope, (e, ec) => {
+                    e.EnvelopeCategory = ec;
+                    return e;
+                }, parameters).ConfigureAwait(false);
+
+                return result.SingleOrDefault();
+            }
+            catch (PostgresException ex)
+            {
+                LogPostgresException(ex, $"Error getting envelope: {envelopeId}");
+                throw;
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, $"Error getting envelope: {envelopeId}");
+                throw;
+            }
+        }
+
+        public async Task<Guid> GetAvailableIncomeEnvelopeId(Guid budgetId, IDbConnection conn)
+        {
+            if (budgetId == Guid.Empty) throw new ArgumentException("envelopeId must be provided", nameof(budgetId));
+            if (conn == null) throw new ArgumentNullException(nameof(conn));
+
+            try
+            {
+                var parameters = new DynamicParameters();
+
+                parameters.Add("@BudgetId", budgetId);
+
+                var result = await conn.ExecuteScalarAsync<Guid>(EnvelopeSql.GetAvailableIncomeEnvelopeId, parameters).ConfigureAwait(false);
+
+                return result;
+            }
+            catch (PostgresException ex)
+            {
+                LogPostgresException(ex, $"Error getting available income envelope for budget: {budgetId}");
+                throw;
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, $"Error getting available income envelope for budget: {budgetId}");
+                throw;
+            }
+        }
     }
 }

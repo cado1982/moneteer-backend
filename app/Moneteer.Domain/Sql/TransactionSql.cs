@@ -37,6 +37,41 @@
             WHERE
                 a.budget_id = @BudgetId;";
 
+        public static string GetForEnvelope = @"
+            SELECT 
+	            t.id as Id, 
+                t.account_id as AccountId,
+                t.payee_id as PayeeId,
+                t.is_cleared as IsCleared,
+                t.date as Date,
+                t.description as Description,
+                t.is_reconciled as IsReconciled,
+                a.id as Id,
+                a.name as Name,
+                a.is_budget as IsBudget,
+                a.budget_id as BudgetId,
+                p.id as Id,
+                p.name as Name,
+                p.last_envelope_id as LastEnvelopeId,
+                ta.id as Id,
+                ta.inflow as Inflow,
+                ta.outflow as Outflow,
+                ta.envelope_id as EnvelopeId,
+                e.id as Id,
+                e.name as Name
+            FROM
+                app.transaction as t
+            INNER JOIN
+                app.account as a ON a.id = t.account_id
+            LEFT JOIN
+                app.payee as p ON p.id = t.payee_id
+            LEFT JOIN
+                app.transaction_assignment as ta ON ta.transaction_id = t.id
+            LEFT JOIN
+                app.envelope as e ON ta.envelope_id = e.id
+            WHERE
+                e.id = @EnvelopeId;";
+
         public static string GetForAccount = @"
             SELECT 
 	            t.id as Id, 

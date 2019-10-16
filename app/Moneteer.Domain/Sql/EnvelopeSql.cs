@@ -171,5 +171,31 @@
                 is_hidden = @IsHidden
             WHERE
                 envelope.id = @EnvelopeId";
+
+        public static string GetEnvelope = @"
+            SELECT
+                e.id,
+                e.name,
+                e.is_hidden AS IsHidden,
+                e.assigned,
+                ec.id,
+                ec.name,
+                ec.budget_id as BudgetId
+            FROM
+                app.envelope e
+            INNER JOIN
+                app.envelope_category ec ON ec.id = e.envelope_category_id
+            WHERE
+                e.id = @EnvelopeId";
+
+        public static string GetAvailableIncomeEnvelopeId = @"
+            SELECT
+                e.id
+            FROM
+                app.envelope e
+            INNER JOIN
+                app.envelope_category ec ON ec.id = e.envelope_category_id
+            WHERE
+                ec.budget_id = @BudgetId";
     }
 }
