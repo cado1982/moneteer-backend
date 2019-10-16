@@ -183,5 +183,31 @@ namespace Moneteer.Backend.Managers
                 await _envelopeRepository.UpdateEnvelope(entity, conn);
             }
         }
+
+        public async Task HideEnvelope(Guid envelopeId, Guid userId)
+        {
+            if (envelopeId == Guid.Empty) throw new ArgumentException("envelopeid must be provided", nameof(envelopeId));
+            if (userId == Guid.Empty) throw new ArgumentException("envelopeid must be provided", nameof(userId));
+
+            using (var conn = _connectionProvider.GetOpenConnection())
+            {
+                await GuardEnvelope(envelopeId, userId, conn);
+
+                await _envelopeRepository.UpdateEnvelopeIsHidden(envelopeId, true, conn);
+            }
+        }
+
+        public async Task ShowEnvelope(Guid envelopeId, Guid userId)
+        {
+            if (envelopeId == Guid.Empty) throw new ArgumentException("envelopeid must be provided", nameof(envelopeId));
+            if (userId == Guid.Empty) throw new ArgumentException("envelopeid must be provided", nameof(userId));
+
+            using (var conn = _connectionProvider.GetOpenConnection())
+            {
+                await GuardEnvelope(envelopeId, userId, conn);
+
+                await _envelopeRepository.UpdateEnvelopeIsHidden(envelopeId, false, conn);
+            }
+        }
     }
 }

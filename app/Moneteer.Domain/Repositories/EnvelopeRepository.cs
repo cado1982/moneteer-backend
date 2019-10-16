@@ -346,7 +346,6 @@ namespace Moneteer.Domain.Repositories
                 parameters.Add("@EnvelopeId", envelope.Id);
                 parameters.Add("@EnvelopeCategoryId", envelope.EnvelopeCategory.Id);
                 parameters.Add("@IsHidden", envelope.IsHidden);
-                parameters.Add("@Assigned", envelope.Assigned);
 
                 var result = await conn.ExecuteAsync(EnvelopeSql.UpdateEnvelope, parameters).ConfigureAwait(false);
             }
@@ -358,6 +357,32 @@ namespace Moneteer.Domain.Repositories
             catch (Exception ex)
             {
                 Logger.LogError(ex, $"Error updating envelope: {envelope.Id}");
+                throw;
+            }
+        }
+
+        public async Task UpdateEnvelopeIsHidden(Guid envelopeId, bool isHidden, IDbConnection conn)
+        {
+            if (envelopeId == Guid.Empty) throw new ArgumentException("envelopeId must be provided", nameof(envelopeId));
+            if (conn == null) throw new ArgumentNullException(nameof(conn));
+
+            try
+            {
+                var parameters = new DynamicParameters();
+
+                parameters.Add("@EnvelopeId", envelopeId);
+                parameters.Add("@IsHidden", isHidden);
+
+                var result = await conn.ExecuteAsync(EnvelopeSql.UpdateEnvelopeIsHidden, parameters).ConfigureAwait(false);
+            }
+            catch (PostgresException ex)
+            {
+                LogPostgresException(ex, $"Error updating envelope is hidden: {envelopeId}");
+                throw;
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, $"Error updating envelope is hidden: {envelopeId}");
                 throw;
             }
         }

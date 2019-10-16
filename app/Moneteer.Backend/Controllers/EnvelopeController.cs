@@ -109,7 +109,7 @@ namespace Moneteer.Backend.Controllers
         }
 
         [HttpPut]
-        [Route("api/envelopes/{envelopeId}")]
+        [Route("api/envelopes")]
         public Task<IActionResult> UpdateEnvelope(Envelope envelope)
         {
             return HandleExceptions(() =>
@@ -117,6 +117,28 @@ namespace Moneteer.Backend.Controllers
                 var userId = GetCurrentUserId();
 
                 return _envelopeManager.UpdateEnvelope(envelope, userId);
+            });
+        }
+
+        [HttpPut]
+        [Route("api/envelopes/{envelopeId}/hide")]
+        public Task<IActionResult> HideEnvelope(Guid envelopeId)
+        {
+            return HandleExceptions(() => {
+                var userId = GetCurrentUserId();
+
+                return _envelopeManager.HideEnvelope(envelopeId, userId);
+            });
+        }
+
+        [HttpPut]
+        [Route("api/envelopes/{envelopeId}/show")]
+        public Task<IActionResult> ShowEnvelope(Guid envelopeId)
+        {
+            return HandleExceptions(() => {
+                var userId = GetCurrentUserId();
+
+                return _envelopeManager.ShowEnvelope(envelopeId, userId);
             });
         }
     }

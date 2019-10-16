@@ -63,7 +63,7 @@
  	            e.id,
 	            e.name,
 	            e.envelope_category_id,
-	            e.is_hidden,
+	            e.is_hidden as IsHidden,
 	            e.assigned,
 	            COALESCE((SELECT SpendingLast30Days FROM spending WHERE EnvelopeId = e.id), 0) as SpendingLast30Days,
 	            COALESCE((SELECT AverageSpend FROM average_spend WHERE EnvelopeId = e.id), 0) as AverageSpend,
@@ -160,8 +160,15 @@
             SET
                 name = @Name,
                 envelope_category_id = @EnvelopeCategoryId,
-                is_hidden = @IsHidden,
-                assigned = @Assigned
+                is_hidden = @IsHidden
+            WHERE
+                envelope.id = @EnvelopeId";
+
+        public static string UpdateEnvelopeIsHidden = @"
+            UPDATE 
+                app.envelope
+            SET
+                is_hidden = @IsHidden
             WHERE
                 envelope.id = @EnvelopeId";
     }
