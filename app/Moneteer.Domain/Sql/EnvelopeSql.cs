@@ -196,6 +196,8 @@
             INNER JOIN
                 app.envelope_category ec ON ec.id = e.envelope_category_id
             WHERE
-                ec.budget_id = @BudgetId";
+                ec.budget_id = @BudgetId AND
+                e.name = 'Available Income' AND
+                ec.name = 'Income'";
     }
 }
