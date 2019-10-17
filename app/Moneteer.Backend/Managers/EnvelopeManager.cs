@@ -123,6 +123,7 @@ namespace Moneteer.Backend.Managers
             if (envelopeId == Guid.Empty) throw new ArgumentException("envelope id must be provided");
 
             using (var conn = _connectionProvider.GetOpenConnection())
+            using (var trans = conn.BeginTransaction())
             {
                 await GuardEnvelope(envelopeId, userId, conn);
 
@@ -131,25 +132,25 @@ namespace Moneteer.Backend.Managers
                 if (envelope == null) throw new ApplicationException("Envelope does not exist");
                 if (envelope.Assigned < 0) throw new ApplicationException("Cannot delete envelopes who have a negative balance");
 
-                // Move any existing balance to the Available Income envelope
-                if (envelope.Assigned > 0) {
-                    await MoveEnvelopeBalance(envelopeId, new List<EnvelopeBalanceTarget>{
-                        new EnvelopeBalanceTarget
-                        {
-                            Amount = envelope.Assigned,
-                            EnvelopeId = await _envelopeRepository.GetAvailableIncomeEnvelopeId(envelope.EnvelopeCategory.BudgetId, conn)
-                        }
-                    }, userId);
-                }
-
-                // Block delete if any transactions are still using this envelope
+                // Throw if any transactions are still using this envelope
                 var transactions = await _transactionRepository.GetByEnvelopeId(envelopeId, conn);
 
                 if (transactions.Any()) {
-                    throw new ApplicationException("Cannot delete envelope with existing transactions");
+                    throw new ApplicationException("Cannot delete an envelope that is being used in a transaction. Change these transactions to a different envelope first.");
+                }
+
+                // Move any existing balance to the Available Income envelope
+                if (envelope.Assigned > 0) 
+                {
+                    var availableIncomeEnvelopeId = await _envelopeRepository.GetAvailableIncomeEnvelopeId(envelope.EnvelopeCategory.BudgetId, conn);
+                    var target = new Tuple<Guid, decimal>(availableIncomeEnvelopeId, envelope.Assigned);
+
+                    await _envelopeRepository.MoveEnvelopeBalanceMultiple(envelopeId, new List<Tuple<Guid, decimal>>{ target }, conn);
                 }
 
                 await _envelopeRepository.DeleteEnvelope(envelopeId, conn);
+
+                trans.Commit();
             }
         }
 

@@ -266,9 +266,7 @@
                     is_cleared,
                     date,
                     description,
-                    is_reconciled,
-                    inflow,
-                    outflow) 
+                    is_reconciled) 
                 VALUES (
                     @Id,
                     @AccountId,
@@ -276,9 +274,7 @@
                     @IsCleared,
                     @Date,
                     @Description,
-                    @IsReconciled, 
-                    0,
-                    0);";
+                    @IsReconciled);";
 
         public static string Delete = @"
             DELETE FROM
@@ -295,9 +291,7 @@
                 is_cleared = @IsCleared,
                 date = @Date,
                 description = @Description,
-                is_reconciled = @IsReconciled,
-                inflow = 0,
-                outflow = 0
+                is_reconciled = @IsReconciled
             WHERE
                 id = @Id";
 

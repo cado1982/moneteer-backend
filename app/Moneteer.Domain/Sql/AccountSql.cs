@@ -70,12 +70,21 @@
                 a.budget_id = @BudgetId";
 
         public static string GetAccountBalance = @"
-            WITH transactions AS (
-                SELECT * FROM app.transaction WHERE account_id = @AccountId
+            WITH transaction_assignments AS (
+                SELECT
+                    ta.inflow,
+                    ta.outflow,
+                    t.is_cleared
+                FROM 
+                    app.transaction_assignment ta
+                INNER JOIN
+                    app.transaction t ON t.id = ta.transaction_id 
+                WHERE 
+                    t.account_id = @AccountId
             )
 
-            SELECT 
-                (SELECT COALESCE(SUM(inflow) - SUM(outflow), 0) as ClearedBalance FROM transactions t WHERE t.is_cleared = true),
-                (SELECT COALESCE(SUM(inflow) - SUM(outflow), 0) as UnclearedBalance FROM transactions t WHERE t.is_cleared = false)";
+            SELECT
+                (SELECT COALESCE(SUM(inflow) - SUM(outflow), 0) as ClearedBalance FROM transaction_assignments t WHERE t.is_cleared = true),
+                (SELECT COALESCE(SUM(inflow) - SUM(outflow), 0) as UnclearedBalance FROM transaction_assignments t WHERE t.is_cleared = false)";
     }
 }
