@@ -15,7 +15,8 @@ namespace Moneteer.Backend.Extensions
             {
                 Name = entity.Name,
                 Id = entity.Id,
-                IsHidden = entity.IsHidden
+                IsHidden = entity.IsHidden,
+                IsToggled = entity.IsToggled
             };
         }
 
@@ -28,7 +29,8 @@ namespace Moneteer.Backend.Extensions
                 Name = model.Name,
                 Id = model.Id,
                 BudgetId = budgetId == null ? Guid.Empty : (Guid)budgetId,
-                IsHidden = model.IsHidden
+                IsHidden = model.IsHidden,
+                IsToggled = model.IsToggled
             };
         }
 

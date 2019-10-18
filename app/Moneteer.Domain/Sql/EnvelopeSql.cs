@@ -3,7 +3,17 @@
     public static class EnvelopeSql
     {
         public static string CreateEnvelopeCategory = @"
-            INSERT INTO app.envelope_category (id, budget_id, name, is_hidden) VALUES (@Id, @BudgetId, @Name, false);";
+            INSERT INTO 
+                app.envelope_category (
+                    id,
+                    budget_id,
+                    name,
+                    is_hidden) 
+                VALUES (
+                    @Id,
+                    @BudgetId,
+                    @Name,
+                    false);";
 
         public static string CreateEnvelope = @"
             INSERT INTO 
@@ -70,7 +80,8 @@
 	            ec.id,
 	            ec.name,
 	            ec.budget_id,
-	            ec.is_hidden
+	            ec.is_hidden,
+                ec.is_toggled as IsToggled
             FROM 
 	            app.envelope e 
             INNER JOIN 
@@ -89,7 +100,8 @@
         public static string GetEnvelopeCategoriesForBudget = @"
             SELECT
 	            id,
-	            name
+	            name,
+                is_toggled as IsToggled
             FROM
 	            app.envelope_category
             WHERE
@@ -113,7 +125,7 @@
             FROM
                 app.envelope_category ec
             INNER JOIN
-                budget b ON b.id = ec.budget_id
+                app.budget b ON b.id = ec.budget_id
             WHERE
                 ec.id = @EnvelopeCategoryId";
 
@@ -172,6 +184,14 @@
             WHERE
                 envelope.id = @EnvelopeId";
 
+        public static string UpdateEnvelopeCategoryIsToggled = @"
+            UPDATE 
+                app.envelope_category ec
+            SET
+                is_toggled = @IsToggled
+            WHERE
+                ec.id = @EnvelopeCategoryId";
+
         public static string GetEnvelope = @"
             SELECT
                 e.id,
@@ -180,7 +200,8 @@
                 e.assigned,
                 ec.id,
                 ec.name,
-                ec.budget_id as BudgetId
+                ec.budget_id as BudgetId,
+                ec.is_toggled as IsToggled
             FROM
                 app.envelope e
             INNER JOIN

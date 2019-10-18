@@ -255,7 +255,7 @@ namespace Moneteer.Domain.Repositories
 
                 parameters.Add("@EnvelopeCategoryId", envelopeCategoryId);
 
-                return await conn.QuerySingleAsync<Guid>(EnvelopeSql.GetEnvelopeCategoryOwner, parameters).ConfigureAwait(false);
+                return await conn.ExecuteScalarAsync<Guid>(EnvelopeSql.GetEnvelopeCategoryOwner, parameters).ConfigureAwait(false);
             }
             catch (PostgresException ex)
             {
@@ -440,6 +440,32 @@ namespace Moneteer.Domain.Repositories
             catch (Exception ex)
             {
                 Logger.LogError(ex, $"Error getting available income envelope for budget: {budgetId}");
+                throw;
+            }
+        }
+
+        public async Task UpdateEnvelopeCategoryIsToggled(Guid envelopeCategoryId, bool isToggled, IDbConnection conn)
+        {
+            if (envelopeCategoryId == Guid.Empty) throw new ArgumentException("envelopeCategoryId must be provided", nameof(envelopeCategoryId));
+            if (conn == null) throw new ArgumentNullException(nameof(conn));
+
+            try
+            {
+                var parameters = new DynamicParameters();
+
+                parameters.Add("@EnvelopeCategoryId", envelopeCategoryId);
+                parameters.Add("@IsToggled", isToggled);
+
+                var result = await conn.ExecuteAsync(EnvelopeSql.UpdateEnvelopeCategoryIsToggled, parameters).ConfigureAwait(false);
+            }
+            catch (PostgresException ex)
+            {
+                LogPostgresException(ex, $"Error updating envelope category is toggled: {envelopeCategoryId}");
+                throw;
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, $"Error updating envelope category is toggled: {envelopeCategoryId}");
                 throw;
             }
         }

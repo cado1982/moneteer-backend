@@ -17,5 +17,7 @@ namespace Moneteer.Backend.Managers
         Task MoveEnvelopeBalance(Guid fromEnvelopeId, List<EnvelopeBalanceTarget> targets, Guid userId);
         Task HideEnvelope(Guid envelopeId, Guid userId);
         Task ShowEnvelope(Guid envelopeId, Guid userId);
+        Task HideEnvelopeCategory(Guid envelopeCategoryId, Guid userId);
+        Task ShowEnvelopeCategory(Guid envelopeCategoryId, Guid userId);
     }
 }

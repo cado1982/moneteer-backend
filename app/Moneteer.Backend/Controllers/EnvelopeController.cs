@@ -124,7 +124,8 @@ namespace Moneteer.Backend.Controllers
         [Route("api/envelopes/{envelopeId}/hide")]
         public Task<IActionResult> HideEnvelope(Guid envelopeId)
         {
-            return HandleExceptions(() => {
+            return HandleExceptions(() => 
+            {
                 var userId = GetCurrentUserId();
 
                 return _envelopeManager.HideEnvelope(envelopeId, userId);
@@ -135,10 +136,35 @@ namespace Moneteer.Backend.Controllers
         [Route("api/envelopes/{envelopeId}/show")]
         public Task<IActionResult> ShowEnvelope(Guid envelopeId)
         {
-            return HandleExceptions(() => {
+            return HandleExceptions(() => 
+            {
                 var userId = GetCurrentUserId();
 
                 return _envelopeManager.ShowEnvelope(envelopeId, userId);
+            });
+        }
+
+        [HttpPut]
+        [Route("api/envelopeCategories/{envelopeCategoryId}/show")]
+        public Task<IActionResult> ShowEnvelopeCategory(Guid envelopeCategoryId)
+        {
+            return HandleExceptions(() =>
+            {
+                var userId = GetCurrentUserId();
+
+                return _envelopeManager.ShowEnvelopeCategory(envelopeCategoryId, userId);
+            });
+        }
+
+        [HttpPut]
+        [Route("api/envelopeCategories/{envelopeCategoryId}/hide")]
+        public Task<IActionResult> HideEnvelopeCategory(Guid envelopeCategoryId)
+        {
+            return HandleExceptions(() =>
+            {
+                var userId = GetCurrentUserId();
+
+                return _envelopeManager.HideEnvelopeCategory(envelopeCategoryId, userId);
             });
         }
     }

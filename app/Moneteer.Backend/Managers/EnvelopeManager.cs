@@ -220,5 +220,31 @@ namespace Moneteer.Backend.Managers
                 await _envelopeRepository.UpdateEnvelopeIsHidden(envelopeId, false, conn);
             }
         }
+
+        public async Task HideEnvelopeCategory(Guid envelopeCategoryId, Guid userId)
+        {
+            if (envelopeCategoryId == Guid.Empty) throw new ArgumentException("envelopeCategoryId must be provided", nameof(envelopeCategoryId));
+            if (userId == Guid.Empty) throw new ArgumentException("envelopeid must be provided", nameof(userId));
+
+            using (var conn = _connectionProvider.GetOpenConnection())
+            {
+                await GuardEnvelopeCategory(envelopeCategoryId, userId, conn);
+
+                await _envelopeRepository.UpdateEnvelopeCategoryIsToggled(envelopeCategoryId, false, conn);
+            }
+        }
+
+        public async Task ShowEnvelopeCategory(Guid envelopeCategoryId, Guid userId)
+        {
+            if (envelopeCategoryId == Guid.Empty) throw new ArgumentException("envelopeCategoryId must be provided", nameof(envelopeCategoryId));
+            if (userId == Guid.Empty) throw new ArgumentException("envelopeid must be provided", nameof(userId));
+
+            using (var conn = _connectionProvider.GetOpenConnection())
+            {
+                await GuardEnvelopeCategory(envelopeCategoryId, userId, conn);
+
+                await _envelopeRepository.UpdateEnvelopeCategoryIsToggled(envelopeCategoryId, true, conn);
+            }
+        }
     }
 }

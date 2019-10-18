@@ -21,6 +21,7 @@ namespace Moneteer.Domain.Repositories
         Task MoveEnvelopeBalanceMultiple(Guid fromEnvelopeId, List<Tuple<Guid, decimal>> targets, IDbConnection conn);
         Task UpdateEnvelope(Envelope envelope, IDbConnection conn);
         Task UpdateEnvelopeIsHidden(Guid envelopeId, bool isHidden, IDbConnection conn);
+        Task UpdateEnvelopeCategoryIsToggled(Guid envelopeCategoryId, bool isToggled, IDbConnection conn);
         Task<Envelope> GetEnvelope(Guid envelopeId, IDbConnection conn);
         Task<Guid> GetAvailableIncomeEnvelopeId(Guid budgetId, IDbConnection conn);
     }
