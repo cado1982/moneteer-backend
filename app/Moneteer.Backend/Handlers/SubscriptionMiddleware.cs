@@ -20,6 +20,12 @@ namespace Moneteer.Backend.Handlers
         {
             logger.LogTrace("Entered InvokeAsync");
 
+            if (context.Request.Path == "/healthcheck" || context.Request.Path == "/favicon.ico")
+            {
+                await _next(context);
+                return;
+            }
+
             var user = context.User;
             Claim sub = null;
 
