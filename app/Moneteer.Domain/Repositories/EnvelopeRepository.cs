@@ -346,6 +346,7 @@ namespace Moneteer.Domain.Repositories
                 parameters.Add("@EnvelopeId", envelope.Id);
                 parameters.Add("@EnvelopeCategoryId", envelope.EnvelopeCategory.Id);
                 parameters.Add("@IsHidden", envelope.IsHidden);
+                parameters.Add("@Name", envelope.Name);
 
                 var result = await conn.ExecuteAsync(EnvelopeSql.UpdateEnvelope, parameters).ConfigureAwait(false);
             }

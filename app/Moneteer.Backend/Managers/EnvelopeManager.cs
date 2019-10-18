@@ -30,14 +30,14 @@ namespace Moneteer.Backend.Managers
             _transactionRepository = transactionRepository;
         }
 
-        public async Task<Envelope> CreateEnvelope(Guid budgetId, Envelope envelope, Guid userId)
+        public async Task<Envelope> CreateEnvelope(Envelope envelope, Guid userId)
         {
-            if (budgetId == Guid.Empty) throw new ArgumentException("budgetId must be provided");
+            if (envelope == null) throw new ArgumentNullException(nameof(envelope));
 
             using (var conn = _connectionProvider.GetOpenConnection())
             {
-                await GuardBudget(budgetId, userId, conn);
-            
+                await GuardEnvelopeCategory(envelope.EnvelopeCategory.Id, userId, conn);
+
                 var entity = envelope.ToEntity();
 
                 await _envelopeRepository.CreateEnvelope(entity, conn);

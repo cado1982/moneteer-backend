@@ -69,16 +69,14 @@ namespace Moneteer.Backend.Controllers
         }
 
         [HttpPost]
-        [Route("api/budget/{budgetId}/envelopes")]
-        public Task<IActionResult> CreateEnvelope(Guid budgetId, [FromBody] Envelope envelope)
+        [Route("api/envelopes")]
+        public Task<IActionResult> CreateEnvelope([FromBody] Envelope envelope)
         {
             return HandleExceptions(() =>
             {
-                if (budgetId == Guid.Empty) throw new ArgumentException("budgetId must be provided", nameof(budgetId));
-
                 var userId = GetCurrentUserId();
 
-                return _envelopeManager.CreateEnvelope(budgetId, envelope, userId);
+                return _envelopeManager.CreateEnvelope(envelope, userId);
             });
         }
         
