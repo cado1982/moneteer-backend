@@ -22,6 +22,7 @@
                 ta.inflow as Inflow,
                 ta.outflow as Outflow,
                 ta.envelope_id as EnvelopeId,
+                ta.account_id as AccountId,
                 e.id as Id,
                 e.name as Name
             FROM
@@ -57,6 +58,7 @@
                 ta.inflow as Inflow,
                 ta.outflow as Outflow,
                 ta.envelope_id as EnvelopeId,
+                ta.account_id as AccountId,
                 e.id as Id,
                 e.name as Name
             FROM
@@ -92,6 +94,7 @@
                 ta.inflow as Inflow,
                 ta.outflow as Outflow,
                 ta.envelope_id as EnvelopeId,
+                ta.account_id as AccountId,
                 e.id as Id,
                 e.name as Name
             FROM
@@ -127,6 +130,7 @@
                 ta.inflow as Inflow,
                 ta.outflow as Outflow,
                 ta.envelope_id as EnvelopeId,
+                ta.account_id as AccountId,
                 e.id as Id,
                 e.name as Name
             FROM
@@ -169,6 +173,7 @@
                 ta.inflow as Inflow,
                 ta.outflow as Outflow,
                 ta.envelope_id as EnvelopeId,
+                ta.account_id as AccountId,
                 e.id as Id,
                 e.name as Name
             FROM
@@ -204,6 +209,7 @@
                 ta.inflow as Inflow,
                 ta.outflow as Outflow,
                 ta.envelope_id as EnvelopeId,
+                ta.account_id as AccountId,
                 e.id as Id,
                 e.name as Name
             FROM
@@ -240,6 +246,7 @@
                 ta.inflow as Inflow,
                 ta.outflow as Outflow,
                 ta.envelope_id as EnvelopeId,
+                ta.account_id as AccountId,
                 e.id as Id,
                 e.name as Name
             FROM

@@ -31,6 +31,7 @@ namespace Moneteer.Domain.Repositories
                         Id = assignment.Id,
                         TransactionId = transactionId,
                         EnvelopeId = assignment.Envelope?.Id,
+                        AccountId = assignment.Account?.Id,
                         Inflow = assignment.Inflow,
                         Outflow = assignment.Outflow
                     }).ConfigureAwait(false);

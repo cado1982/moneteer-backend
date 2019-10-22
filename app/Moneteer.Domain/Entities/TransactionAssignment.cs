@@ -8,5 +8,6 @@ namespace Moneteer.Domain.Entities
         public decimal Inflow { get; set; }
         public decimal Outflow { get; set; }
         public Envelope Envelope { get; set; }
+        public Account Account { get; set; }
     }
 }
