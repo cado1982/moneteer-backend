@@ -6,6 +6,7 @@
             SELECT 
 	            t.id as Id, 
                 t.account_id as AccountId,
+                t.target_account_id as TargetAccountId,
                 t.payee_id as PayeeId,
                 t.is_cleared as IsCleared,
                 t.date as Date,
@@ -22,13 +23,18 @@
                 ta.inflow as Inflow,
                 ta.outflow as Outflow,
                 ta.envelope_id as EnvelopeId,
-                ta.account_id as AccountId,
                 e.id as Id,
-                e.name as Name
+                e.name as Name,
+                at.id as Id,
+                at.name as Name,
+                at.is_budget as IsBudget,
+                at.budget_id as BudgetId
             FROM
                 app.transaction as t
             INNER JOIN
                 app.account as a ON a.id = t.account_id
+            LEFT JOIN
+                app.account as at ON at.id = t.target_account_id
             LEFT JOIN
                 app.payee as p ON p.id = t.payee_id
             LEFT JOIN
@@ -42,6 +48,7 @@
             SELECT 
 	            t.id as Id, 
                 t.account_id as AccountId,
+                t.target_account_id as TargetAccountId,
                 t.payee_id as PayeeId,
                 t.is_cleared as IsCleared,
                 t.date as Date,
@@ -58,13 +65,14 @@
                 ta.inflow as Inflow,
                 ta.outflow as Outflow,
                 ta.envelope_id as EnvelopeId,
-                ta.account_id as AccountId,
                 e.id as Id,
                 e.name as Name
             FROM
                 app.transaction as t
             INNER JOIN
                 app.account as a ON a.id = t.account_id
+            LEFT JOIN
+                app.account as at ON at.id = t.target_account_id
             LEFT JOIN
                 app.payee as p ON p.id = t.payee_id
             LEFT JOIN
@@ -78,6 +86,7 @@
             SELECT 
 	            t.id as Id, 
                 t.account_id as AccountId,
+                t.target_account_id as TargetAccountId,
                 t.payee_id as PayeeId,
                 t.is_cleared as IsCleared,
                 t.date as Date,
@@ -94,13 +103,14 @@
                 ta.inflow as Inflow,
                 ta.outflow as Outflow,
                 ta.envelope_id as EnvelopeId,
-                ta.account_id as AccountId,
                 e.id as Id,
                 e.name as Name
             FROM
                 app.transaction as t
             INNER JOIN
                 app.account as a ON a.id = t.account_id
+            LEFT JOIN
+                app.account as at ON at.id = t.target_account_id
             LEFT JOIN
                 app.payee as p ON p.id = t.payee_id
             INNER JOIN
@@ -114,6 +124,7 @@
             SELECT 
 	            t.id as Id, 
                 t.account_id as AccountId,
+                t.target_account_id as TargetAccountId,
                 t.payee_id as PayeeId,
                 t.is_cleared as IsCleared,
                 t.date as Date,
@@ -130,13 +141,14 @@
                 ta.inflow as Inflow,
                 ta.outflow as Outflow,
                 ta.envelope_id as EnvelopeId,
-                ta.account_id as AccountId,
                 e.id as Id,
                 e.name as Name
             FROM
                 app.transaction as t
             INNER JOIN
                 app.account as a ON a.id = t.account_id
+            LEFT JOIN
+                app.account as at ON at.id = t.target_account_id
             LEFT JOIN
                 app.payee as p ON p.id = t.payee_id
             INNER JOIN
@@ -157,6 +169,7 @@
             SELECT 
 	            t.id as Id, 
                 t.account_id as AccountId,
+                t.target_account_id as TargetAccountId,
                 t.payee_id as PayeeId,
                 t.is_cleared as IsCleared,
                 t.date as Date,
@@ -173,13 +186,14 @@
                 ta.inflow as Inflow,
                 ta.outflow as Outflow,
                 ta.envelope_id as EnvelopeId,
-                ta.account_id as AccountId,
                 e.id as Id,
                 e.name as Name
             FROM
                 app.transaction as t
             INNER JOIN
                 app.account as a ON a.id = t.account_id
+            LEFT JOIN
+                app.account as at ON at.id = t.target_account_id
             LEFT JOIN
                 app.payee as p ON p.id = t.payee_id
             LEFT JOIN
@@ -193,6 +207,7 @@
             SELECT 
 	            t.id as Id, 
                 t.account_id as AccountId,
+                t.target_account_id as TargetAccountId,
                 t.payee_id as PayeeId,
                 t.is_cleared as IsCleared,
                 t.date as Date,
@@ -209,13 +224,14 @@
                 ta.inflow as Inflow,
                 ta.outflow as Outflow,
                 ta.envelope_id as EnvelopeId,
-                ta.account_id as AccountId,
                 e.id as Id,
                 e.name as Name
             FROM
                 app.transaction as t
             INNER JOIN
                 app.account as a ON a.id = t.account_id
+            LEFT JOIN
+                app.account as at ON at.id = t.target_account_id
             LEFT JOIN
                 app.payee as p ON p.id = t.payee_id
             LEFT JOIN
@@ -230,6 +246,7 @@
             SELECT 
 	            t.id as Id, 
                 t.account_id as AccountId,
+                t.target_account_id as TargetAccountId,
                 t.payee_id as PayeeId,
                 t.is_cleared as IsCleared,
                 t.date as Date,
@@ -246,13 +263,14 @@
                 ta.inflow as Inflow,
                 ta.outflow as Outflow,
                 ta.envelope_id as EnvelopeId,
-                ta.account_id as AccountId,
                 e.id as Id,
                 e.name as Name
             FROM
                 app.transaction as t
             INNER JOIN
                 app.account as a ON a.id = t.account_id
+            LEFT JOIN
+                app.account as at ON at.id = t.target_account_id
             LEFT JOIN
                 app.payee as p ON p.id = t.payee_id
             LEFT JOIN
@@ -269,6 +287,7 @@
                 app.transaction (
                     id,
                     account_id,
+                    target_account_id,
                     payee_id,
                     is_cleared,
                     date,
@@ -277,6 +296,7 @@
                 VALUES (
                     @Id,
                     @AccountId,
+                    @TargetAccountId,
                     @PayeeId,
                     @IsCleared,
                     @Date,
@@ -294,6 +314,7 @@
                 app.transaction
             SET
                 account_id = @AccountId,
+                target_accountId = @TargetAccountId,
                 payee_id = @PayeeId,
                 is_cleared = @IsCleared,
                 date = @Date,

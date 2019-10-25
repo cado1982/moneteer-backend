@@ -11,6 +11,8 @@ namespace Moneteer.Models
 
         public Account Account { get; set; }
 
+        public Payee Payee { get; set; }
+
         public bool IsCleared { get; set; }
 
         public bool IsReconciled { get; set; }
@@ -20,5 +22,6 @@ namespace Moneteer.Models
         public string Description { get; set; }
 
         public List<TransactionAssignment> Assignments { get; set; }
+        public Account TargetAccount { get; set; }
     }
 }

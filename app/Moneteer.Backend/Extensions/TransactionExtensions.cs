@@ -15,6 +15,8 @@ namespace Moneteer.Backend.Extensions
             return new Models.Transaction
             {
                 Account = entity.Account.ToModel(),
+                TargetAccount = entity.TargetAccount.ToModel(),
+                Payee = entity.Payee.ToModel(),
                 Date = entity.Date,
                 Description = entity.Description,
                 Id = entity.Id,
@@ -31,6 +33,8 @@ namespace Moneteer.Backend.Extensions
             return new Entities.Transaction
             {
                 Account = model.Account.ToEntity(),
+                TargetAccount = model.TargetAccount.ToEntity(),
+                Payee = model.Payee.ToEntity(),
                 Date = model.Date,
                 Id = model.Id,
                 Description = model.Description,

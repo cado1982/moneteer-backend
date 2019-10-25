@@ -29,6 +29,7 @@ namespace Moneteer.Domain.Repositories
 
                 parameters.Add("@Id", transaction.Id);
                 parameters.Add("@AccountId", transaction.Account.Id);
+                parameters.Add("@TargetAccountId", transaction.TargetAccount.Id);
                 parameters.Add("@PayeeId", transaction.Payee == null ? (Guid?)null : transaction.Payee.Id);
                 parameters.Add("@IsCleared", transaction.IsCleared);
                 parameters.Add("@Date", transaction.Date);
@@ -366,13 +367,14 @@ namespace Moneteer.Domain.Repositories
         {
             var transactionDictionary = new Dictionary<Guid, Transaction>();
 
-            var result = await connection.QueryAsync<Transaction, Account, Payee, TransactionAssignment, Envelope, Transaction>(sql, (t, a, p, ta, c) =>
+            var result = await connection.QueryAsync<Transaction, Account, Payee, TransactionAssignment, Envelope, Account, Transaction>(sql, (t, a, p, ta, c, tar) =>
             {
                 if (!transactionDictionary.TryGetValue(t.Id, out Transaction transactionEntry))
                 {
                     transactionEntry = t;
                     transactionEntry.Assignments = new List<TransactionAssignment>();
                     transactionEntry.Account = a;
+                    transactionEntry.TargetAccount = tar;
                     transactionEntry.Payee = p;
                     transactionDictionary.Add(transactionEntry.Id, transactionEntry);
                 }

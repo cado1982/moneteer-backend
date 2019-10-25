@@ -13,5 +13,6 @@ namespace Moneteer.Domain.Entities
         public string Description { get; set; }
         public bool IsReconciled { get; set; }
         public List<TransactionAssignment> Assignments { get; set; }
+        public Account TargetAccount { get; set; }
     }
 }

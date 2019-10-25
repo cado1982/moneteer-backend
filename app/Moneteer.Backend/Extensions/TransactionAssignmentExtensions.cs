@@ -15,7 +15,6 @@ namespace Moneteer.Backend.Extensions
             {
                 Id = entity.Id,
                 Envelope = entity.Envelope.ToModel(),
-                Account = entity.Account.ToModel(),
                 Inflow = entity.Inflow,
                 Outflow = entity.Outflow
             };
@@ -29,7 +28,6 @@ namespace Moneteer.Backend.Extensions
             {
                 Id = model.Id,
                 Envelope = model.Envelope.ToEntity(),
-                Account = model.Account.ToEntity(),
                 Inflow = model.Inflow,
                 Outflow = model.Outflow
             };
