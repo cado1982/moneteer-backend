@@ -8,7 +8,7 @@ namespace Moneteer.Backend.Tests.Managers
 
         public EnvelopeManagerTests()
         {
-            _sut = new EnvelopeManager(ConnectionProvider, EnvelopeRepository, BudgetRepository, Guards);
+            _sut = new EnvelopeManager(ConnectionProvider, EnvelopeRepository, BudgetRepository, TransactionRepository, Guards);
         }
     }
 }

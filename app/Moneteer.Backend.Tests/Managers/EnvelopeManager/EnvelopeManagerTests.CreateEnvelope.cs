@@ -14,7 +14,7 @@ namespace Moneteer.Backend.Tests.Managers
         {
             Mock.Get(BudgetRepository).Setup(r => r.GetOwner(BudgetId, DbConnection)).ReturnsAsync(Guid.NewGuid());
 
-            await Assert.ThrowsAsync<ForbiddenException>(() => _sut.CreateEnvelope(BudgetId, new Envelope(), UserId));
+            await Assert.ThrowsAsync<ForbiddenException>(() => _sut.CreateEnvelope(new Envelope(), UserId));
         }
 
         [Fact]
@@ -31,7 +31,7 @@ namespace Moneteer.Backend.Tests.Managers
                 }
             };
 
-            await _sut.CreateEnvelope(BudgetId, model, UserId);
+            await _sut.CreateEnvelope(model, UserId);
 
             Mock.Get(EnvelopeRepository).Verify(r => r.CreateEnvelope(It.Is<Domain.Entities.Envelope>(cc => cc.Name == "MyEnvelope" && cc.EnvelopeCategory.Id == envelopeCategoryId), DbConnection), Times.Once);
         }
